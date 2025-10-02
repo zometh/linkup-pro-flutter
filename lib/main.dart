@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/core/utils/services/get_it_setup.dart';
-import 'package:linkup_pro/features/splash/pages/splash_fisrt.dart';
+import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 import 'package:linkup_pro/home.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
 
@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
-      home: const SplashFisrt(),
+      home: const SplashScreen(),
       darkTheme: ThemeData.dark(),
       theme: context.isDarkMode ? ThemeData.dark() : ThemeData.light(),
       locale: context.locale,
@@ -51,13 +51,11 @@ extension ContextExtensions on BuildContext {
   TextTheme get textTheme => theme.textTheme;
 
   bool get isMobile => MediaQuery.of(this).size.width < 600;
-  bool get isTablet => MediaQuery.of(this).size.width >= 600 && MediaQuery.of(this).size.width < 1200;
+  bool get isTablet =>
+      MediaQuery.of(this).size.width >= 600 &&
+      MediaQuery.of(this).size.width < 1200;
   Orientation get orientation => MediaQuery.of(this).orientation;
   double get screenWidth => MediaQuery.of(this).size.width;
   double get screenHeight => MediaQuery.of(this).size.height;
   String get languageCode => locale.languageCode;
-
-
-
 }
-

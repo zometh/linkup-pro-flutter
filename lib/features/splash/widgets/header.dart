@@ -5,7 +5,8 @@ import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/main.dart';
 
 class SplashHeader extends StatelessWidget {
-  const SplashHeader({super.key});
+  final int currentIndex;
+  const SplashHeader({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,8 @@ class SplashHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Image.asset(AssetsPath.logo, height: context.isMobile ? 40 : 60),
-        TextButton(
+        currentIndex != 2 
+        ? TextButton(
           onPressed: () {
             // Navigate to login page
           },
@@ -23,7 +25,7 @@ class SplashHeader extends StatelessWidget {
               color: context.isDarkMode ? Colors.white70 : Colors.black87,
             ),
           ).tr(),
-        ),
+        ) : SizedBox.shrink(),
       ],
     );
   }

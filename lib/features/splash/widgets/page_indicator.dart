@@ -6,11 +6,13 @@ import 'package:linkup_pro/features/splash/providers/splash_provider.dart';
 class PageIndicator extends ConsumerWidget {
   final double availableWidth;
   final double availableHeight;
+  final PageController pageController;
 
   const PageIndicator({
     super.key,
     required this.availableWidth,
     required this.availableHeight,
+    required this.pageController,
   });
 
   @override
@@ -30,14 +32,29 @@ class PageIndicator extends ConsumerWidget {
         Row(
           children: List.generate(3, (index) {
             return InkWell(
-              onTap: () =>
-                  ref.read(splashProviderProvider.notifier).setIndex(index),
+              hoverColor: Colors.transparent,
+              overlayColor: WidgetStatePropertyAll(Colors.transparent),
+              onTap: (){
+                ref.read(splashProviderProvider.notifier).setIndex(index);
+                pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+              },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                width: indicatorProvider == index ? 20.0 : 8.0,
-                height: 8.0,
+                width: indicatorProvider == index ? 25.0 : 9.0,
+                height: 9.0,
                 decoration: BoxDecoration(
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(10),
+                      blurRadius: 4.0,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
                   color: indicatorProvider == index ? Colors.blue : Colors.grey,
                   borderRadius: BorderRadius.circular(4.0),
                 ),
@@ -49,6 +66,13 @@ class PageIndicator extends ConsumerWidget {
           width: availableWidth * 0.13,
           height: availableHeight * 0.13,
           decoration: BoxDecoration(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha(20),
+                blurRadius: 6.0,
+                offset: const Offset(0, 3),
+              ),
+            ],
             shape: BoxShape.circle,
             color: AppColors.primary,
           ),

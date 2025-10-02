@@ -19,6 +19,7 @@ class SplashProvider extends _$SplashProvider {
     if (index >= 0 && index <= 2) {
       state = index;
     }
+   
   }
 
   
