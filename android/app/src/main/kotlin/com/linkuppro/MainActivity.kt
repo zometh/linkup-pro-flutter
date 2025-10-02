@@ -1,4 +1,4 @@
-package com.zomethdev.linkuppro.linkup_pro
+package com.linkuppro
 
 import io.flutter.embedding.android.FlutterActivity
 
