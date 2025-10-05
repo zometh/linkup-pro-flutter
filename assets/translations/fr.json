@@ -61,5 +61,22 @@
     "text_splash_2": "Publiez, interagissez et développez votre réseau",
     "splash_subtitle_2": "Partagez vos idées, opportunités et expériences tout en vous connectant avec des professionnels qui comprennent votre domaine.",
     "text_splash_3": "Construisez votre identité professionnelle.",
-    "splash_subtitle_3": "Créez une forte présence professionnelle avec un profil détaillé, mettez en valeur votre expertise, et laissez les autres découvrir votre travail."
+    "splash_subtitle_3": "Créez une forte présence professionnelle avec un profil détaillé, mettez en valeur votre expertise, et laissez les autres découvrir votre travail.",
+    "login_header": "Bon retour sur LinkUp Pro",
+    "login_subtitle": "Connectez-vous pour continuer et vous connecter avec des professionnels de votre secteur.",
+    "login_forgot_password": "Mot de passe oublié ?",
+    "login_no_account": "Vous n'avez pas de compte ? ",
+    "login_sign_up": "S'inscrire",
+    "login_button": "Se connecter",
+    "login_or": "OU",
+    "login_with_google": "Se connecter avec Google",
+    "username_or_email": "Nom d'utilisateur ou Email",
+    "password_hint": "Entrez votre mot de passe",
+    "required_field": "Ce champ est requis",
+    "field_length": "Ce champ doit contenir entre {min} et {max} caractères",
+    "invalid_email": "Veuillez entrer une adresse email valide",
+    "password_mismatch": "Les mots de passe ne correspondent pas",
+  "username_taken": "Nom d'utilisateur déjà pris",
+  "email_taken": "Email déjà enregistré",
+  "username_min_length": "Le nom d'utilisateur doit comporter au moins {min} caractères"
 }

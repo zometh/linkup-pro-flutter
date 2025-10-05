@@ -33,6 +33,10 @@ dependencies:
   google_fonts: ^6.3.2
   flutter_riverpod: ^3.0.1
   riverpod_annotation: ^3.0.1
+  email_validator: ^3.0.0
+  animated_text_kit: ^4.2.3
+  flutter_animate: ^4.5.2
+  logger: ^2.6.1
 
 dev_dependencies:
   flutter_test:

@@ -45,7 +45,7 @@ final lightTheme = ThemeData(
       ),
     ),
   ),
-  scaffoldBackgroundColor: const Color(0xFFF8FAFC),
+  scaffoldBackgroundColor: Colors.white,
   appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,
     foregroundColor: Color(0xFF1E293B),

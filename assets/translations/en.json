@@ -61,5 +61,23 @@
   "text_splash_2" : "Post, interact, and grow your network",
   "splash_subtitle_2" : "Share your ideas, opportunities, and experiences while connecting with professionals who understand your field.",
   "text_splash_3" : "Build Your Professional Identity.",
-  "splash_subtitle_3" : "Create a strong professional presence with a detailed profile, highlight your expertise, and let others discover your work."
+  "splash_subtitle_3" : "Create a strong professional presence with a detailed profile, highlight your expertise, and let others discover your work.",
+  "login_header" : "Welcome back to LinkUp Pro",
+  "login_subtitle" : "Sign in to continue and connect with professionals in your sector.",
+  "login_forgot_password" : "Forgot Password?",
+  "login_no_account" : "Don't have an account? ",
+  "login_sign_up" : "Sign Up",
+  "login_button" : "Login",
+  "login_or" : "OR",
+  "login_with_google" : "Login with Google",
+  "username_or_email" : "Username or Email",
+  "password_hint" : "Enter your password",
+  "required_field": "This field is required",
+  "field_length": "This field must be between {min} and {max} characters",
+  "invalid_email": "Please enter a valid email address",
+  "password_mismatch": "Passwords do not match",
+  "username_taken": "Username is already taken",
+  "email_taken": "Email is already registered",
+  "username_min_length": "Username must be at least {min} characters"
+
 }

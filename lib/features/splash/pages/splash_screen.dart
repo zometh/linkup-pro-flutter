@@ -49,7 +49,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       'splash_subtitle_3',
     ];
     return Scaffold(
-      appBar: AppBar(title: SplashHeader(currentIndex: value,)),
+      appBar: AppBar(title: SplashHeader()),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return Padding(
@@ -81,11 +81,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                             style: Theme.of(context).textTheme.headlineMedium!
                                 .copyWith(
                                   fontWeight: FontWeight.bold,
-                                  fontSize: constraints.maxWidth * 0.065,
+                                  fontSize: constraints.maxWidth * 0.068,
                                 ),
                             textAlign: TextAlign.center,
                           ).tr(),
-                          SizedBox(height: constraints.maxHeight * 0.01),
+                          SizedBox(height: constraints.maxHeight * 0.02),
                           Padding(
                             padding: EdgeInsets.symmetric(
                               horizontal: constraints.maxWidth * 0.05,

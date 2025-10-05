@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/splash/providers/splash_provider.dart';
 
@@ -34,7 +35,7 @@ class PageIndicator extends ConsumerWidget {
             return InkWell(
               hoverColor: Colors.transparent,
               overlayColor: WidgetStatePropertyAll(Colors.transparent),
-              onTap: (){
+              onTap: () {
                 ref.read(splashProviderProvider.notifier).setIndex(index);
                 pageController.animateToPage(
                   index,
@@ -45,8 +46,10 @@ class PageIndicator extends ConsumerWidget {
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 300),
                 margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                width: indicatorProvider == index ? 25.0 : 9.0,
-                height: 9.0,
+                width: indicatorProvider == index
+                    ? availableWidth * 0.09
+                    : availableWidth * 0.03,
+                height: availableHeight * 0.013,
                 decoration: BoxDecoration(
                   boxShadow: [
                     BoxShadow(
@@ -56,30 +59,34 @@ class PageIndicator extends ConsumerWidget {
                     ),
                   ],
                   color: indicatorProvider == index ? Colors.blue : Colors.grey,
-                  borderRadius: BorderRadius.circular(4.0),
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
             );
           }),
         ),
-        Container(
-          width: availableWidth * 0.13,
-          height: availableHeight * 0.13,
-          decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withAlpha(20),
-                blurRadius: 6.0,
-                offset: const Offset(0, 3),
-              ),
-            ],
-            shape: BoxShape.circle,
-            color: AppColors.primary,
-          ),
-          child: Icon(
-            Icons.arrow_forward,
-            color: Colors.white,
-            size: availableHeight * 0.03,
+        InkWell(
+          overlayColor: WidgetStatePropertyAll(Colors.transparent),
+          onTap: () => context.go('/login'),
+          child: Container(
+            width: availableWidth * 0.13,
+            height: availableHeight * 0.13,
+            decoration: BoxDecoration(
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withAlpha(20),
+                  blurRadius: 6.0,
+                  offset: const Offset(0, 3),
+                ),
+              ],
+              shape: BoxShape.circle,
+              color: AppColors.primary,
+            ),
+            child: Icon(
+              Icons.arrow_forward,
+              color: Colors.white,
+              size: availableHeight * 0.03,
+            ),
           ),
         ),
       ],
