@@ -5,10 +5,15 @@ import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
 import 'package:linkup_pro/core/utils/services/assets_path.dart';
+import 'package:linkup_pro/core/utils/services/custom_toast.dart';
+import 'package:linkup_pro/core/utils/services/my_logger.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/progress_indicator.dart';
+import 'package:linkup_pro/features/auth/presentation/providers/auth_provider.dart';
 import 'package:linkup_pro/main.dart';
+import 'package:toastification/toastification.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -35,182 +40,172 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-  bool _isLoading = false;
+
 
   @override
   Widget build(BuildContext context) {
+    final isLoading = ref.watch(authProvider);
+
     return Scaffold(
-      /* appBar: AppBar(
-        title: Center(
-          child: Image.asset(
-            AssetsPath.logo,
-            height: context.isMobile ? 40 : 60,
-          ),
-        ),
-      ),*/
-      body: SafeArea(
+      body: isLoading ?
+      customProgressIndicator()
+       : SafeArea(
         child: Center(
           child: LayoutBuilder(
             builder: (_, constraints) {
               return SingleChildScrollView(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: constraints.maxWidth * 0.05,
+                    horizontal: constraints.maxWidth * 0.04,
                     vertical: 0 /*constraints.maxHeight * 0.02*/,
                   ),
                   child: Form(
                     key: _formKey,
                     child: context.isMobile
                         ? Column(
-                            spacing: context.isMobile
-                                ? constraints.maxHeight * 0.008
-                                : constraints.maxHeight * 0.05,
-                            children: [
-                              // SizedBox(height: constraints.maxHeight * 0.01),
-                              Image.asset(
-                                AssetsPath.logo,
-                                height: context.isMobile
-                                    ? constraints.maxHeight * 0.1
-                                    : constraints.maxHeight * 0.2,
-                              ),
-                              CustomText(
-                                text: "login_header",
-                                fontSize: constraints.maxWidth * 0.065,
-                                fontWeight: FontWeight.w600,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.005),
-                              CustomText(
-                                text: "login_subtitle",
-                                fontSize: constraints.maxWidth * 0.037,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.015),
-                              CustomTextField(
-                                maxHeight: constraints.maxHeight,
-                                maxWidth: constraints.maxWidth,
-                                controller: _emailController,
-                                hintText: "username_or_email".tr(),
-                                validator: (v) =>
-                                    FormValidator.isValidEmailOrUsername(v!),
-                                //type: TextFieldType.formatted,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.001),
-                              CustomTextField(
-                                maxHeight: constraints.maxHeight,
-                                maxWidth: constraints.maxWidth,
-                                controller: _passwordController,
-                                hintText: "password_hint".tr(),
-                                type: TextFieldType.password,
-                                validator: (v) =>
-                                    FormValidator.isValidPassword(v!),
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.008),
-                              CustomButton(
-                                text: "login_button".tr(),
-                                onPressed: () {
-                                  _formKey.currentState!.validate();
-                                },
-                                height: constraints.maxHeight * 0.065,
-                                fontSize: constraints.maxWidth * 0.05,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.005),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomText(
-                                    text: "login_no_account",
-                                    fontSize: constraints.maxWidth * 0.04,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to sign up page
-                                    },
-                                    child: CustomText(
-                                      text: "login_sign_up",
-                                      fontSize: constraints.maxWidth * 0.04,
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
-                        : Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              Image.asset(
-                                AssetsPath.logo,
-                                height: constraints.maxHeight * 0.12,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.02),
-                              CustomText(
-                                text: "login_header",
-                                fontSize: constraints.maxWidth * 0.05,
-                                fontWeight: FontWeight.w600,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.01),
-                              CustomText(
-                                text: "login_subtitle",
-                                fontSize: constraints.maxWidth * 0.03,
-                                textAlign: TextAlign.center,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.03),
-                              CustomTextField(
-                                maxHeight: constraints.maxHeight,
-                                maxWidth: constraints.maxWidth,
-                                controller: _emailController,
-                                hintText: "username_or_email".tr(),
-                                validator: (v) =>
-                                    FormValidator.isValidEmailOrUsername(v!),
-                                //type: TextFieldType.formatted,
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.014),
-                              CustomTextField(
-                                maxHeight: constraints.maxHeight,
-                                maxWidth: constraints.maxWidth,
-                                controller: _passwordController,
-                                hintText: "password_hint".tr(),
-                                type: TextFieldType.password,
-                                validator: (v) =>
-                                    FormValidator.isValidPassword(v!),
-                              ),
-                              SizedBox(height: constraints.maxHeight * 0.014),
-                              CustomButton(
-                                borderRadius: constraints.maxHeight * 0.012,
-                                text: "login_button".tr(),
-                                onPressed: () {
-                                  _formKey.currentState!.validate();
-                                },
-                                height: constraints.maxHeight * 0.047,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      spacing: context.isMobile
+                          ? constraints.maxHeight * 0.008
+                          : constraints.maxHeight * 0.05,
+                      children: [
+
+                        // SizedBox(height: constraints.maxHeight * 0.01),
+                        Image.asset(
+                          AssetsPath.logo,
+                          height: context.isMobile
+                              ? constraints.maxHeight * 0.1
+                              : constraints.maxHeight * 0.2,
+                        ),
+                        CustomText(
+                          text: "login_header",
+                          fontSize: constraints.maxWidth * 0.065,
+                          fontWeight: FontWeight.w600,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.005),
+                        CustomText(
+                          text: "login_subtitle",
+                          fontSize: constraints.maxWidth * 0.037,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.015),
+                        CustomTextField(
+                          maxHeight: constraints.maxHeight,
+                          maxWidth: constraints.maxWidth,
+                          controller: _emailController,
+                          hintText: "username_or_email".tr(),
+                          validator: (v) =>
+                              FormValidator.isValidEmailOrUsername(v!),
+                          //type: TextFieldType.formatted,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.001),
+                        CustomTextField(
+                          maxHeight: constraints.maxHeight,
+                          maxWidth: constraints.maxWidth,
+                          controller: _passwordController,
+                          hintText: "password_hint".tr(),
+                          type: TextFieldType.password,
+                          validator: (v) =>
+                              FormValidator.isValidPassword(v!),
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.008),
+                        CustomButton(
+                          text: "login_button".tr(),
+                          onPressed: _submit,
+                          height: constraints.maxHeight * 0.065,
+                          fontSize: constraints.maxWidth * 0.05,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.005),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomText(
+                              text: "login_no_account",
+                              fontSize: constraints.maxWidth * 0.035,
+                            ),
+                            GestureDetector(
+                              onTap: _submit,
+                              child: CustomText(
+                                text: "login_sign_up",
                                 fontSize: constraints.maxWidth * 0.035,
-                                width: constraints.maxWidth,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
                               ),
-                              SizedBox(height: constraints.maxHeight * 0.01),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CustomText(
-                                    text: "login_no_account",
-                                    fontSize: constraints.maxWidth * 0.03,
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      // Navigate to sign up page
-                                    },
-                                    child: CustomText(
-                                      text: "login_sign_up",
-                                      fontSize: constraints.maxWidth * 0.03,
-                                      color: AppColors.primary,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                        : Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Image.asset(
+                          AssetsPath.logo,
+                          height: constraints.maxHeight * 0.12,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.02),
+                        CustomText(
+                          text: "login_header",
+                          fontSize: constraints.maxWidth * 0.05,
+                          fontWeight: FontWeight.w600,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.01),
+                        CustomText(
+                          text: "login_subtitle",
+                          fontSize: constraints.maxWidth * 0.03,
+                          textAlign: TextAlign.center,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.03),
+                        CustomTextField(
+                          maxHeight: constraints.maxHeight,
+                          maxWidth: constraints.maxWidth,
+                          controller: _emailController,
+                          hintText: "username_or_email".tr(),
+                          validator: (v) =>
+                              FormValidator.isValidEmailOrUsername(v!),
+                          //type: TextFieldType.formatted,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.014),
+                        CustomTextField(
+                          maxHeight: constraints.maxHeight,
+                          maxWidth: constraints.maxWidth,
+                          controller: _passwordController,
+                          hintText: "password_hint".tr(),
+                          type: TextFieldType.password,
+                          validator: (v) =>
+                              FormValidator.isValidPassword(v!),
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.014),
+                        CustomButton(
+                          borderRadius: constraints.maxHeight * 0.012,
+                          text: "login_button".tr(),
+                          onPressed: _submit,
+                          height: constraints.maxHeight * 0.047,
+                          fontSize: constraints.maxWidth * 0.035,
+                          width: constraints.maxWidth,
+                        ),
+                        SizedBox(height: constraints.maxHeight * 0.01),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CustomText(
+                              text: "login_no_account",
+                              fontSize: constraints.maxWidth * 0.03,
+                            ),
+                            GestureDetector(
+                              onTap: _submit,
+                              child: CustomText(
+                                text: "login_sign_up",
+                                fontSize: constraints.maxWidth * 0.03,
+                                color: AppColors.primary,
+                                fontWeight: FontWeight.w600,
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               );
@@ -219,5 +214,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         ),
       ),
     );
+  }
+  _submit() async{
+    print("Login button pressed");
+    if(_formKey.currentState!.validate()) {
+
+     /* MyLogger logger = MyLogger();
+      logger.log("Email: ${_emailController.text.trim()}");
+      await ref.read(authProvider.notifier).signIn(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );*/
+      showToast( description: "Fonctionnalité non disponible pour le moment", type: ToastificationType.info);
+    }else{
+      showToast( description: "Veuillez remplir tous les champs correctement", type: ToastificationType.error);
+    }
   }
 }
