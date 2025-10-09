@@ -29,11 +29,14 @@ class CustomButton extends StatelessWidget {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return InkWell(
+
+      overlayColor: WidgetStatePropertyAll(Colors.transparent),
+      hoverColor: Colors.red,
       onTap: onPressed,
       child: Card(
         elevation: 1,
         color: Colors
-            .transparent, // Ajouté pour que la couleur du Container soit visible
+            .transparent,
         child: Container(
           width: width ?? size.width,
           height: height,

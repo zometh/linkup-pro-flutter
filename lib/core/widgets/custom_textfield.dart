@@ -28,7 +28,8 @@ class CustomTextField extends StatefulWidget {
     this.filled = true,
     this.prefixIcon,
 
-    this.borderRadius = 15,
+    this.borderRadius = 10
+    ,
     this.maxLines = 1,
     this.maxHeight,
     this.maxWidth,

@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/utils/services/custom_toast.dart';
-import 'package:linkup_pro/features/auth/data/auth_repository.dart';
+import 'package:linkup_pro/features/login/data/auth_repository.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/utils/types/error_api_type.dart';
@@ -10,25 +9,30 @@ class AuthRepositoryImplement implements AuthRepository {
   final _apiClient = GetIt.I<ApiClient>();
   @override
   Future<String?> getCurrentUser() {
-    // TODO: implement getCurrentUser
+  
     throw UnimplementedError();
   }
 
   @override
   Future<bool> isSignedIn() {
-    // TODO: implement isSignedIn
+  
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, String>> signIn(String credential, String password) async {
+  Future<Either<Failure, Map<String, dynamic>>> signIn(String credential, String password) async {
     try {
       final response = await _apiClient.post('/auth/login', data: {
         credential.contains("@") ? "email" : "username" : credential,
         'password': password,
       });
-      final token = response['auth_token'] as String;
-      return Right(token);
+      final authtoken = response['access_token'] as String;
+      final userId = response['id'] as String;
+      return Right({
+        "token": authtoken,
+        "userId": userId,
+
+      });
     } catch (e) {
       return Left(Failure( e.toString()));
     }

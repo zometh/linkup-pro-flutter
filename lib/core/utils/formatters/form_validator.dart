@@ -30,7 +30,6 @@ class FormValidator {
         "min": nbCar.toString(),
         "max": maxCar.toString()
       });
-      return "Le champs doit contenir au moins $nbCar caractères ! ";
     }
     return null;
   }

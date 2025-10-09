@@ -78,5 +78,24 @@
     "password_mismatch": "Les mots de passe ne correspondent pas",
   "username_taken": "Nom d'utilisateur déjà pris",
   "email_taken": "Email déjà enregistré",
-  "username_min_length": "Le nom d'utilisateur doit comporter au moins {min} caractères"
+  "username_min_length": "Le nom d'utilisateur doit comporter au moins {min} caractères",
+  "account_choice_title": "Choisissez le type de compte",
+  "account_choice_subtitle": "Sélectionnez le type de compte qui correspond le mieux à vos besoins.",
+  "account_choice_individual_title": "Compte Individuel",
+  "account_choice_individual_description": "Idéal pour les professionnels individuels cherchant à réseauter et à partager des idées.",
+  "account_choice_business_title": "Compte Entreprise",
+  "account_choice_business_description": "Parfait pour les entreprises souhaitant recruter, partager des mises à jour et interagir avec des professionnels.",
+  "register_header": "Créez votre compte LinkUp Pro",
+  "register_subtitle": "Rejoignez une communauté de professionnels partageant les mêmes idées et faites passer votre carrière au niveau supérieur.",
+  "register_have_account": "Vous avez déjà un compte ? ",
+  "register_sign_in": "Se connecter",
+  "register_button": "S'inscrire",
+  "register_or": "OU",
+  "register_with_google": "S'inscrire avec Google",
+  "full_name": "Nom complet",
+  "confirm_password": "Confirmez le mot de passe",
+  "choose_country" : "Choisissez votre pays",
+  "first_name": "Prénom",
+  "last_name": "Nom de famille"
+
 }

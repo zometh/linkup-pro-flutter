@@ -35,13 +35,7 @@ class CustomText extends StatelessWidget {
   Widget build(BuildContext context) {
     Color textColor =
         color ??
-        (context.isDarkMode ? Colors.white : Colors.black87);
-
-    /* final responsiveFontSize = context.isMobile
-        ? fontSize
-        : context.isTablet
-        ? fontSize * 1.2
-        : fontSize * 1.4;*/
+            (context.isDarkMode ? Colors.white : Colors.black87);
 
     return Text(
       text,
@@ -58,6 +52,6 @@ class CustomText extends StatelessWidget {
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
-    ).tr();
+    );
   }
 }

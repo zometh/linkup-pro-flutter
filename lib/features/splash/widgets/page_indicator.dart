@@ -58,6 +58,9 @@ class PageIndicator extends ConsumerWidget {
                       offset: const Offset(0, 2),
                     ),
                   ],
+                  gradient: ref.read(splashProviderProvider) == index
+                      ? AppGradients.primaryGradient
+                      : null,
                   color: indicatorProvider == index ? Colors.blue : Colors.grey,
                   borderRadius: BorderRadius.circular(8.0),
                 ),
@@ -72,6 +75,7 @@ class PageIndicator extends ConsumerWidget {
             width: availableWidth * 0.13,
             height: availableHeight * 0.13,
             decoration: BoxDecoration(
+              gradient: AppGradients.primaryGradient,
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withAlpha(20),
