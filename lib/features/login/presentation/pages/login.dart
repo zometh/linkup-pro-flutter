@@ -281,7 +281,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             _passwordController.text.trim().toLowerCase(),
           );
       if (result) {
-        context.go("/");
+        context.go("/home");
       }
     } else {
       showToast(

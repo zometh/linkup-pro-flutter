@@ -176,7 +176,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
                             height: constraints.maxHeight * 0.015,
                           ),
         
-                          CustomTextField(controller: emailController, hintText: "username".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidField(input: v!, maxCar: 10, nbCar:5),
+                          CustomTextField(controller: usernameController, hintText: "username".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidField(input: v!, maxCar: 10, nbCar:5),
                             type: TextFieldType.formatted,
                           ),
                           SizedBox(

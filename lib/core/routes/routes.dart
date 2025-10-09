@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/features/login/presentation/pages/login.dart';
 import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
+import 'package:linkup_pro/features/posts/presentation/pages/home_page.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
@@ -29,6 +30,11 @@ final router = GoRouter(
       path: '/register',
       name: 'register',
       builder: (context, state) => const RegisterPage(),
+    ),
+    GoRoute(
+      path: '/home',
+      name: 'home',
+      builder: (context, state) => const HomePage(),
     ),
   ],
 );

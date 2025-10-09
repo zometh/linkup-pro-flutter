@@ -22,7 +22,7 @@ void showToast({
   toastification.show(
     type: type,
     style: style,
-    title: CustomText(text: description,fontSize: 12, fontWeight: FontWeight.w400,),
+    title: CustomText(text: description,fontSize: 12, fontWeight: FontWeight.w400,color: Colors.white,),
     //description: Text(description) /*CustomText(text: description)*/,
     autoCloseDuration: autoCloseDuration,
     borderRadius: BorderRadius.all(Radius.circular(borderRadius.toDouble())),
