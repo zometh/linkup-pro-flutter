@@ -58,60 +58,70 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
     final hintColor = isDark ? AppColors.textTertiary : AppColors.textSecondary;
 
-    return TextFormField(
-      autocorrect: true,
-      enableSuggestions: true,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: widget.maxHeight ?? double.infinity,
+        maxWidth: widget.maxWidth ?? double.infinity,
+      ),
+      child: TextFormField(
+        autocorrect: true,
+        enableSuggestions: true,
 
-      cursorColor: AppColors.primary,
-      onTapOutside: (event) => FocusScope.of(context).unfocus(),
-      maxLines: widget.maxLines,
-      controller: widget.controller,
-      validator: widget.validator,
-      obscureText: widget.type == TextFieldType.password && isHidden,
-      inputFormatters: widget.formatter != null ? [widget.formatter!] : null,
-      style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary),
-      onChanged: widget.type == TextFieldType.password
-          ? (value) => setState(() => textLength = value.length)
-          : null,
-      decoration: InputDecoration(
-        hintText: widget.hintText,
-        hintStyle: TextStyle(color: hintColor),
-        filled: widget.filled,
-        fillColor: widget.filled ? fillColor : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(color: borderColor),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(
-            color: widget.filled ? borderColor : AppColors.lightBorder,
+        cursorColor: AppColors.primary,
+        onTapOutside: (event) => FocusScope.of(context).unfocus(),
+        maxLines: widget.maxLines,
+        controller: widget.controller,
+        validator: widget.validator,
+        obscureText: widget.type == TextFieldType.password && isHidden,
+        inputFormatters: widget.formatter != null ? [widget.formatter!] : null,
+        style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary),
+        decoration: InputDecoration(
+          isDense: true, // réduit automatiquement la hauteur
+          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12), // ajuste la hauteur
+          hintText: widget.hintText,
+          hintStyle: TextStyle(color: hintColor),
+          filled: widget.filled,
+          fillColor: widget.filled ? fillColor : null,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(color: borderColor),
           ),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(
-            color: focusedBorderColor,
-            width: 2.0, // Épaisseur plus importante pour le focus
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(
+              color: widget.filled ? borderColor : AppColors.lightBorder,
+            ),
           ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(
+              color: focusedBorderColor,
+              width: 2.0, // Épaisseur plus importante pour le focus
+            ),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(color: AppColors.error, width: 1.5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderSide: BorderSide(color: AppColors.error, width: 2.0),
+          ),
+          suffixIcon: _buildSuffixIcon(isDark),
+          prefixIcon: widget.prefixIcon != null
+              ? Padding(
+                  padding: const EdgeInsets.only(left: 8, right: 8),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                    child: Icon(
+                      widget.prefixIcon,
+                      size: 20,
+                      color: isDark ? AppColors.textTertiary : AppColors.textSecondary,
+                    ),
+                  ),
+                )
+              : null,
         ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(color: AppColors.error, width: 1.5),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(widget.borderRadius),
-          borderSide: BorderSide(color: AppColors.error, width: 2.0),
-        ),
-        suffixIcon: _buildSuffixIcon(isDark),
-        prefixIcon: widget.prefixIcon != null
-            ? Icon(
-                widget.prefixIcon,
-                color: isDark
-                    ? AppColors.textTertiary
-                    : AppColors.textSecondary,
-              )
-            : null,
       ),
     );
   }
@@ -119,10 +129,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget? _buildSuffixIcon(bool isDark) {
     if (widget.type == TextFieldType.password && textLength > 0) {
       return IconButton(
+        padding: EdgeInsets.zero,
+        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
         onPressed: () => setState(() => isHidden = !isHidden),
         icon: Icon(
           isHidden ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-          size: widget.maxWidth! * 0.04,
+          size: 20, // taille fixe pour éviter d'augmenter la hauteur
           color: isDark ? AppColors.textTertiary : AppColors.textSecondary,
         ),
       );

@@ -13,7 +13,7 @@ class Auth extends _$Auth {
   final _db = GetIt.I<LocalDBService>();
   final _logger = GetIt.I<MyLogger>();
   bool isLoading = false;
-  String errorMessage = '';
+
 
   @override
   bool build() => isLoading;

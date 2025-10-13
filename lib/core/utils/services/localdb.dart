@@ -29,4 +29,8 @@ class LocalDBService {
   Future<String?> getLanguageCode() async {
     return await storage.read(key: 'language_code');
   }
+
+  Future<void> clearAllData() async {
+    await storage.deleteAll();
+  }
 }

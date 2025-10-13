@@ -1,14 +1,26 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:linkup_pro/core/utils/formatters/fomat_text.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
+import 'package:linkup_pro/core/utils/services/custom_toast.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
+import 'package:linkup_pro/core/widgets/custom_popscope.dart';
+import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/features/register/data/entities/user.dart';
+import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
+import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
+import 'package:linkup_pro/features/register/presentation/providers/stepper.dart';
+import 'package:linkup_pro/features/register/widgets/custom_stepper.dart';
 import 'package:linkup_pro/main.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../../core/utils/services/assets_path.dart';
 import '../../../../core/widgets/custom_text.dart';
@@ -93,11 +105,11 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
   void initState() {
     // TODO: implement initState
     super.initState();
-    emailController = getInstance();
-    passwordController = getInstance();
-    usernameController = getInstance();
-    firstNameController = getInstance();
-    lastNameController = getInstance();
+    emailController = getInstance(initial: "johndoe@gmail.com");
+    passwordController = getInstance(initial: "passer");
+    usernameController = getInstance(initial: "johndoe");
+    firstNameController = getInstance(initial :"John");
+    lastNameController = getInstance(initial: "Doe");
 
   }
   @override
@@ -114,152 +126,187 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-
-    return Scaffold(
-      /*extendBodyBehindAppBar: true,
-      extendBody: true,
-      appBar: AppBar(
-        leading: Icon(Icons.arrow_back_ios),
-        foregroundColor: Colors.transparent,
-        backgroundColor: Colors.transparent,
-
-      ),*/
-      body: SafeArea(
-        child: LayoutBuilder(
-            builder: (_, constraints){
-              return SingleChildScrollView(
-                child: Form(
-                  key: formKey,
-                  child: Padding(
-                    padding: EdgeInsetsGeometry.all(10),
-                    child: Center(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          SizedBox(
-                            height: constraints.maxHeight * 0.05,
-                          ),
-                          Center(
-                            child: Image.asset(
-                              AssetsPath.logo,
-                              width: constraints.maxWidth * 0.5,
-                              height: context.isMobile
-                                  ? constraints.maxHeight * 0.1
-                                  : constraints.maxHeight * 0.2,
+    final bool loading = ref.watch(registerProvider);
+    return CustomPopscope(
+      executeOnPop: () => ref.read(registerProvider.notifier).deleteUser(),
+      widget: Scaffold(
+      
+        body: loading ?
+            CustomProgress().animate().fadeIn(duration: 500.ms)
+            : SafeArea(
+          child: LayoutBuilder(
+              builder: (_, constraints){
+                return SingleChildScrollView(
+                  child: Form(
+                    key: formKey,
+                    child: Padding(
+                      padding: EdgeInsetsGeometry.all(10),
+                      child: Center(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            SizedBox(height: constraints.maxHeight * 0.03,child: CustomStepper(),),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.05,
                             ),
-                          ),
-                          CustomText(
-                            text: "register_header".tr(),
-                            fontSize: constraints.maxWidth * 0.065,
-                            fontWeight: FontWeight.w600,
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.005,
-                          ),
-                          CustomText(
-                            text: "register_subtitle".tr(),
-                            fontSize: constraints.maxWidth * 0.037,
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.03,
-                          ),
-        
-                           widget.isEntreprise ? SizedBox.shrink() : buildIndividualInfos(constraints),
-        
-                          CustomTextField(controller: emailController, hintText: "email".tr(),prefixIcon: Icons.email,validator: (v) => FormValidator.isValidMail(v!),
-                          type: TextFieldType.formatted,
-                          ),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.015,
-                          ),
-        
-                          CustomTextField(controller: usernameController, hintText: "username".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidField(input: v!, maxCar: 10, nbCar:5),
-                            type: TextFieldType.formatted,
-                          ),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.015,
-                          ),
-                          CustomTextField(
-                            prefixIcon: Icons.lock_outline_rounded,
-                            maxHeight: constraints.maxHeight,
-                            maxWidth: constraints.maxWidth,
-                            controller: passwordController,
-                            hintText: "password_hint".tr(),
-                            type: TextFieldType.password,
-                            validator: (v) =>
-                                FormValidator.isValidPassword(v!),
-                          ),
-                          SizedBox(height: constraints.maxHeight * 0.01,),
-                          CustomText(text: "choose_country".tr()),
-                          SizedBox(height: constraints.maxHeight * 0.01,),
-        
-                          SizedBox(
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Flexible(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.primary,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: constraints.maxWidth * 0.04,
-                                        vertical: constraints.maxHeight * 0.015,
-                                      ),
-                                    ),
-                                    onPressed: chooseCountry,
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Flexible(
-                                          child: CustomText(
-                                            color: Colors.white,
-                                            overflow: TextOverflow.ellipsis,
-                                            text: selectedCountry.name,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: constraints.maxWidth * 0.04,
-                                          ),
+                            Center(
+                              child: Image.asset(
+                                AssetsPath.logo,
+                                width: constraints.maxWidth * 0.5,
+                                height: context.isMobile
+                                    ? constraints.maxHeight * 0.1
+                                    : constraints.maxHeight * 0.2,
+                              ),
+                            ),
+                            CustomText(
+                              text: "register_header".tr(),
+                              fontSize: constraints.maxWidth * 0.065,
+                              fontWeight: FontWeight.w600,
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.005,
+                            ),
+                            CustomText(
+                              text: "register_subtitle".tr(),
+                              fontSize: constraints.maxWidth * 0.037,
+                              textAlign: TextAlign.center,
+                            ),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.03,
+                            ),
+      
+                            widget.isEntreprise ? SizedBox.shrink() : buildIndividualInfos(constraints),
+      
+                            CustomTextField(controller: emailController, hintText: "email".tr(),prefixIcon: Icons.email,validator: (v) => FormValidator.isValidMail(v!.trim()),
+                              type: TextFieldType.formatted,
+                            ),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.015,
+                            ),
+      
+                            CustomTextField(controller: usernameController, hintText: "username".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidUsername(username: v!.trim()),
+                              type: TextFieldType.formatted,
+                            ),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.015,
+                            ),
+                            CustomTextField(
+                              prefixIcon: Icons.lock_outline_rounded,
+                              maxHeight: constraints.maxHeight,
+                              maxWidth: constraints.maxWidth,
+                              controller: passwordController,
+                              hintText: "password_hint".tr(),
+                              type: TextFieldType.password,
+                              validator: (v) =>
+                                  FormValidator.isValidPassword(v!),
+                            ),
+                            SizedBox(height: constraints.maxHeight * 0.01,),
+                            CustomText(text: "choose_country".tr()),
+                            SizedBox(height: constraints.maxHeight * 0.01,),
+      
+                            SizedBox(
+                              height: constraints.maxHeight * 0.06,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppColors.primary,
+      
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10),
                                         ),
-                                        SizedBox(width: constraints.maxWidth * 0.02),
-                                        Icon(Icons.arrow_drop_down, color: Colors.white, size: constraints.maxWidth * 0.09,)
-                                      ],
+                                        minimumSize: Size(double.infinity, constraints.maxHeight * 0.055),
+                                        padding: EdgeInsets.symmetric(
+                                          horizontal: constraints.maxWidth * 0.04,
+                                          vertical: 0,
+                                        ),
+                                      ),
+                                      onPressed: chooseCountry,
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                            child: CustomText(
+                                              color: Colors.white,
+                                              overflow: TextOverflow.ellipsis,
+                                              text: selectedCountry.name,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: constraints.maxWidth * 0.04,
+                                            ),
+                                          ),
+                                          SizedBox(width: constraints.maxWidth * 0.02),
+                                          Icon(Icons.arrow_drop_down, color: Colors.white, size: constraints.maxWidth * 0.06),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.015,
-                          ),
-                          CustomButton(text: "next".tr(), onPressed: (){},height: constraints.maxHeight * 0.07,),
-                          SizedBox(
-                            height: constraints.maxHeight * 0.02,
-                          )
-                        ],
+                            SizedBox(
+                              height: constraints.maxHeight * 0.015,
+                            ),
+                            CustomButton(
+      
+                              text: "next".tr(), onPressed: _submit,height: constraints.maxHeight * 0.065,width: double.infinity,),
+                            SizedBox(
+                              height: constraints.maxHeight * 0.02,
+                            )
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-              );
-            }
-        ),
-      ),
+                );
+              }
+          ),
+        )),
     );
   }
+  _submit()async{
+
+
+    if(formKey.currentState!.validate()){
+
+      final user = User(
+        role:widget.isEntreprise ? "ENTREPRISE" :  "MEMBER",
+          firstName: firstNameController.text.isEmpty ? null : FormatText.formatFormFiel(firstNameController),
+          lastName: lastNameController.text.isEmpty ? null : FormatText.formatFormFiel(lastNameController),
+          email: FormatText.formatFormFiel(emailController),
+          address: selectedCountry.countryCode,
+
+          password: FormatText.formatFormFiel(passwordController),
+          username: FormatText.formatFormFiel(usernameController),
+      );
+      final response = await ref.read(registerProvider.notifier)
+      .registerUser(user);
+      if(response){
+        ref.read(stepperProvider.notifier).next();
+        final route = MaterialPageRoute(builder: (_) => const SectorGridView());
+        Navigator.push(context, route);
+        //showToast(description: "success_register".tr(),);
+      }else {
+      }/*else{
+        showToast(description: "error_register".tr(),
+        type: ToastificationType.error
+        );*/
+      }
+      }
+
+
+
   Widget buildIndividualInfos(BoxConstraints constraints){
     return Column(
       children: [
-        CustomTextField(controller: firstNameController, hintText: "first_name".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidField(input: v!, maxCar: 30, nbCar: 3),),
+        CustomTextField(controller: firstNameController, hintText: "first_name".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidName(name: v!.trim(), max: 30, min: 3, field: "first_name"),),
         SizedBox(
           height: constraints.maxHeight * 0.015,
         ),
-        CustomTextField(controller: lastNameController, hintText: "last_name".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidField(input: v!, maxCar: 30, nbCar: 3),),
+        CustomTextField(controller: lastNameController, hintText: "last_name".tr(),prefixIcon: Icons.person,validator: (v) => FormValidator.isValidName(name: v!.trim(), max: 30, min: 2, field :"last_name"),),
         SizedBox(
           height: constraints.maxHeight * 0.015,
         ),
@@ -302,12 +349,14 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
           prefixIcon: const Icon(Icons.search),
           border: OutlineInputBorder(
             borderSide: BorderSide(
-              color: const Color(0xFF8C98A8).withOpacity(0.2),
+              color: const Color(0xFF8C98A8).withAlpha(20),
             ),
           ),
         ),
       ),
     );
   }
-  TextEditingController getInstance() => TextEditingController();
+  TextEditingController getInstance({String initial = ""}) => TextEditingController(text: initial);
+
+
 }

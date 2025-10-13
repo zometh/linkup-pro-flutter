@@ -282,11 +282,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           );
       if (result) {
         context.go("/home");
+      }else{
+
       }
     } else {
       showToast(
         applyBlurEffect: true,
-        description: "Veuillez remplir tous les champs correctement",
+        description: "error_form".tr(),
         type: ToastificationType.error,
       );
     }

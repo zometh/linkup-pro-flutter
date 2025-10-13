@@ -4,6 +4,7 @@ import 'package:linkup_pro/core/utils/services/localdb.dart';
 import 'package:linkup_pro/core/utils/services/my_logger.dart';
 
 import '../../../features/login/data/auth_repository_implement.dart';
+import '../../../features/register/data/register_user/register_repository_implement.dart';
 import '../../network/api_client.dart';
 
 Future<void> setup() async{
@@ -18,6 +19,7 @@ void setupGetIt() {
   getIt.registerLazySingleton<LocalDBService>(() => LocalDBService());
   getIt.registerLazySingleton<ApiClient>(() => ApiClient());
   getIt.registerLazySingleton<AuthRepositoryImplement>(() => AuthRepositoryImplement());
+  getIt.registerLazySingleton<RegisterRepositoryImplement>(() => RegisterRepositoryImplement());
   getIt.registerLazySingleton<MyLogger>(() => MyLogger());
 
 }

@@ -42,9 +42,7 @@ class User {
   final String? firstName;
   final String? lastName;
   final String? address;
-  final String? plan;
   final String? role;
-  final String subscriptionPlan;
 
   final String? id;
 
@@ -55,9 +53,7 @@ class User {
     this.firstName,
     this.lastName,
     this.address,
-    this.plan,
     this.role,
-    required this.subscriptionPlan,
 
     this.id,
   });
@@ -71,8 +67,7 @@ class User {
       username: json['username'],
       address: json['address'],
       role: json['role'],
-      subscriptionPlan: json['subscriptionPlan'],
-    
+
       password: json['password'] ?? '', // Password might not be returned from API
     );
   }
@@ -84,7 +79,6 @@ class User {
       if (firstName != null) 'firstName': firstName,
       if (lastName != null) 'lastName': lastName,
       if (address != null) 'address': address,
-      if (plan != null) 'plan': plan,
       if (role != null) 'role': role,
     };
   }

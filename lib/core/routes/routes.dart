@@ -5,6 +5,8 @@ import 'package:linkup_pro/features/posts/presentation/pages/home_page.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
+import '../../features/register/presentation/pages/sector_choice.dart';
+
 /*final routes = [
   
 ];*/
@@ -36,5 +38,9 @@ final router = GoRouter(
       name: 'home',
       builder: (context, state) => const HomePage(),
     ),
+    GoRoute(path: "/sector-choice",
+      name: "sector-choice",
+      builder: (context, state) => const SectorGridView()
+    )
   ],
 );

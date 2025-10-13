@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 
 class FormatText {
@@ -43,5 +44,8 @@ class FormatText {
     final NumberFormat formatter =
         NumberFormat.currency(locale: 'fr_FR', decimalDigits: 0, symbol: 'CFA');
     return (price == 0) ? "Prix sur demande" : formatter.format(price);
+  }
+  static String formatFormFiel(TextEditingController field){
+    return field.text.toLowerCase().trim();
   }
 }

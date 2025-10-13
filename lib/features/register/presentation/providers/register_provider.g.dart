@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_provider.dart';
+part of 'register_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,27 +9,27 @@ part of 'auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Auth)
-const authProvider = AuthProvider._();
+@ProviderFor(Register)
+const registerProvider = RegisterProvider._();
 
-final class AuthProvider extends $NotifierProvider<Auth, bool> {
-  const AuthProvider._()
+final class RegisterProvider extends $NotifierProvider<Register, bool> {
+  const RegisterProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'registerProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authHash();
+  String debugGetCreateSourceHash() => _$registerHash();
 
   @$internal
   @override
-  Auth create() => Auth();
+  Register create() => Register();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
@@ -40,9 +40,9 @@ final class AuthProvider extends $NotifierProvider<Auth, bool> {
   }
 }
 
-String _$authHash() => r'056f969e31275e38af4192d99e35a3d36caa50d4';
+String _$registerHash() => r'a706dd2f8580eaf367e64847949c94f5c83b4d8f';
 
-abstract class _$Auth extends $Notifier<bool> {
+abstract class _$Register extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override

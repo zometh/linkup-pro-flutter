@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_provider.dart';
+part of 'stepper.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,51 @@ part of 'auth_provider.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Auth)
-const authProvider = AuthProvider._();
+@ProviderFor(Stepper)
+const stepperProvider = StepperProvider._();
 
-final class AuthProvider extends $NotifierProvider<Auth, bool> {
-  const AuthProvider._()
+final class StepperProvider extends $NotifierProvider<Stepper, int> {
+  const StepperProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'authProvider',
+        name: r'stepperProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$authHash();
+  String debugGetCreateSourceHash() => _$stepperHash();
 
   @$internal
   @override
-  Auth create() => Auth();
+  Stepper create() => Stepper();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(bool value) {
+  Override overrideWithValue(int value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<bool>(value),
+      providerOverride: $SyncValueProvider<int>(value),
     );
   }
 }
 
-String _$authHash() => r'056f969e31275e38af4192d99e35a3d36caa50d4';
+String _$stepperHash() => r'61fafe13a9bd6e195dc7863b1df69fc41be4a718';
 
-abstract class _$Auth extends $Notifier<bool> {
-  bool build();
+abstract class _$Stepper extends $Notifier<int> {
+  int build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<bool, bool>;
+    final ref = this.ref as $Ref<int, int>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<bool, bool>,
-              bool,
+              AnyNotifier<int, int>,
+              int,
               Object?,
               Object?
             >;
