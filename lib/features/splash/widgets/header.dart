@@ -1,6 +1,4 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/main.dart';
 

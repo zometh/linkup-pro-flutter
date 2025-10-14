@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/core/routes/routes.dart';
-import 'package:linkup_pro/core/utils/services/get_it_setup.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart' as DotEnv;
+import 'package:linkup_pro/core/utils/services/app_setup.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:toastification/toastification.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,22 +14,24 @@ void main() async {
     DeviceOrientation.portraitDown,
 
   ]);
-  setup();
+  await setup();
   await EasyLocalization.ensureInitialized();
-  await DotEnv.DotEnv().load(fileName: ".env");
+  await dotenv.load(fileName: ".env");
   runApp(
-    EasyLocalization(
-      supportedLocales: const [
-        Locale('en'),
-        Locale('en', 'US'),
-        Locale('fr'),
-        Locale('fr', 'FR'),
-        Locale('ar'),
-        Locale('ar', 'DZ'),
-      ],
-      path: 'assets/translations',
-      fallbackLocale: const Locale('en'),
-      child: ProviderScope(child: const MyApp()),
+    ToastificationWrapper(
+      child: EasyLocalization(
+        supportedLocales: const [
+          Locale('en'),
+          Locale('en', 'US'),
+          Locale('fr'),
+          Locale('fr', 'FR'),
+          Locale('ar'),
+          Locale('ar', 'DZ'),
+        ],
+        path: 'assets/translations',
+        fallbackLocale: const Locale('en'),
+        child: ProviderScope(child: const MyApp()),
+      ),
     ),
   );
 }
