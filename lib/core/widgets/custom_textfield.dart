@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/main.dart';
@@ -17,6 +18,7 @@ class CustomTextField extends StatefulWidget {
   final int maxLines;
   final double? maxHeight;
   final double? maxWidth;
+  final double? maxLength;
 
   const CustomTextField({
     super.key,
@@ -27,7 +29,7 @@ class CustomTextField extends StatefulWidget {
     this.formatter,
     this.filled = true,
     this.prefixIcon,
-
+    this.maxLength,
     this.borderRadius = 10
     ,
     this.maxLines = 1,
@@ -64,9 +66,11 @@ class _CustomTextFieldState extends State<CustomTextField> {
         maxWidth: widget.maxWidth ?? double.infinity,
       ),
       child: TextFormField(
+
+        maxLength: widget.maxLength?.toInt(),
         autocorrect: true,
         enableSuggestions: true,
-
+        onChanged: (value) => setState(() => textLength = value.length),
         cursorColor: AppColors.primary,
         onTapOutside: (event) => FocusScope.of(context).unfocus(),
         maxLines: widget.maxLines,
@@ -74,7 +78,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         obscureText: widget.type == TextFieldType.password && isHidden,
         inputFormatters: widget.formatter != null ? [widget.formatter!] : null,
-        style: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary),
+        style: GoogleFonts.getFont('Poppins', textStyle: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary, fontSize: 14)),
         decoration: InputDecoration(
           isDense: true, // réduit automatiquement la hauteur
           contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12), // ajuste la hauteur

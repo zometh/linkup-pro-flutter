@@ -1,8 +1,10 @@
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/utils/types/error_api_type.dart';
+import 'package:linkup_pro/features/register/data/entities/profile.dart';
 import 'package:linkup_pro/features/register/data/entities/user.dart';
-import 'package:linkup_pro/features/register/data/register_user/regsiter_repository.dart';
+import 'package:linkup_pro/features/register/data/repos/regsiter_repository.dart';
 
 import '../../../../core/network/api_client.dart';
 
@@ -43,6 +45,26 @@ class RegisterRepositoryImplement extends RegisterRepository {
       final response =  await _apiClient.get('/sector');
 
       return Right(response);
+    } catch (e) {
+      return Left(Failure( e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> createProfile(Profile profile) async {
+    try{
+      final formData = FormData.fromMap({
+        ...profile.toMap(),
+        if(profile.file != null)
+          'photo': MultipartFile.fromBytes(
+            profile.file!.readAsBytesSync(),
+            filename: profile.file!.path.split('/').last,
+          ),
+      });
+      final response =  await _apiClient.post('/profile', data: formData);
+      return Right({
+        "message": response,
+      });
     } catch (e) {
       return Left(Failure( e.toString()));
     }

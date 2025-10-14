@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'stepper.dart';
+part of 'register_profile.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,51 +9,52 @@ part of 'stepper.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Stepper)
-const stepperProvider = StepperProvider._();
+@ProviderFor(RegisterProfile)
+const registerProfileProvider = RegisterProfileProvider._();
 
-final class StepperProvider extends $NotifierProvider<Stepper, int> {
-  const StepperProvider._()
+final class RegisterProfileProvider
+    extends $NotifierProvider<RegisterProfile, bool> {
+  const RegisterProfileProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'stepperProvider',
+        name: r'registerProfileProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$stepperHash();
+  String debugGetCreateSourceHash() => _$registerProfileHash();
 
   @$internal
   @override
-  Stepper create() => Stepper();
+  RegisterProfile create() => RegisterProfile();
 
   /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(int value) {
+  Override overrideWithValue(bool value) {
     return $ProviderOverride(
       origin: this,
-      providerOverride: $SyncValueProvider<int>(value),
+      providerOverride: $SyncValueProvider<bool>(value),
     );
   }
 }
 
-String _$stepperHash() => r'61fafe13a9bd6e195dc7863b1df69fc41be4a718';
+String _$registerProfileHash() => r'882b1eed53abac29e18f72503315e9e1ec4dedb5';
 
-abstract class _$Stepper extends $Notifier<int> {
-  int build();
+abstract class _$RegisterProfile extends $Notifier<bool> {
+  bool build();
   @$mustCallSuper
   @override
   void runBuild() {
     final created = build();
-    final ref = this.ref as $Ref<int, int>;
+    final ref = this.ref as $Ref<bool, bool>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<int, int>,
-              int,
+              AnyNotifier<bool, bool>,
+              bool,
               Object?,
               Object?
             >;

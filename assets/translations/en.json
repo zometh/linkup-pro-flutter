@@ -122,6 +122,22 @@
   "Hospitality & Tourism" : "Hôtellerie & Tourisme",
   "Sports & Wellbeing" : "Sports & Bien-être",
   "Other" : "Autre",
-    "Choose your sector" : "Choose your sector"
+    "Choose your sector" : "Choose your sector",
+    "complete_profile" : "Complete your profile",
+  "complete_company_profile" : "Complete your company profile",
+    "max_file_size" : "The file size must be less than or equal to {max} MB.",  "about_me" : "About me",
+  "birth_date" : "Birth date",
+  "phone_number" : "Phone number",
+  "portfolio" : "Portfolio",
+"visibility_of_your_profile": "Visibility of your profile",
+"PUBLIC": "PUBLIC",
+"PUBLIC_description": "Your profile will be visible to all LinkUp Pro users.",
+"FRIENDS": "FRIENDS",
+"FRIENDS_description": "Your profile will be visible only to your connections.",
+"PRIVATE": "PRIVATE",
+"PRIVATE_description": "Your profile will be private and only visible to you.",
+"select_your_profile_visibility": "Select your profile visibility",
+"register_profile_button": "Register and continue"
+
 
 }

@@ -4,24 +4,23 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
-import 'package:linkup_pro/core/utils/services/my_logger.dart';
-import 'package:linkup_pro/core/widgets/custom_popscope.dart';
+
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
-import 'package:linkup_pro/features/register/widgets/custom_stepper.dart';
+import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
+import 'package:linkup_pro/features/register/presentation/pages/register_profile.dart';
 
 import '../../data/entities/sector.dart';
-import '../../data/register_user/register_repository_implement.dart';
+import '../../data/repos/register_repository_implement.dart';
 
 import '../../widgets/sector_card.dart';
-import '../providers/stepper.dart';
 
 
 
 class SectorGridView extends ConsumerStatefulWidget {
+  final bool isEntreprise;
 
-
-   const SectorGridView({super.key});
+   const SectorGridView({super.key, this.isEntreprise = false});
 
   @override
   ConsumerState<SectorGridView> createState() => _SectorGridViewState();
@@ -32,6 +31,7 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
   @override
   Widget build(BuildContext context) {
     final registerRepositoryImplements = GetIt.I<RegisterRepositoryImplement>();
+    Sector ? selectedSector;
 
     return RefreshIndicator(
       key: refreshKey,
@@ -39,24 +39,21 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
       onRefresh: () async {
         setState(() {});
       },
-      child: CustomPopscope(
-          executeOnPop: () =>     ref.read(stepperProvider.notifier).previous()
-        ,
-        widget: Scaffold(
+      child: Scaffold(
+
           body: SafeArea(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 return Column(
                   children: [
-                SizedBox(height: constraints.maxHeight * 0.03,child: CustomStepper(),),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
                       child: CustomText(
                         text: "Choose your sector".tr(),
-                        fontSize: constraints.maxWidth * 0.06,
+                        fontSize: constraints.maxWidth * 0.05,
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
                         textAlign: TextAlign.center,
+                      color: AppColors.primary,
                       ),
                     ),
 
@@ -95,11 +92,14 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
                           itemBuilder: (context, index) {
                             final sector = sectors[index];
                             return SectorCard(
+                              selected: sector == selectedSector,
                               sector: sector,
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text("Selected: ${sector.name}")),
-                                );
+                                setState(() {
+                                  selectedSector = sector;
+                                });
+                               final route = MaterialPageRoute(builder: (_) => widget.isEntreprise ? RegisterCompany(sector: sector) : RegisterProfile(sector: sector));
+                                Navigator.push(context, route);
                               },
                             ).animate().fadeIn(duration: 200.ms, delay: (index * 100).ms);
                           },
@@ -112,7 +112,7 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
             ),
           ),
         ),
-      ),
+    
     );
   }
 }

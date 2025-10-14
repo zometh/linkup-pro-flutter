@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:country_picker/country_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -14,67 +16,18 @@ import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_popscope.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/register/data/entities/user.dart';
 import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
-import 'package:linkup_pro/features/register/presentation/providers/stepper.dart';
-import 'package:linkup_pro/features/register/widgets/custom_stepper.dart';
+
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../../core/utils/services/assets_path.dart';
 import '../../../../core/widgets/custom_text.dart';
 
-/*class RegisterPage extends StatelessWidget {
-  final bool isEntreprise;
-  const RegisterPage({super.key, this.isEntreprise = false});
 
-  @override
-  Widget build(BuildContext context) {
-    final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-    return Scaffold(
-      body: LayoutBuilder(
-          builder: (_, constraints){
-            return Form(
-              key: _formKey,
-              child: Padding(
-                padding: EdgeInsetsGeometry.all(10),
-                child: Center(
-                  child: Column(
-
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        AssetsPath.logo,
-                        width: constraints.maxWidth * 0.5,
-                        height: context.isMobile
-                            ? constraints.maxHeight * 0.1
-                            : constraints.maxHeight * 0.2,
-                      ),
-                      CustomText(
-                        text: "register_header".tr(),
-                        fontSize: constraints.maxWidth * 0.065,
-                        fontWeight: FontWeight.w600,
-                        textAlign: TextAlign.center,
-                      ),
-                      SizedBox(
-                        height: constraints.maxHeight * 0.005,
-                      ),
-                      CustomText(
-                        text: "register_subtitle".tr(),
-                        fontSize: constraints.maxWidth * 0.037,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-      ),
-    );
-  }
-}*/
 class RegisterPage extends ConsumerStatefulWidget{
   final bool isEntreprise;
 
@@ -130,7 +83,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
     return CustomPopscope(
       executeOnPop: () => ref.read(registerProvider.notifier).deleteUser(),
       widget: Scaffold(
-      
+
         body: loading ?
             CustomProgress().animate().fadeIn(duration: 500.ms)
             : SafeArea(
@@ -146,10 +99,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            SizedBox(height: constraints.maxHeight * 0.03,child: CustomStepper(),),
-                            SizedBox(
-                              height: constraints.maxHeight * 0.05,
-                            ),
+                          
                             Center(
                               child: Image.asset(
                                 AssetsPath.logo,
@@ -285,8 +235,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
       final response = await ref.read(registerProvider.notifier)
       .registerUser(user);
       if(response){
-        ref.read(stepperProvider.notifier).next();
-        final route = MaterialPageRoute(builder: (_) => const SectorGridView());
+        final route = MaterialPageRoute(builder: (_) =>  SectorGridView(isEntreprise: widget.isEntreprise));
         Navigator.push(context, route);
         //showToast(description: "success_register".tr(),);
       }else {
@@ -356,7 +305,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage>{
       ),
     );
   }
-  TextEditingController getInstance({String initial = ""}) => TextEditingController(text: initial);
 
 
 }

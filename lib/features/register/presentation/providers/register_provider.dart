@@ -1,6 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/features/register/data/entities/user.dart';
-import 'package:linkup_pro/features/register/data/register_user/register_repository_implement.dart';
+import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../core/utils/services/localdb.dart';

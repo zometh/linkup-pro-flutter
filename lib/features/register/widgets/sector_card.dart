@@ -2,7 +2,6 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
-import 'package:linkup_pro/main.dart';
 
 import '../data/entities/sector.dart';
 class SectorCard extends StatelessWidget {
@@ -26,6 +25,7 @@ class SectorCard extends StatelessWidget {
     Color color = getColor(sector.color);
     return GestureDetector(
       onTap: onTap,
+
       child: Card(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -37,10 +37,12 @@ class SectorCard extends StatelessWidget {
         elevation: selected ? 8 : 2,
         shadowColor: selected ? color.withAlpha(50) : Colors.black26,
         child: Container(
+
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
+
             backgroundBlendMode: BlendMode.overlay,
-            color: color.withAlpha(10),
+            color: selected ? AppColors.primary : color.withAlpha(10),
             borderRadius: BorderRadius.circular(16),
             gradient: AppGradients.primaryGradient,
             border: Border.all(color: AppColors.primary.withAlpha(20)),
@@ -56,7 +58,7 @@ class SectorCard extends StatelessWidget {
              CustomText(
                   text: sector.name.tr(),
                   //color: color,
-                  fontSize: maxWidth != null ? maxWidth! * 0.04 : 16,
+                  fontSize: maxWidth != null ? maxWidth! * 0.03 : 12,
                   fontWeight: FontWeight.w600,
                   textAlign: TextAlign.center,
 

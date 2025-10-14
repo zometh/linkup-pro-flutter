@@ -120,5 +120,22 @@
   "Hospitality & Tourism" : "الضيافة والسياحة",
   "Sports & Wellbeing" : "الرياضة والرفاهية",
   "Other" : "أخرى",
-    "Choose your sector" : "اختر قطاعك"
+    "Choose your sector" : "اختر قطاعك",
+  "complete_profile" : "أكمل ملفك الشخصي",
+  "complete_company_profile" : "أكمل ملف شركتك",
+    "max_file_size" : "يجب أن تكون حجم الملف أقل من أو يساوي {max} ميغابايت.",
+      "about_me" : "نبذة عني",
+  "birth_date" : "تاريخ الميلاد",
+  "phone_number" : "رقم الهاتف",
+  "portfolio" : "محفظة الأعمال",
+"visibility_of_your_profile": "رؤية ملفك الشخصي",
+"PUBLIC": "عام",
+"PUBLIC_description": "سيكون ملفك الشخصي مرئيًا لجميع مستخدمي LinkUp Pro.",
+"FRIENDS": "أصدقاء",
+"FRIENDS_description": "سيكون ملفك الشخصي مرئيًا فقط لجهات الاتصال الخاصة بك.",
+"PRIVATE": "خاص",
+"PRIVATE_description": "سيكون ملفك الشخصي خاصًا ولن يكون مرئيًا إلا لك.",
+"select_your_profile_visibility": "اختر رؤية ملفك الشخصي",
+"register_profile_button": "تسجيل"
+
 }

@@ -59,7 +59,7 @@ class ApiClient {
   }
   Future<Map<String, dynamic>> post(
     String path, {
-    required Map<String, dynamic> data,
+    required dynamic data,
   }) async {
     final token = await localDb.getToken();
     try {
