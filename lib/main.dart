@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/core/routes/routes.dart';
+import 'package:linkup_pro/core/theme/dark_theme.dart';
+import 'package:linkup_pro/core/theme/light_theme.dart';
 import 'package:linkup_pro/core/utils/services/app_setup.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:toastification/toastification.dart';
@@ -44,8 +46,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       routerConfig: router,
-      darkTheme: ThemeData.dark(),
-      theme: context.isDarkMode ? ThemeData.dark() : ThemeData.light(),
+      darkTheme: darkTheme,
+      theme: context.isDarkMode ? darkTheme : lightTheme,
       locale: context.locale,
       supportedLocales: context.supportedLocales,
     );

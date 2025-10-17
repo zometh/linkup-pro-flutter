@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/utils/formatters/fomat_text.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';

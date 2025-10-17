@@ -2,6 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 final lightTheme = ThemeData(
+  datePickerTheme: DatePickerThemeData(
+    backgroundColor: Colors.white,
+    headerBackgroundColor: const Color(0xFF3B82F6),
+    headerForegroundColor: Colors.white,
+    dayForegroundColor: WidgetStatePropertyAll(const Color(0xFF1E293B)),
+    dayBackgroundColor: WidgetStatePropertyAll(Colors.white),
+    todayForegroundColor: WidgetStatePropertyAll(Colors.white),
+    todayBackgroundColor: WidgetStatePropertyAll(const Color(0xFF3B82F6)),
+  ),
   brightness: Brightness.light,
   primaryColor: const Color(0xFF3B82F6),
   colorScheme: const ColorScheme.light(

@@ -5,16 +5,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
-import 'package:linkup_pro/core/utils/formatters/fomat_text.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
 import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
-import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
-import 'package:linkup_pro/features/auth/presentation/providers/auth_provider.dart';
+
+
 import 'package:linkup_pro/main.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../../../core/utils/services/custom_toast.dart';
+import '../../../../core/widgets/account_choice.dart';
+import '../../../login/presentation/providers/auth_provider.dart';
+
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +29,22 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  // ...existing code...
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  late TextEditingController _emailController;
+  late TextEditingController _passwordController;
+  @override
+  void initState() {
+    super.initState();
+    _emailController = TextEditingController();
+    _passwordController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ]
                       : [
                           Colors.white,
-                          AppColors.primary.withOpacity(0.05),
+                          AppColors.primary.withValues(alpha: 0.05),
                         ],
                 ),
               ),
@@ -54,7 +74,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                     return SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
                       child: Form(
-                        key: formKey,
+                        key: _formKey,
                         child: Padding(
                           padding: EdgeInsets.symmetric(
                             horizontal: constraints.maxWidth * 0.06,
@@ -104,7 +124,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                                 // Email field avec animation
                                 CustomTextField(
-                                  controller: emailController,
+                                  controller: _emailController,
                                   hintText: "email".tr(),
                                   prefixIcon: Icons.email_outlined,
                                   validator: (v) => FormValidator.isValidMail(v!.trim()),
@@ -120,7 +140,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                   prefixIcon: Icons.lock_outline_rounded,
                                   maxHeight: constraints.maxHeight,
                                   maxWidth: constraints.maxWidth,
-                                  controller: passwordController,
+                                  controller: _passwordController,
                                   hintText: "password_hint".tr(),
                                   type: TextFieldType.password,
                                   validator: (v) => FormValidator.isValidPassword(v!),
@@ -130,7 +150,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
                                 SizedBox(height: constraints.maxHeight * 0.025),
 
-                                // Forgot password avec Card moderne
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: InkWell(
@@ -142,7 +161,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                         vertical: 6,
                                       ),
                                       decoration: BoxDecoration(
-                                        color: AppColors.primary.withOpacity(0.1),
+                                        color: AppColors.primary.withValues(alpha:0.1),
                                         borderRadius: BorderRadius.circular(8),
                                       ),
                                       child: CustomText(
@@ -190,7 +209,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                                           vertical: 4,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppColors.primary.withOpacity(0.1),
+                                          color: AppColors.primary.withValues(alpha:0.1),
                                           borderRadius: BorderRadius.circular(8),
                                         ),
                                         child: CustomText(
@@ -219,6 +238,42 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  // ...existing code...
+  _register() async {
+    await showModalBottomSheet(
+      elevation: 10,
+      showDragHandle: true,
+      sheetAnimationStyle: AnimationStyle(
+        duration: 300.ms,
+        curve: Curves.easeInOut,
+        reverseDuration: 300.ms,
+        reverseCurve: Curves.easeInOut,
+      ),
+
+      context: context,
+      builder: (_) => const AccountChoice(),
+    );
+  }
+
+  _submit() async {
+    if (_formKey.currentState!.validate()) {
+      bool result = await ref
+          .read(authProvider.notifier)
+          .signIn(
+        _emailController.text.trim().toLowerCase(),
+        _passwordController.text.trim().toLowerCase(),
+      );
+      if (result) {
+        context.go("/home");
+      }else{
+
+      }
+    } else {
+      showToast(
+        applyBlurEffect: true,
+        description: "error_form".tr(),
+        type: ToastificationType.error,
+      );
+    }
+  }
 }
 

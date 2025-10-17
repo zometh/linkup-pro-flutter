@@ -3,6 +3,15 @@ import 'package:google_fonts/google_fonts.dart';
 
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
+  datePickerTheme: DatePickerThemeData(
+    backgroundColor: const Color(0xFF1E1E1E),
+    headerBackgroundColor: const Color(0xFF3B82F6),
+    headerForegroundColor: Colors.white,
+    dayForegroundColor: WidgetStatePropertyAll(Colors.white),
+    dayBackgroundColor: WidgetStatePropertyAll(const Color(0xFF2D2D2D)),
+    todayForegroundColor: WidgetStatePropertyAll(Colors.white),
+    todayBackgroundColor: WidgetStatePropertyAll(const Color(0xFF2563EB)),
+  ),
   primaryColor: const Color(0xFF3B82F6),
   colorScheme: const ColorScheme.dark(
     primary: Color(0xFF3B82F6),

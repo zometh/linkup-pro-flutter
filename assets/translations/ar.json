@@ -136,6 +136,15 @@
 "PRIVATE": "خاص",
 "PRIVATE_description": "سيكون ملفك الشخصي خاصًا ولن يكون مرئيًا إلا لك.",
 "select_your_profile_visibility": "اختر رؤية ملفك الشخصي",
-"register_profile_button": "تسجيل"
+"register_profile_button": "تسجيل",
+    "invalid_field_name" : "{field} غير صالح",
+  "biography" : "السيرة الذاتية",
+  "skills" : "المهارات",
+  "experience" : " الخبرة",
+  "education" : "التعليم",
+  "certifications" : "الشهادات",
+  "add_photo" : "إضافة صورة",
+  "complete_profile_subtitle" : "قدم معلومات إضافية لجعل ملفك الشخصي أكثر جاذبية.",
+  "company_name" : "اسم الشركة"
 
 }

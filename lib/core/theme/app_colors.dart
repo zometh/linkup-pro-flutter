@@ -54,4 +54,14 @@ class AppGradients {
     end: Alignment.bottomCenter,
     colors: [Colors.transparent, Color(0x80000000)],
   );
+  static const LinearGradient scaffoldGradient = LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                      Color(0xFF1a1a2e),
+                      Color(0xFF16213e),
+                    ]
+                  
+            
+          );
 }

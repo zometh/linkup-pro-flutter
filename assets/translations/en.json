@@ -137,7 +137,17 @@
 "PRIVATE": "PRIVATE",
 "PRIVATE_description": "Your profile will be private and only visible to you.",
 "select_your_profile_visibility": "Select your profile visibility",
-"register_profile_button": "Register and continue"
+"register_profile_button": "Register and continue",
+  "invalid_field_name" : "{field} est incorrect",
+  "biography" : "Biography",
+  "skills" : "Skills",
+  "experience" : "Experience",
+  "education" : "Education",
+  "certifications" : "Certifications",
+  "add_photo" : "Add a photo",
+  "complete_profile_subtitle" : "Provide additional information to make your profile more appealing.",
+  "company_name" : "Company name"
+
 
 
 }
