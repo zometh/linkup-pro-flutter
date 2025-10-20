@@ -2,12 +2,13 @@
 
 import 'dart:io';
 
+import 'package:dio/dio.dart';
+
 class Profile {
   final String? biography;
   final String? phone;
   final DateTime? birthDate;
   final String? portfolio;
-  final String visibility;
   final String sector;
   final File? file;
 
@@ -16,7 +17,6 @@ class Profile {
     this.phone,
     this.birthDate,
     this.portfolio,
-    required this.visibility,
     required this.sector,
     this.file,
   });
@@ -25,12 +25,12 @@ class Profile {
 
   Map<String, dynamic> toMap() {
     return {
-      'biography': biography,
-      'phone': phone,
-      'birthDate': birthDate?.toIso8601String(),
-      'portfolio': portfolio,
-      'visibility': visibility,
+      if(biography != null) 'biography': biography,
+      if(phone != null) 'phone': phone,
+      if(birthDate != null) 'birthDate': birthDate?.toIso8601String(),
+      if(portfolio != null) 'portfolio': portfolio,
       'sector': sector,
+      if(file != null) "photo": MultipartFile.fromFileSync(file!.path, filename: file!.path.split('/').last),
     };
   }
 }

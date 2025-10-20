@@ -10,7 +10,43 @@ import '../../features/register/presentation/pages/sector_choice.dart';
 /*final routes = [
   
 ];*/
-final router = GoRouter(
+GoRouter router(String initialRoute){
+  return GoRouter(
+    initialLocation: "/",
+    routes: [
+      GoRoute(
+        path: '/',
+        name: 'auth-checker',
+        builder: (context, state) => const AuthCheckerService(),
+      ),
+      GoRoute(
+        path: '/splash',
+        name: 'splash',
+        builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/login',
+        name: 'login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/register',
+        name: 'register',
+        builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/home',
+        name: 'home',
+        builder: (context, state) => const HomePage(),
+      ),
+      GoRoute(path: "/sector-choice",
+          name: "sector-choice",
+          builder: (context, state) => const SectorGridView()
+      )
+    ],
+  );
+}
+/*final router = GoRouter(
   initialLocation: "/",
   routes: [
     GoRoute(
@@ -43,4 +79,4 @@ final router = GoRouter(
       builder: (context, state) => const SectorGridView()
     )
   ],
-);
+);*/

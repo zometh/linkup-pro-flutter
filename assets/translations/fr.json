@@ -143,5 +143,9 @@
   "certifications" : "Certifications",
   "add_photo" : "Ajouter une photo",
   "complete_profile_subtitle" : "Fournissez des informations supplémentaires pour rendre votre profil plus attrayant.",
-  "company_name" : "Nom de l'entreprise"
+  "company_name" : "Nom de l'entreprise",
+  "company_website" : "Site web de l'entreprise",
+  "company_size" : "Taille de l'entreprise",
+  "select_date" : "Sélectionner une date"
+
 }

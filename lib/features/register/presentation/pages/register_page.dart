@@ -1,10 +1,12 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:faker/faker.dart' as faker_;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
+import 'package:linkup_pro/core/enums/user_role.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/fomat_text.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
@@ -13,7 +15,7 @@ import 'package:linkup_pro/core/widgets/custom_popscope.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
-import 'package:linkup_pro/features/register/data/entities/user.dart';
+import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
 
@@ -49,15 +51,16 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     displayNameNoCountryCode: 'Senegal (SN)',
     e164Key: '',
   );
+  var faker = faker_.Faker();
   @override
   void initState() {
-    // TODO: implement initState
+
     super.initState();
-    emailController = getInstance(initial: "johndoe@gmail.com");
+    emailController = getInstance(initial: faker.internet.email());
     passwordController = getInstance(initial: "passer");
-    usernameController = getInstance(initial: "johndoe");
-    firstNameController = getInstance(initial: "John");
-    lastNameController = getInstance(initial: "Doe");
+    usernameController = getInstance(initial: faker.internet.userName());
+    firstNameController = getInstance(initial: faker.person.firstName());
+    lastNameController = getInstance(initial: faker.person.lastName());
   }
 
   @override
@@ -191,6 +194,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         prefixIcon: Icons.person_outline,
                                         validator: (v) =>
                                             FormValidator.isValidUsername(
+                                              max: 16,
                                               username: v!.trim(),
                                             ),
                                         type: TextFieldType.formatted,
@@ -359,7 +363,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   _submit() async {
     if (formKey.currentState!.validate()) {
       final user = User(
-        role: widget.isEntreprise ? "ENTREPRISE" : "MEMBER",
+        role: widget.isEntreprise ? userRoleFromString("ENTREPRISE") : userRoleFromString("MEMBER"),
         firstName: firstNameController.text.isEmpty
             ? null
             : FormatText.formatFormFiel(firstNameController),

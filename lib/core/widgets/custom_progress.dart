@@ -139,9 +139,6 @@ class _CustomProgressState extends State<CustomProgress>
 
                 // Points indicateurs rotatifs
                 ...List.generate(3, (index) {
-                  final angle =
-                      (index * 2 * 3.141592653589793 / 3) +
-                      (_rotationAnimation.value * 6.283185307179586);
                   final radius = context.screenWidth * 0.11;
                   final x =
                       radius *

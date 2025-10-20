@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
 import 'package:linkup_pro/core/utils/services/assets_path.dart';
@@ -11,13 +12,14 @@ import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
+import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 
 
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../../core/utils/services/custom_toast.dart';
-import '../../../../core/widgets/account_choice.dart';
 import '../../../login/presentation/providers/auth_provider.dart';
 
 
@@ -35,8 +37,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
+    _emailController = getInstance(initial: "zometh");
+    _passwordController = getInstance(initial: "passer");
   }
 
   @override
@@ -54,19 +56,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           ? CustomProgress().animate().fadeIn(duration: 500.ms)
           : Container(
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: context.isDarkMode
-                      ? [
-                          Color(0xFF1a1a2e),
-                          Color(0xFF16213e),
-                        ]
-                      : [
-                          Colors.white,
-                          AppColors.primary.withValues(alpha: 0.05),
-                        ],
-                ),
+                gradient: context.isDarkMode
+                    ? AppGradients.scaffoldGradient
+                    : null,
               ),
               child: SafeArea(
                 child: LayoutBuilder(
@@ -238,7 +230,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     );
   }
 
-  _register() async {
+  /*_register() async {
     await showModalBottomSheet(
       elevation: 10,
       showDragHandle: true,
@@ -252,7 +244,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
       context: context,
       builder: (_) => const AccountChoice(),
     );
-  }
+  }*/
 
   _submit() async {
     if (_formKey.currentState!.validate()) {
@@ -263,7 +255,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         _passwordController.text.trim().toLowerCase(),
       );
       if (result) {
-        context.go("/home");
+        MyNavigator(context).navigateTo(const AuthCheckerService());
       }else{
 
       }

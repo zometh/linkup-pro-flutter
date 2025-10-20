@@ -20,7 +20,7 @@ final class RegisterProfileProvider
         argument: null,
         retry: null,
         name: r'registerProfileProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -41,7 +41,7 @@ final class RegisterProfileProvider
   }
 }
 
-String _$registerProfileHash() => r'882b1eed53abac29e18f72503315e9e1ec4dedb5';
+String _$registerProfileHash() => r'c7e3235751231c08e3c00b263c7901b472393863';
 
 abstract class _$RegisterProfile extends $Notifier<bool> {
   bool build();

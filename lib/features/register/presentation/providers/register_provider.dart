@@ -1,5 +1,6 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/features/register/data/entities/user.dart';
+import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -31,6 +32,8 @@ class Register extends _$Register{
         return false;
       },
       (data) async {
+        final storage = FlutterSecureStorage();
+        await storage.write(key: 'isRegistrationComplete', value: "false");
         await _db.saveToken(data['token'] as String);
         state = false;
         return true;

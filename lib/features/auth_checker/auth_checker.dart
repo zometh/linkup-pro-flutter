@@ -11,9 +11,13 @@ class AuthCheckerService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    _deleteOldInfos() async {
+      final db = GetIt.I<LocalDBService>();
+      await db.clearAllData();
+    }
     final db = GetIt.I<LocalDBService>();
     return FutureBuilder(
-        future: db.getToken(),
+        future: db.isConnected(),
         builder: (_, snapshots){
           if(snapshots.connectionState == ConnectionState.waiting){
             return const CustomProgress();
@@ -24,7 +28,10 @@ class AuthCheckerService extends StatelessWidget {
           if(snapshots.data == null){
             return const SplashScreen();
           }
-          
+          if(snapshots.data == false){
+            _deleteOldInfos();
+            return const SplashScreen();
+          }
           return HomePage();
         });
   }

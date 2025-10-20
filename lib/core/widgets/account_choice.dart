@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
@@ -111,14 +112,9 @@ class _AccountChoiceState extends State<AccountChoice>
     );
   }
 
-  _navigate(BuildContext context, {bool isEntreprise = false}) {
-    final route = MaterialPageRoute(
-      builder: (_) {
-        return RegisterPage(isEntreprise: isEntreprise);
-      },
-    );
-    Navigator.push(context, route);
-  }
+  _navigate(BuildContext context, {bool isEntreprise = false}) =>
+      MyNavigator(context).navigateTo(RegisterPage(isEntreprise: isEntreprise));
+
 }
 
 class AccountTypeTile extends StatefulWidget {

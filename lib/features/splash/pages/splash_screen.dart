@@ -92,7 +92,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
       'splash_subtitle_3',
     ];
 
-    final currentIndex = ref.watch(splashProviderProvider);
+    ref.watch(splashProviderProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,

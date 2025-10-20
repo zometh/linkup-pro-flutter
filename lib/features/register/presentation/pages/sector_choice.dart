@@ -28,16 +28,29 @@ class SectorGridView extends ConsumerStatefulWidget {
 class _SectorGridViewState extends ConsumerState<SectorGridView> {
   GlobalKey<RefreshIndicatorState> refreshKey =
       GlobalKey<RefreshIndicatorState>();
+  // Hold the repository and the future so we don't trigger the network call on every build
+  late final RegisterRepositoryImplement _registerRepositoryImplements;
+  // We intentionally keep the Future untyped here to avoid adding extra imports; it's the result of getSectors()
+  late Future _sectorsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _registerRepositoryImplements = GetIt.I<RegisterRepositoryImplement>();
+    _sectorsFuture = _registerRepositoryImplements.getSectors();
+  }
   @override
   Widget build(BuildContext context) {
-    final registerRepositoryImplements = GetIt.I<RegisterRepositoryImplement>();
     Sector? selectedSector;
 
     return RefreshIndicator(
       key: refreshKey,
       color: AppColors.primary,
       onRefresh: () async {
-        setState(() {});
+        // Refresh the future explicitly to re-fetch sectors
+        setState(() {
+          _sectorsFuture = _registerRepositoryImplements.getSectors();
+        });
       },
       child: Scaffold(
         body: SafeArea(
@@ -67,7 +80,8 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
 
                     Expanded(
                       child: FutureBuilder(
-                        future: registerRepositoryImplements.getSectors(),
+                        // Use the cached future so the request is not re-issued on every rebuild
+                        future: _sectorsFuture,
                         builder: (_, snapshot) {
                           if (snapshot.connectionState ==
                               ConnectionState.waiting) {
@@ -78,7 +92,7 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
                               child: Text('Error: ${snapshot.error}'),
                             );
                           }
-                          if (!snapshot.hasData || snapshot.data == null) {
+                          if (!snapshot.hasData) {
                             return const Center(
                               child: Text('No data available'),
                             );
@@ -141,3 +155,4 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
     );
   }
 }
+

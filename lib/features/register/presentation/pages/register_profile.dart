@@ -1,11 +1,13 @@
 import 'dart:io';
-
+import 'package:faker/faker.dart' as _faker;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
@@ -15,6 +17,8 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
+import 'package:linkup_pro/features/register/data/entities/profile.dart';
+import 'package:linkup_pro/features/register/presentation/providers/register_profile.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
 import 'package:linkup_pro/main.dart';
 import '../../data/entities/sector.dart';
@@ -29,21 +33,23 @@ class RegisterProfile extends ConsumerStatefulWidget {
 
 class _RegisterProfileState extends ConsumerState<RegisterProfile>
     with SingleTickerProviderStateMixin {
-  XFile? _selectedImage;
   late TextEditingController _biographyController;
   late TextEditingController _phoneController;
   late TextEditingController _portfolioController;
   late AnimationController _animationController;
+  final faker = _faker.Faker();
+  File? _selectedFile;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime? _selectedDate;
   String _fullPhoneNumber = '';
+  PhoneNumber _phoneNumber = PhoneNumber(dialCode: "+221", isoCode: "SN");
 
   @override
   initState() {
     super.initState();
-    _biographyController = getInstance();
+    _biographyController = getInstance(initial: faker.lorem.sentence());
     _phoneController = getInstance();
-    _portfolioController = getInstance();
+    _portfolioController = getInstance(initial: faker.internet.httpsUrl());
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -61,24 +67,18 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
 
   @override
   Widget build(BuildContext context) {
-    final bool loading = ref.watch(registerProvider);
+    final bool loading = ref.watch(registerProfileProvider);
     return CustomPopscope(
       executeOnPop: () {},
       widget: Scaffold(
+        appBar: null,
         body: loading
             ? const CustomProgress().animate().fadeIn(duration: 500.ms)
             : Container(
                 decoration: BoxDecoration(
                   gradient: context.isDarkMode
                       ? AppGradients.scaffoldGradient
-                      : LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            AppColors.primary.withValues(alpha: 0.03),
-                            Colors.white,
-                          ],
-                        ),
+                      : null,
                 ),
                 child: SafeArea(
                   child: LayoutBuilder(
@@ -209,7 +209,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                                   decoration: BoxDecoration(
                                                     shape: BoxShape.circle,
                                                     gradient:
-                                                        _selectedImage == null
+                                                        _selectedFile == null
                                                         ? LinearGradient(
                                                             begin: Alignment
                                                                 .topLeft,
@@ -228,11 +228,11 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                                           )
                                                         : null,
                                                   ),
-                                                  child: _selectedImage != null
+                                                  child: _selectedFile != null
                                                       ? ClipOval(
                                                           child: Image.file(
                                                             File(
-                                                              _selectedImage!
+                                                              _selectedFile!
                                                                   .path,
                                                             ),
                                                             fit: BoxFit.cover,
@@ -286,7 +286,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                                               fontSize:
                                                                   constraints
                                                                       .maxWidth *
-                                                                  0.032,
+                                                                  0.02,
                                                               color: AppColors
                                                                   .primary,
                                                               fontWeight:
@@ -299,7 +299,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                               ),
                                             ),
                                           ),
-                                          if (_selectedImage != null)
+                                          if (_selectedFile != null)
                                             Positioned(
                                               bottom: 0,
                                               right: 0,
@@ -327,7 +327,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                                     child: InkWell(
                                                       onTap: () {
                                                         setState(() {
-                                                          _selectedImage = null;
+                                                          _selectedFile = null;
                                                         });
                                                       },
                                                       child: const Icon(
@@ -355,7 +355,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
 
                                 // Bio field avec animation
                                 _buildSectionTitle(
-                                  "bio".tr(),
+                                  "biography".tr(),
                                   Icons.info_outline_rounded,
                                   constraints,
                                 ).animate().fadeIn(
@@ -377,7 +377,41 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                     .slideX(begin: -0.2, end: 0),
 
                                 SizedBox(height: constraints.maxHeight * 0.025),
+                                _buildSectionTitle(
+                                  "portfolio".tr(),
+                                  Icons.public_rounded,
+                                  constraints,
+                                ),
+                                SizedBox(height: constraints.maxHeight * 0.015),
 
+                                CustomTextField(
+                                      controller: _portfolioController,
+                                      hintText: "https://www.example.com",
+                                      validator: (value) {
+                                        if (value == null || value.isEmpty) {
+                                          return null;
+                                        }
+                                        final uri = Uri.tryParse(value);
+                                        if (uri == null ||
+                                            (!uri.isAbsolute) ||
+                                            (uri.scheme != 'http' &&
+                                                uri.scheme != 'https')) {
+                                          return 'invalid_field_name'.tr(
+                                            namedArgs: {
+                                              'field': 'portfolio'.tr(),
+                                            },
+                                          );
+                                        }
+                                        return null;
+                                      },
+                                      //prefixIcon: Icons.edit_note_rounded,
+
+                                      //maxLength: 200,
+                                    )
+                                    .animate()
+                                    .fadeIn(duration: 500.ms, delay: 600.ms)
+                                    .slideX(begin: -0.2, end: 0),
+                                SizedBox(height: constraints.maxHeight * 0.025),
                                 // Phone field avec animation
                                 _buildSectionTitle(
                                   "phone".tr(),
@@ -388,29 +422,96 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
                                   delay: 700.ms,
                                 ),
 
-                                SizedBox(height: constraints.maxHeight * 0.015),
+                                SizedBox(height: constraints.maxHeight * 0.01),
 
                                 CustomPhonePicker(
-                                      onPhoneNumberChanged: (PhoneNumber phone) {
-                                        
-                                      },
+                                      textEditingController: _phoneController,
+                                      initialValue: _phoneNumber,
+                                      onPhoneNumberChanged:
+                                          (PhoneNumber phone) {
+                                            _phoneNumber = phone;
+                                            _fullPhoneNumber =
+                                                phone.phoneNumber ?? '';
+                                          },
                                     )
                                     .animate()
                                     .fadeIn(duration: 500.ms, delay: 800.ms)
                                     .slideX(begin: 0.2, end: 0),
 
-                                SizedBox(height: constraints.maxHeight * 0.04),
+                                SizedBox(height: constraints.maxHeight * 0.01),
+                                _buildSectionTitle(
+                                  "birth_date".tr(),
+                                  Icons.cake_sharp,
+                                  constraints,
+                                ).animate().fadeIn(
+                                  duration: 500.ms,
+                                  delay: 700.ms,
+                                ),
+                                SizedBox(height: constraints.maxHeight * 0.01),
+                                InkWell(
+                                  onTap: _pickDate,
+                                  child: Container(
+                                    width: double.infinity,
+                                    padding: EdgeInsets.symmetric(
+                                      vertical: constraints.maxHeight * 0.02,
+                                      horizontal: constraints.maxWidth * 0.04,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: context.isDarkMode
+                                          ? Color(0xFF1E293B).withValues(
+                                              alpha: .5,
+                                            ) // Gris foncé semi-transparent en mode sombre
+                                          : AppColors.primary
+                                                .withValues(alpha: .03)
+                                                .withValues(alpha: 0.03),
+                                      borderRadius: BorderRadius.circular(8),
+                                      border: Border.all(
+                                        color: AppColors.primary.withValues(
+                                          alpha: 0.5,
+                                        ),
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        CustomText(
+                                          text: _selectedDate == null
+                                              ? "select_date".tr()
+                                              : DateFormat.yMMMMd().format(
+                                                  _selectedDate!,
+                                                ),
+                                          fontSize: constraints.maxWidth * 0.04,
+                                          color: _selectedDate == null
+                                              ? Colors.grey
+                                              : context.isDarkMode
+                                              ? Colors.white
+                                              : Colors.black,
+                                        ),
+                                        Icon(Icons.arrow_circle_down_rounded),
+                                      ],
+                                    ),
+                                  ),
+                                ),
 
-                                // Finish button avec animation
-                                CustomButton(
-                                      text: "finish".tr(),
-                                      onPressed: _submit,
-                                      height: constraints.maxHeight * 0.065,
-                                      width: double.infinity,
-                                    )
-                                    .animate()
-                                    .fadeIn(duration: 500.ms, delay: 900.ms)
-                                    .slideY(begin: 0.3, end: 0),
+                                SizedBox(height: constraints.maxHeight * 0.01),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child:
+                                      CustomButton(
+                                            text: "finish".tr(),
+                                            onPressed: _submit,
+                                            height:
+                                                constraints.maxHeight * 0.065,
+                                            //width: double.infinity,
+                                          )
+                                          .animate()
+                                          .fadeIn(
+                                            duration: 500.ms,
+                                            delay: 900.ms,
+                                          )
+                                          .slideY(begin: 0.3, end: 0),
+                                ),
 
                                 SizedBox(height: constraints.maxHeight * 0.02),
                               ],
@@ -464,7 +565,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
 
     if (bytes <= maxBytes) {
       setState(() {
-        _selectedImage = image;
+        _selectedFile = File(image.path);
       });
     } else {
       if (!mounted) return;
@@ -495,9 +596,9 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
   _pickDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: DateTime(2010),
       firstDate: DateTime(1900),
-      lastDate: DateTime.now(),
+      lastDate: DateTime(2010),
       builder: (context, child) {
         return Theme(
           data: Theme.of(context).copyWith(
@@ -519,13 +620,49 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>
     }
   }
 
-  _submit() {
+  _submit() async {
     if (_formKey.currentState?.validate() ?? false) {
-      // Traitement des données
-      print('Biography: ${_biographyController.text}');
-      print('Phone: $_fullPhoneNumber');
-      print('Sector: ${widget.sector.name}');
-      // Continuer avec l'enregistrement
+      final bio = _biographyController.text.trim();
+      final portfolio = _portfolioController.text.trim();
+
+      final profile = Profile(
+        sector: widget.sector.id,
+
+        biography: bio.isEmpty ? null : bio,
+        phone: _fullPhoneNumber,
+        birthDate: _selectedDate,
+        portfolio: portfolio.isEmpty ? null : portfolio,
+        file: _selectedFile,
+      );
+
+      try {
+        final response = await ref
+            .read(registerProfileProvider.notifier)
+            .createProfile(profile);
+
+        // Si le widget a été démonté pendant l'opération async, on ne fait rien
+        if (!mounted) return;
+
+        if (response) {
+          final storage = FlutterSecureStorage();
+          await storage.write(key: 'isRegistrationComplete', value: 'true');
+
+          MyNavigator(context).navigateToHomeAndClearStack();
+          //context.go( '/');
+        } else {
+          // Affiche un message d'erreur si la création a échoué
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('profile_creation_failed'.tr())),
+          );
+        }
+      } catch (e, st) {
+        // Gestion d'erreur globale
+        if (!mounted) return;
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('error_occurred'.tr())));
+        print('createProfile error: $e\n$st');
+      }
     }
   }
 }

@@ -1,4 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:linkup_pro/core/entities/member.dart';
+import 'package:linkup_pro/core/enums/user_role.dart';
+
+import '../../entities/company.dart';
 
 class LocalDBService {
 
@@ -10,7 +16,11 @@ class LocalDBService {
   Future<String?> getToken() async {
     return await storage.read(key: 'auth_token');
   }
-
+  Future<bool> isConnected() async {
+    String? token = await getToken();
+    String? userId = await getUserId();
+    return token != null && userId != null;
+  }
   Future<void> deleteToken() async {
     await storage.delete(key: 'auth_token');
   }
@@ -33,4 +43,34 @@ class LocalDBService {
   Future<void> clearAllData() async {
     await storage.deleteAll();
   }
+  Future<UserRole> getUserRole() async {
+    String? roleString = await storage.read(key: 'user_role');
+    if (roleString != null) {
+      return userRoleFromString(roleString);
+    } else {
+      throw Exception('User role not found in local storage');
+    }
+  }
+  Future<void> saveUserInfos(dynamic data) async {
+      print(data.toJson());
+      await storage.write(key: 'user_role', value: data.user.role.toString().split('.').last);
+      await saveUserId(data.user.id!);
+      final userInfos = jsonEncode(data.toJson());
+      await storage.write(key: 'user_infos', value: userInfos);
+
+
+  }
+  Future<dynamic>getUserInfos() async {
+    String? userInfos = await storage.read(key: 'user_infos');
+    UserRole role = await getUserRole();
+    Map<String, dynamic> userInfosMap = userInfos != null ? jsonDecode(userInfos) : {};
+    if(role == UserRole.member) {
+      return Member.fromJson(userInfosMap);
+    }
+      return Company.fromJson(userInfosMap);
+
+
+  }
+
+
 }

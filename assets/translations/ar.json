@@ -145,6 +145,9 @@
   "certifications" : "الشهادات",
   "add_photo" : "إضافة صورة",
   "complete_profile_subtitle" : "قدم معلومات إضافية لجعل ملفك الشخصي أكثر جاذبية.",
-  "company_name" : "اسم الشركة"
+  "company_name" : "اسم الشركة",
+  "company_website" : "موقع الشركة",
+  "company_size" : "حجم الشركة",
+  "select_date" : "اختر تاريخًا"
 
 }

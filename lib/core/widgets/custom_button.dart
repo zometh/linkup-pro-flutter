@@ -26,7 +26,6 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return InkWell(
 
       overlayColor: WidgetStatePropertyAll(Colors.transparent),
@@ -37,7 +36,7 @@ class CustomButton extends StatelessWidget {
         color: Colors
             .transparent,
         child: Container(
-          width: width ?? size.width,
+          width: width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
             //backgroundBlendMode: BlendMode.darken,
