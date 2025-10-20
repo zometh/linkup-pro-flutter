@@ -17,33 +17,65 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with TickerProviderStateMixin {
   late PageController _pageController;
+  late AnimationController _fadeController;
+  late AnimationController _scaleController;
+  late Animation<double> _fadeAnimation;
+  late Animation<double> _scaleAnimation;
   final service = GetIt.I<LocalDBService>();
+
   @override
   void initState() {
+    super.initState();
     _pageController = PageController(initialPage: 0);
 
-    super.initState();
+    _fadeController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _scaleController = AnimationController(
+      duration: const Duration(milliseconds: 600),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _fadeController, curve: Curves.easeInOut),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _scaleController, curve: Curves.easeOutBack),
+    );
+
+    _fadeController.forward();
+    _scaleController.forward();
   }
+
   @override
   void didChangeDependencies() {
-
     super.didChangeDependencies();
-
   }
 
   @override
   void dispose() {
-
     _pageController.dispose();
+    _fadeController.dispose();
+    _scaleController.dispose();
     super.dispose();
+  }
+
+  void _onPageChanged(int index) {
+    ref.read(splashProviderProvider.notifier).setIndex(index);
+    _fadeController.reset();
+    _scaleController.reset();
+    _fadeController.forward();
+    _scaleController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
-
-
     final List<String> splashImages = [
       AssetsPath.splash1,
       AssetsPath.splash2,
@@ -59,77 +91,146 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       'splash_subtitle_2',
       'splash_subtitle_3',
     ];
-   // print(context.locale.languageCode);
-    return Scaffold(
 
-      appBar: AppBar(title: SplashHeader()),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return Padding(
-            padding: EdgeInsets.all(constraints.maxWidth * 0.035),
-            child: Column(
-              children: [
-                Expanded(
-                  flex: 8,
-                  child: PageView(
-                    controller: _pageController,
-                    onPageChanged: (index) {
-                      ref.read(splashProviderProvider.notifier).setIndex(index);
-                    },
-                    children: List.generate(splashImages.length, (index) {
-                      return Column(
+    ref.watch(splashProviderProvider);
+
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: SplashHeader(),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Theme.of(context).scaffoldBackgroundColor,
+              Theme.of(context).primaryColor.withValues(alpha: 0.05),
+              Theme.of(context).scaffoldBackgroundColor,
+            ],
+            stops: const [0.0, 0.5, 1.0],
+          ),
+        ),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            return SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(
+                  horizontal: constraints.maxWidth * 0.05,
+                  vertical: constraints.maxHeight * 0.02,
+                ),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 9,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        onPageChanged: _onPageChanged,
+                        itemCount: splashImages.length,
+                        physics: const BouncingScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return AnimatedBuilder(
+                            animation: _fadeAnimation,
+                            builder: (context, child) {
+                              return FadeTransition(
+                                opacity: _fadeAnimation,
+                                child: ScaleTransition(
+                                  scale: _scaleAnimation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Flexible(
+                                  flex: 5,
+                                  child: Hero(
+                                    tag: 'splash_image_$index',
+                                    child: Container(
+                                      padding: EdgeInsets.all(
+                                        constraints.maxWidth * 0.08,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        gradient: RadialGradient(
+                                          colors: [
+                                            Theme.of(
+                                              context,
+                                            ).primaryColor.withValues(alpha: .1),
+                                            Colors.transparent,
+                                          ],
+                                        ),
+                                      ),
+                                      child: Image.asset(
+                                        splashImages[index],
+                                        fit: BoxFit.contain,
+                                        filterQuality: FilterQuality.high,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(height: constraints.maxHeight * 0.04),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: constraints.maxWidth * 0.08,
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      CustomText(
+                                        text: splashTitles[index].tr(),
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: constraints.maxWidth * 0.07,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      SizedBox(
+                                        height: constraints.maxHeight * 0.02,
+                                      ),
+                                      CustomText(
+                                        text: splashSubtitles[index].tr(),
+                                        textAlign: TextAlign.center,
+                                        fontSize: constraints.maxWidth * 0.042,
+                                        fontWeight: FontWeight.w400,
+                                        fontFamily: "Manrope",
+                                        color: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium
+                                            ?.color
+                                            ?.withValues(alpha: .7),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    SizedBox(height: constraints.maxHeight * 0.02),
+                    Expanded(
+                      flex: 2,
+                      child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Flexible(
-                            flex: 4,
-                            child: Image.asset(
-                              splashImages[index],
-                              fit: BoxFit.contain,
-                              filterQuality: FilterQuality.high,
-                            ),
-                          ),
-                          SizedBox(height: constraints.maxHeight * 0.02),
-                          CustomText(
-
-                            text:splashTitles[index].tr(),
-
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: constraints.maxWidth * 0.068,
-
-                            textAlign: TextAlign.center,
-                          ),
-                          SizedBox(height: constraints.maxHeight * 0.017),
-                          Padding(
-                            padding: EdgeInsets.symmetric(
-                              horizontal: constraints.maxWidth * 0.01,
-                            ),
-                            child: CustomText(
-                              text :splashSubtitles[index].tr(),
-                              textAlign: TextAlign.center ,
-                              fontSize: constraints.maxWidth * 0.039,
-                              fontWeight: FontWeight.w300,
-                              fontFamily: "Manrope",
-                            ),
+                          PageIndicator(
+                            availableHeight: constraints.maxHeight,
+                            availableWidth: constraints.maxWidth,
+                            pageController: _pageController,
                           ),
                         ],
-                      );
-                    }).toList(),
-                  ),
+                      ),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  flex: 2,
-                  child: PageIndicator(
-                    availableHeight: constraints.maxHeight,
-                    availableWidth: constraints.maxWidth,
-                    pageController: _pageController,
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }
-  
 }

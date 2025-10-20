@@ -4,7 +4,8 @@ import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/utils/services/my_logger.dart';
 
-import '../utils/services/localdb.dart';
+import '../../utils/services/localdb.dart';
+
 
 class ApiInterceptors extends Interceptor {
   MyLogger logger = MyLogger();

@@ -1,12 +1,13 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/utils/services/my_logger.dart';
 import 'package:linkup_pro/core/utils/types/error_api_type.dart';
 import 'package:linkup_pro/features/register/data/entities/profile.dart';
-import 'package:linkup_pro/features/register/data/entities/user.dart';
+import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/features/register/data/repos/regsiter_repository.dart';
 
-import '../../../../core/network/api_client.dart';
+import '../../../../core/network/api/api_client.dart';
 
 class RegisterRepositoryImplement extends RegisterRepository {
 
@@ -54,16 +55,11 @@ class RegisterRepositoryImplement extends RegisterRepository {
   Future<Either<Failure, Map<String, dynamic>>> createProfile(Profile profile) async {
     try{
       final formData = FormData.fromMap({
-        ...profile.toMap(),
-        if(profile.file != null)
-          'photo': MultipartFile.fromBytes(
-            profile.file!.readAsBytesSync(),
-            filename: profile.file!.path.split('/').last,
-          ),
+        ...profile.toMap()
       });
-      final response =  await _apiClient.post('/profile', data: formData);
+      final response =  await _apiClient.post('/profiles', data: formData);
       return Right({
-        "message": response,
+        "data": response["data"],
       });
     } catch (e) {
       return Left(Failure( e.toString()));

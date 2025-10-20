@@ -40,7 +40,7 @@ final class RegisterProvider extends $NotifierProvider<Register, bool> {
   }
 }
 
-String _$registerHash() => r'a706dd2f8580eaf367e64847949c94f5c83b4d8f';
+String _$registerHash() => r'8ae5a6e1f1b2f4acf96a82b5a1d5b3b0449c6f3c';
 
 abstract class _$Register extends $Notifier<bool> {
   bool build();

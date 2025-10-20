@@ -2,7 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/features/login/data/auth_repository.dart';
 
-import '../../../core/network/api_client.dart';
+import '../../../core/network/api/api_client.dart';
 import '../../../core/utils/types/error_api_type.dart';
 
 class AuthRepositoryImplement implements AuthRepository {

@@ -47,26 +47,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = context.isDarkMode;
-
-    // Utilisation des couleurs de l'application
-    final fillColor = isDark
-        ? AppColors.darkInput
-        : AppColors.lightSurface.withAlpha(50);
-
-    final borderColor = isDark ? Colors.white10 : AppColors.lightBorder;
-
-    final focusedBorderColor = AppColors.primary;
-
-    final hintColor = isDark ? AppColors.textTertiary : AppColors.textSecondary;
-
     return ConstrainedBox(
       constraints: BoxConstraints(
         maxHeight: widget.maxHeight ?? double.infinity,
         maxWidth: widget.maxWidth ?? double.infinity,
       ),
       child: TextFormField(
-
         maxLength: widget.maxLength?.toInt(),
         autocorrect: true,
         enableSuggestions: true,
@@ -78,68 +64,91 @@ class _CustomTextFieldState extends State<CustomTextField> {
         validator: widget.validator,
         obscureText: widget.type == TextFieldType.password && isHidden,
         inputFormatters: widget.formatter != null ? [widget.formatter!] : null,
-        style: GoogleFonts.getFont('Poppins', textStyle: TextStyle(color: isDark ? Colors.white : AppColors.textPrimary, fontSize: 14)),
+        style: GoogleFonts.getFont('Poppins',
+            textStyle: TextStyle(color: context.isDarkMode ? Colors.white : AppColors.textPrimary, fontSize: 14)),
         decoration: InputDecoration(
-          isDense: true, // réduit automatiquement la hauteur
-          contentPadding: const EdgeInsets.symmetric(vertical: 10, horizontal: 12), // ajuste la hauteur
+          filled: true,
+          fillColor: context.isDarkMode
+              ? Color(0xFF1E293B).withValues(alpha: .5) // Gris foncé semi-transparent en mode sombre
+              : AppColors.primary.withValues(alpha: .03), // Teinte primaire très légère en mode clair
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: hintColor),
-          filled: widget.filled,
-          fillColor: widget.filled ? fillColor : null,
+          hintStyle: GoogleFonts.poppins(
+            color: context.isDarkMode
+                ? Colors.grey[400]
+                : Colors.grey[600],
+            fontSize: 14,
+          ),
+          prefixIcon: widget.prefixIcon != null
+              ? Icon(
+                  widget.prefixIcon,
+                  color: context.isDarkMode
+                      ? AppColors.primary.withValues(alpha: .7)
+                      : AppColors.primary.withValues(alpha: .6),
+                  size: 20,
+                )
+              : null,
+          suffixIcon: _buildSuffixIcon(context),
+          isDense: true,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 14,
+          ),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(color: borderColor),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: context.isDarkMode
+                  ? Colors.grey[700]!
+                  : Colors.grey[300]!,
+              width: 1,
+            ),
           ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: widget.filled ? borderColor : AppColors.lightBorder,
+              color: context.isDarkMode
+                  ? Colors.grey[700]!.withValues(alpha: .3)
+                  : Colors.grey[300]!,
+              width: 1,
             ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
+            borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: focusedBorderColor,
-              width: 2.0, // Épaisseur plus importante pour le focus
+              color: AppColors.primary,
+              width: 2,
             ),
           ),
           errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(color: AppColors.error, width: 1.5),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.red[400]!,
+              width: 1.5,
+            ),
           ),
           focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(widget.borderRadius),
-            borderSide: BorderSide(color: AppColors.error, width: 2.0),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.red[400]!,
+              width: 2,
+            ),
           ),
-          suffixIcon: _buildSuffixIcon(isDark),
-          prefixIcon: widget.prefixIcon != null
-              ? Padding(
-                  padding: const EdgeInsets.only(left: 8, right: 8),
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-                    child: Icon(
-                      widget.prefixIcon,
-                      size: 20,
-                      color: isDark ? AppColors.textTertiary : AppColors.textSecondary,
-                    ),
-                  ),
-                )
-              : null,
         ),
       ),
     );
   }
 
-  Widget? _buildSuffixIcon(bool isDark) {
+  Widget? _buildSuffixIcon(BuildContext context) {
     if (widget.type == TextFieldType.password && textLength > 0) {
       return IconButton(
         padding: EdgeInsets.zero,
         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
-        onPressed: () => setState(() => isHidden = !isHidden),
+        onPressed: () => setState((){
+          isHidden = !isHidden;
+        }),
         icon: Icon(
           isHidden ? CupertinoIcons.eye : CupertinoIcons.eye_slash,
-          size: 20, // taille fixe pour éviter d'augmenter la hauteur
-          color: isDark ? AppColors.textTertiary : AppColors.textSecondary,
+          size: 20,
+          color: context.isDarkMode ? Colors.white : AppColors.textSecondary,
         ),
       );
     }

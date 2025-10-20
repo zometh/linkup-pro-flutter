@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/utils/formatters/fomat_text.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
@@ -27,7 +26,6 @@ class CustomButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
     return InkWell(
 
       overlayColor: WidgetStatePropertyAll(Colors.transparent),
@@ -38,7 +36,7 @@ class CustomButton extends StatelessWidget {
         color: Colors
             .transparent,
         child: Container(
-          width: width ?? size.width,
+          width: width ?? double.infinity,
           height: height,
           decoration: BoxDecoration(
             //backgroundBlendMode: BlendMode.darken,
