@@ -1,7 +1,6 @@
 
 import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/core/enums/user_visibility.dart';
-import 'package:linkup_pro/core/utils/services/my_logger.dart';
 
 class Member{
   final String id;

@@ -5,7 +5,8 @@ import 'package:linkup_pro/features/posts/presentation/pages/home_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
 import '../../core/network/websocket/config.dart';
-import '../../core/utils/services/localdb.dart';
+import '../../core/services/localdb.dart';
+
 
 class AuthCheckerService extends StatefulWidget {
   const AuthCheckerService({super.key});

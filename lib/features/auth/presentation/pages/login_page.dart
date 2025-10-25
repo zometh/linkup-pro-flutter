@@ -7,7 +7,6 @@ import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
-import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
@@ -19,7 +18,8 @@ import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../../../core/utils/services/custom_toast.dart';
+import '../../../../core/utils/assets_path.dart';
+import '../../../../core/widgets/custom_toast.dart';
 import '../../../login/presentation/providers/auth_provider.dart';
 
 

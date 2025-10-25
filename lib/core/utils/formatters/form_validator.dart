@@ -75,4 +75,22 @@ class FormValidator {
     }
     return null;
   }
+static String? isValidWebsite({required String website}) {
+  if (website.isEmpty) {
+    return "required_field".tr();
+  }
+  final uri = Uri.tryParse(website);
+  if (uri == null ||
+      (!uri.isAbsolute) ||
+      (uri.scheme != 'http' && uri.scheme != 'https')) {
+    // Translation key 'invalid_field_name' is expected to provide an error message for invalid website fields.
+    // It should accept a named argument 'field' for the field name.
+        return 'invalid_field_name'.tr(
+          namedArgs: {
+            'field': 'website'.tr(),
+          },
+        );
+  }
+  return null;
+}
 }

@@ -9,32 +9,32 @@ class AuthRepositoryImplement implements AuthRepository {
   final _apiClient = GetIt.I<ApiClient>();
   @override
   Future<String?> getCurrentUser() {
-  
     throw UnimplementedError();
   }
 
   @override
   Future<bool> isSignedIn() {
-  
     throw UnimplementedError();
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> signIn(String credential, String password) async {
+  Future<Either<Failure, Map<String, dynamic>>> signIn(
+    String credential,
+    String password,
+  ) async {
     try {
-      final response = await _apiClient.post('/auth/login', data: {
-        credential.contains("@") ? "email" : "username" : credential,
-        'password': password,
-      });
-      final authtoken = response['access_token'] as String;
-      final userId = response['id'] as String;
-      return Right({
-        "token": authtoken,
-        "userId": userId,
+      final response = await _apiClient.post(
+        '/auth/login',
+        data: {
+          credential.contains("@") ? "email" : "username": credential,
+          'password': password,
+        },
+      );
 
-      });
+
+      return Right({"data": response});
     } catch (e) {
-      return Left(Failure( e.toString()));
+      return Left(Failure(e.toString()));
     }
   }
 
@@ -43,5 +43,4 @@ class AuthRepositoryImplement implements AuthRepository {
     // TODO: implement signOut
     throw UnimplementedError();
   }
-
 }

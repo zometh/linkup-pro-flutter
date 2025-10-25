@@ -1,8 +1,4 @@
-enum UserRole {
-  admin,
-  member,
-  company,
-}
+enum UserRole { admin, member, entreprise }
 
 UserRole userRoleFromString(String role) {
   switch (role.toUpperCase()) {
@@ -11,7 +7,7 @@ UserRole userRoleFromString(String role) {
     case 'MEMBER':
       return UserRole.member;
     case 'ENTREPRISE':
-      return UserRole.company;
+      return UserRole.entreprise;
     default:
       throw ArgumentError('Unknown user role: $role');
   }

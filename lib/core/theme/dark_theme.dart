@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   datePickerTheme: DatePickerThemeData(
+    dayStyle: GoogleFonts.manrope(
+      textStyle: const TextStyle(color: Colors.white),
+    ),
     backgroundColor: const Color(0xFF1E1E1E),
     headerBackgroundColor: const Color(0xFF3B82F6),
     headerForegroundColor: Colors.white,

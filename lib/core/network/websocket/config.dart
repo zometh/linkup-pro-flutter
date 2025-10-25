@@ -1,10 +1,10 @@
 
 
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/utils/services/my_logger.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../../utils/services/localdb.dart';
+import '../../services/localdb.dart';
+import '../../utils/my_logger.dart';
 import '../api/api_constants.dart';
 
 

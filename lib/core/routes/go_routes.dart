@@ -2,6 +2,8 @@ import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/features/login/presentation/pages/login.dart';
 import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 import 'package:linkup_pro/features/posts/presentation/pages/home_page.dart';
+import 'package:linkup_pro/features/register/data/entities/sector.dart';
+import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
@@ -30,6 +32,11 @@ GoRouter router(String initialRoute){
         builder: (context, state) => const LoginPage(),
       ),
       GoRoute(
+        path: '/register-company',
+        name: 'register-company',
+        builder: (context, state) =>  RegisterCompany(sector: Sector(color: "", name: "", icon: ""),),
+      ),
+      GoRoute(
         path: '/register',
         name: 'register',
         builder: (context, state) => const RegisterPage(),
@@ -42,7 +49,8 @@ GoRouter router(String initialRoute){
       GoRoute(path: "/sector-choice",
           name: "sector-choice",
           builder: (context, state) => const SectorGridView()
-      )
+      ),
+      
     ],
   );
 }

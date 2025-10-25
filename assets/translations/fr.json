@@ -146,6 +146,26 @@
   "company_name" : "Nom de l'entreprise",
   "company_website" : "Site web de l'entreprise",
   "company_size" : "Taille de l'entreprise",
-  "select_date" : "Sélectionner une date"
-
+  "select_date" : "Sélectionner une date",
+  "complete_company_infos" : "Fournissez des informations sur votre entreprise pour aider les autres à en savoir plus sur vous.",
+  "complete_company" : "Compléter l'entreprise",
+  "description" : "Description",
+  "describe_your_company" : "Décrivez votre entreprise",
+  "name_of_your_company" : "Nom de votre entreprise",
+  "website" : "Site web",
+  "company_logo" : "Logo de l'entreprise",
+   "select_your_company_size" : "Sélectionnez la taille de votre entreprise",
+  "small_business": "1-50 employés",
+  "medium_business": "51-200 employés",
+  "large_business": "201+ employés",
+  "please_upload_company_logo": "Veuillez télécharger le logo de l'entreprise",
+  "creation_date": "Date de création",
+  "please_enter_a_valid_phone_number": "Veuillez entrer un numéro de téléphone valide",
+  "show_more": "Voir plus",
+  "show_less": "Voir moins",
+  "like": "J'aime",
+  "comment": "Commenter",
+  "save_post": "Enregistrer le post",
+  "copy_link": "Copier le lien",
+  "report": "Signaler"
 }

@@ -23,7 +23,7 @@ class Profile {
 
   
 
-  Map<String, dynamic> toMap() {
+  Map<String, dynamic> toJson() {
     return {
       if(biography != null) 'biography': biography,
       if(phone != null) 'phone': phone,

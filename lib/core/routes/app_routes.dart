@@ -11,7 +11,7 @@ class MyNavigator {
   }
 
   void navigateToHomeAndClearStack() {
-    context.go( '/home' );
+    context.go( '/' );
   }
 }
 
