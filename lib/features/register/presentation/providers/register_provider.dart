@@ -4,8 +4,8 @@ import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/utils/services/localdb.dart';
-import '../../../../core/utils/services/my_logger.dart';
+import '../../../../core/services/localdb/localdb.dart';
+import '../../../../core/utils/my_logger.dart';
 
 
 part 'register_provider.g.dart';

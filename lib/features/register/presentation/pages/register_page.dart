@@ -21,7 +21,7 @@ import 'package:linkup_pro/features/register/presentation/providers/register_pro
 
 import 'package:linkup_pro/main.dart';
 
-import '../../../../core/utils/services/assets_path.dart';
+import '../../../../core/utils/assets_path.dart';
 import '../../../../core/widgets/custom_text.dart';
 
 class RegisterPage extends ConsumerStatefulWidget {
@@ -54,7 +54,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   var faker = faker_.Faker();
   @override
   void initState() {
-
     super.initState();
     emailController = getInstance(initial: faker.internet.email());
     passwordController = getInstance(initial: "passer");
@@ -194,7 +193,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                         prefixIcon: Icons.person_outline,
                                         validator: (v) =>
                                             FormValidator.isValidUsername(
-                                              max: 16,
+                                              max: 20,
                                               username: v!.trim(),
                                             ),
                                         type: TextFieldType.formatted,
@@ -278,7 +277,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                                   padding: EdgeInsets.all(8),
                                                   decoration: BoxDecoration(
                                                     color: Colors.white
-                                                        .withOpacity(0.2),
+                                                        .withValues(alpha: 0.2),
                                                     borderRadius:
                                                         BorderRadius.circular(
                                                           8,
@@ -363,7 +362,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
   _submit() async {
     if (formKey.currentState!.validate()) {
       final user = User(
-        role: widget.isEntreprise ? userRoleFromString("ENTREPRISE") : userRoleFromString("MEMBER"),
+        role: widget.isEntreprise
+            ? userRoleFromString("ENTREPRISE")
+            : userRoleFromString("MEMBER"),
         firstName: firstNameController.text.isEmpty
             ? null
             : FormatText.formatFormFiel(firstNameController),

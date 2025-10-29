@@ -2,13 +2,13 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/utils/services/assets_path.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/splash/providers/splash_provider.dart';
 import 'package:linkup_pro/features/splash/widgets/header.dart';
 import 'package:linkup_pro/features/splash/widgets/page_indicator.dart';
 
-import '../../../core/utils/services/localdb.dart';
+import '../../../core/utils/assets_path.dart';
+import '../../../core/services/localdb/localdb.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

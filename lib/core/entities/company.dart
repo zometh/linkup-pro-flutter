@@ -10,8 +10,10 @@ class Company {
   final String logo;
   final String profileFileId;
   final String phone;
+  final String size;
   final bool isValidated;
   final String description;
+  final String sector;
   Company({
     required this.creationDate,
     required this.id,
@@ -23,6 +25,8 @@ class Company {
     required this.phone,
     required this.isValidated,
     required this.description,
+    required this.size,
+    required this.sector,
   });
   factory Company.fromJson(Map<String, dynamic> json) {
     return Company(
@@ -36,6 +40,25 @@ class Company {
       phone: json['phone'],
       isValidated: json['isValidated'],
       description: json['description'],
+      size: json['size'],
+      sector: json['sector'],
     );
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'user': user.toJson(),
+      'creationDate': creationDate.toIso8601String(),
+      'website': website,
+      'logo': logo,
+      'profileFileId': profileFileId,
+      'phone': phone,
+      'isValidated': isValidated,
+      'description': description,
+      'size': size,
+      'sector': sector,
+      
+    };
   }
 }

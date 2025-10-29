@@ -8,11 +8,11 @@ import '../data/entities/sector.dart';
 class SectorCard extends StatelessWidget {
   final Sector sector;
   final bool selected;
-  double? maxWidth;
-  double? maxHeight;
+  final double? maxWidth;
+  final double? maxHeight;
   final VoidCallback? onTap;
 
-  SectorCard({
+  const SectorCard({
     super.key,
     this.selected = false,
     required this.sector,

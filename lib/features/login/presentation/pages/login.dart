@@ -6,16 +6,19 @@ import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
-import 'package:linkup_pro/core/utils/services/assets_path.dart';
-import 'package:linkup_pro/core/utils/services/custom_toast.dart';
+
 import 'package:linkup_pro/core/widgets/account_choice.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/login/presentation/providers/auth_provider.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
+
+import '../../../../core/utils/assets_path.dart';
+import '../../../../core/widgets/custom_toast.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -30,8 +33,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _emailController = TextEditingController();
-    _passwordController = TextEditingController();
+    _emailController = getInstance(initial: "zometh");
+    _passwordController = getInstance(initial: "passer");
   }
 
   @override
@@ -294,7 +297,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             _passwordController.text.trim().toLowerCase(),
           );
       if (result) {
-        context.go("/home");
+        context.go("/");
       } else {}
     } else {
       showToast(

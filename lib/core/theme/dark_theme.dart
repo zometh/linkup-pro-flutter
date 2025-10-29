@@ -4,6 +4,9 @@ import 'package:google_fonts/google_fonts.dart';
 final darkTheme = ThemeData(
   brightness: Brightness.dark,
   datePickerTheme: DatePickerThemeData(
+    dayStyle: GoogleFonts.manrope(
+      textStyle: const TextStyle(color: Colors.white),
+    ),
     backgroundColor: const Color(0xFF1E1E1E),
     headerBackgroundColor: const Color(0xFF3B82F6),
     headerForegroundColor: Colors.white,
@@ -47,12 +50,12 @@ final darkTheme = ThemeData(
     ),
   ),
   scaffoldBackgroundColor: const Color(0xFF121212),
-  appBarTheme: const AppBarTheme(
+ /* appBarTheme: const AppBarTheme(
     backgroundColor: Color(0xFF1F1F1F),
     foregroundColor: Colors.white,
     elevation: 0,
     centerTitle: true,
-  ),
+  ),*/
   cardTheme: const CardThemeData(
     color: Color(0xFF1E1E1E),
     elevation: 2,
@@ -107,7 +110,7 @@ final darkTheme = ThemeData(
     foregroundColor: Colors.white,
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Color(0xFF1F1F1F),
+   // backgroundColor: Color(0xFF1F1F1F),
     selectedItemColor: Color(0xFF3B82F6),
     unselectedItemColor: Colors.white54,
     type: BottomNavigationBarType.fixed,

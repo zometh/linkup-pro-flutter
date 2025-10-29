@@ -4,11 +4,13 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:linkup_pro/core/widgets/custom_popscope.dart';
 
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_profile.dart';
+import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../data/entities/sector.dart';
@@ -43,111 +45,114 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
   Widget build(BuildContext context) {
     Sector? selectedSector;
 
-    return RefreshIndicator(
-      key: refreshKey,
-      color: AppColors.primary,
-      onRefresh: () async {
-        // Refresh the future explicitly to re-fetch sectors
-        setState(() {
-          _sectorsFuture = _registerRepositoryImplements.getSectors();
-        });
-      },
-      child: Scaffold(
-        body: SafeArea(
-          child: Container(
-            decoration: BoxDecoration(
-              gradient: context.isDarkMode
-                  ? AppGradients.scaffoldGradient
-                  : null,
-            ),
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                return Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8,
+    return CustomPopscope(
+      executeOnPop: () => ref.read(registerProvider.notifier).deleteUser(),
+      widget: RefreshIndicator(
+        key: refreshKey,
+        color: AppColors.primary,
+        onRefresh: () async {
+          // Refresh the future explicitly to re-fetch sectors
+          setState(() {
+            _sectorsFuture = _registerRepositoryImplements.getSectors();
+          });
+        },
+        child: Scaffold(
+          body: SafeArea(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: context.isDarkMode
+                    ? AppGradients.scaffoldGradient
+                    : null,
+              ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 8,
+                        ),
+                        child: CustomText(
+                          text: "Choose your sector".tr(),
+                          fontSize: constraints.maxWidth * 0.05,
+                          fontWeight: FontWeight.bold,
+                          textAlign: TextAlign.center,
+                          color: AppColors.primary,
+                        ),
                       ),
-                      child: CustomText(
-                        text: "Choose your sector".tr(),
-                        fontSize: constraints.maxWidth * 0.05,
-                        fontWeight: FontWeight.bold,
-                        textAlign: TextAlign.center,
-                        color: AppColors.primary,
-                      ),
-                    ),
-
-                    Expanded(
-                      child: FutureBuilder(
-                        // Use the cached future so the request is not re-issued on every rebuild
-                        future: _sectorsFuture,
-                        builder: (_, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return const CustomProgress();
-                          }
-                          if (snapshot.hasError) {
-                            return Center(
-                              child: Text('Error: ${snapshot.error}'),
-                            );
-                          }
-                          if (!snapshot.hasData) {
-                            return const Center(
-                              child: Text('No data available'),
-                            );
-                          }
-                          final response = snapshot.data!;
-
-                          final sectors = response.fold(
-                            (failure) => <Sector>[],
-                            (data) {
-                              final List<dynamic> sectorList = data ?? [];
-                              return sectorList
-                                  .map((e) => Sector.fromMap(e))
-                                  .toList();
-                            },
-                          );
-
-                          return GridView.builder(
-                            padding: const EdgeInsets.all(16),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount:
-                                      2, // ou 3 selon la taille d’écran
-                                  mainAxisSpacing: 12,
-                                  crossAxisSpacing: 12,
-                                  childAspectRatio: 1,
-                                ),
-                            itemCount: sectors.length,
-                            itemBuilder: (context, index) {
-                              final sector = sectors[index];
-                              return SectorCard(
-                                selected: sector == selectedSector,
-                                sector: sector,
-                                onTap: () {
-                                  setState(() {
-                                    selectedSector = sector;
-                                  });
-                                  final route = MaterialPageRoute(
-                                    builder: (_) => widget.isEntreprise
-                                        ? RegisterCompany(sector: sector)
-                                        : RegisterProfile(sector: sector),
-                                  );
-                                  Navigator.push(context, route);
-                                },
-                              ).animate().fadeIn(
-                                duration: 200.ms,
-                                delay: (index * 100).ms,
+      
+                      Expanded(
+                        child: FutureBuilder(
+                          // Use the cached future so the request is not re-issued on every rebuild
+                          future: _sectorsFuture,
+                          builder: (_, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const CustomProgress();
+                            }
+                            if (snapshot.hasError) {
+                              return Center(
+                                child: Text('Error: ${snapshot.error}'),
                               );
-                            },
-                          );
-                        },
+                            }
+                            if (!snapshot.hasData) {
+                              return const Center(
+                                child: Text('No data available'),
+                              );
+                            }
+                            final response = snapshot.data!;
+      
+                            final sectors = response.fold(
+                              (failure) => <Sector>[],
+                              (data) {
+                                final List<dynamic> sectorList = data ?? [];
+                                return sectorList
+                                    .map((e) => Sector.fromMap(e))
+                                    .toList();
+                              },
+                            );
+      
+                            return GridView.builder(
+                              padding: const EdgeInsets.all(16),
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount:
+                                        2, // ou 3 selon la taille d’écran
+                                    mainAxisSpacing: 12,
+                                    crossAxisSpacing: 12,
+                                    childAspectRatio: 1,
+                                  ),
+                              itemCount: sectors.length,
+                              itemBuilder: (context, index) {
+                                final sector = sectors[index];
+                                return SectorCard(
+                                  selected: sector == selectedSector,
+                                  sector: sector,
+                                  onTap: () {
+                                    setState(() {
+                                      selectedSector = sector;
+                                    });
+                                    final route = MaterialPageRoute(
+                                      builder: (_) => widget.isEntreprise
+                                          ? RegisterCompany(sector: sector)
+                                          : RegisterProfile(sector: sector),
+                                    );
+                                    Navigator.push(context, route);
+                                  },
+                                ).animate().fadeIn(
+                                  duration: 200.ms,
+                                  delay: (index * 100).ms,
+                                );
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                  ],
-                );
-              },
+                    ],
+                  );
+                },
+              ),
             ),
           ),
         ),

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.linkuppro"
-    compileSdk = 34
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -26,7 +26,7 @@ android {
         applicationId = "com.linkuppro"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 21
+        minSdk = flutter.minSdkVersion
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -43,9 +43,10 @@ android {
         }
     }
 }
-dependencies(
+dependencies {
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.google.firebase:firebase-messaging:23.3.0")
-)
+}
 flutter {
     source = "../.."
 }

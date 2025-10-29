@@ -16,12 +16,14 @@ class NetworkException implements Exception {
   String get message => exception.response?.data["message"].toString() ?? "";
   int get statusCode => exception.response?.data["statusCode"].toInt() ?? 200;
   bool get success => exception.response?.data["success"] ?? false;
+  List<dynamic>? get errors => exception.response?.data["errors"];
   @override
   String toString() {
     return "{"
         "message : $message,"
         "statusCode : $statusCode,"
-        "success: $success"
+        "success: $success,"
+        "errors: $errors"
         "}";
   }
 

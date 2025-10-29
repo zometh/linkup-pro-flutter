@@ -33,8 +33,7 @@ class CustomText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color textColor =
-        color ??
-            (context.isDarkMode ? Colors.white : Colors.black87);
+        color ?? (context.isDarkMode ? Colors.white : Colors.black87);
 
     return Text(
       text,
@@ -47,7 +46,7 @@ class CustomText extends StatelessWidget {
         fontStyle: fontStyle,
         decoration: decoration,
       ),
-
+      
       textAlign: textAlign,
       maxLines: maxLines,
       overflow: overflow,
