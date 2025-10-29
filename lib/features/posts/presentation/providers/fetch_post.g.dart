@@ -40,7 +40,7 @@ final class FetchPostProvider extends $NotifierProvider<FetchPost, bool> {
   }
 }
 
-String _$fetchPostHash() => r'901e5774be3af1be5c640ac2a13d3bb715ac4b72';
+String _$fetchPostHash() => r'bc445c591ddb3cea3fe11da6f8f6dc9bc2e227b8';
 
 abstract class _$FetchPost extends $Notifier<bool> {
   bool build();

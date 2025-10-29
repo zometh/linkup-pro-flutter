@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
-import 'package:linkup_pro/features/posts/presentation/pages/home_page.dart';
+import 'package:linkup_pro/features/home_page/presentation/pages/home_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
 import '../../core/network/websocket/config.dart';
-import '../../core/services/localdb.dart';
+import '../../core/services/localdb/localdb.dart';
 
 
 class AuthCheckerService extends StatefulWidget {

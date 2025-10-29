@@ -8,7 +8,7 @@ import 'package:linkup_pro/features/splash/widgets/header.dart';
 import 'package:linkup_pro/features/splash/widgets/page_indicator.dart';
 
 import '../../../core/utils/assets_path.dart';
-import '../../../core/services/localdb.dart';
+import '../../../core/services/localdb/localdb.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});

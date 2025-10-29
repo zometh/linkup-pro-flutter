@@ -3,7 +3,7 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
-import '../../services/localdb.dart';
+import '../../services/localdb/localdb.dart';
 import '../../utils/my_logger.dart';
 
 

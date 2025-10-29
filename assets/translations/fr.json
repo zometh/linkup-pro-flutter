@@ -167,5 +167,11 @@
   "comment": "Commenter",
   "save_post": "Enregistrer le post",
   "copy_link": "Copier le lien",
-  "report": "Signaler"
+  "report": "Signaler",
+  "no_data_found": "Aucune donnée trouvée",
+  "comments": "Commentaires",
+  "add_a_comment": "Ajouter un commentaire",
+  "post": "Publier",
+  "create_post": "Créer un post",
+  "what_do_you_want_to_talk_about": "De quoi voulez-vous parler ?"
 }

@@ -1,5 +1,5 @@
 import 'package:linkup_pro/core/entities/company.dart';
-import 'package:linkup_pro/core/services/localdb.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/features/register/data/entities/entreprise.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

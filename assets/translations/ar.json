@@ -169,5 +169,11 @@
   "comment": "تعليق",
   "save_post": "حفظ المنشور",
   "copy_link": "نسخ الرابط",
-  "report": "إبلاغ"
+  "report": "إبلاغ",
+  "no_data_found": "لم يتم العثور على بيانات",
+  "comments": "التعليقات",
+  "add_a_comment": "أضف تعليق...",
+  "post": "Publier",
+  "create_post": "إنشاء منشور",
+  "what_do_you_want_to_talk_about": "عن ماذا تريد أن تتحدث؟"
 }

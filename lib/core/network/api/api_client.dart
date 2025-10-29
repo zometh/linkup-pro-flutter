@@ -6,7 +6,7 @@ import 'package:get_it/get_it.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../widgets/custom_toast.dart';
-import '../../services/localdb.dart';
+import '../../services/localdb/localdb.dart';
 import 'api_constants.dart';
 import 'api_interceptor.dart';
 import 'network_exception.dart';
@@ -19,8 +19,9 @@ class ApiClient {
     : _dio = Dio(
         BaseOptions(
           baseUrl: ApiConstants.baseUrl,
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 15),
+          sendTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
           responseType: ResponseType.json,
         ),
       ) {
@@ -148,6 +149,49 @@ class ApiClient {
         }
       }
       
+
+      throw NetworkException(exception: e);
+    }
+  }
+
+  // Méthode pour récupérer un seul objet (au lieu d'une liste)
+  Future<Map<String, dynamic>> getOne(
+    String path, {
+    Map<String, dynamic>? queryParams,
+  }) async {
+    final token = await localDb.getToken();
+    try {
+      final response = await _dio.get(
+        path,
+        queryParameters: queryParams,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+
+      // Retourne directement les données sans cast en liste
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      NetworkException exception = NetworkException(exception: e);
+
+      if (exception.errors == null) {
+        showToast(
+          description: exception.message,
+          type: ToastificationType.error,
+          style: ToastificationStyle.fillColored,
+        );
+      } else {
+        for (final error in exception.errors!) {
+          showToast(
+            description: error,
+            type: ToastificationType.error,
+            style: ToastificationStyle.fillColored,
+          );
+        }
+      }
 
       throw NetworkException(exception: e);
     }

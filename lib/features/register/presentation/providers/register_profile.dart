@@ -4,7 +4,7 @@ import 'package:linkup_pro/features/register/data/entities/profile.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../../../core/services/localdb.dart';
+import '../../../../core/services/localdb/localdb.dart';
 
 
 

@@ -22,8 +22,17 @@ class PostRepositoryImpl implements PostRepository {
 
   @override
   Future<Either<Failure, Post>> getPostById(String id) async {
-    // TODO: implement getPostById
-    throw UnimplementedError();
+    try {
+
+      final response = await _apiClient.getOne('/posts/$id');
+
+      final post = Post.fromJson(response);
+
+      return Right(post);
+    } catch (e) {
+
+      return Left(Failure(e.toString()));
+    }
   }
 
   @override

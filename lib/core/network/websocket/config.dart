@@ -3,7 +3,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:socket_io_client/socket_io_client.dart' as IO;
 
-import '../../services/localdb.dart';
+import '../../services/localdb/localdb.dart';
 import '../../utils/my_logger.dart';
 import '../api/api_constants.dart';
 
@@ -21,6 +21,7 @@ class SocketService {
   Future<void> initSocket() async {
     String baseUrl = ApiConstants.baseUrl.replaceFirst('/api/v1', '');
     String ? token = await localDb.getToken();
+    String ? userId = await localDb.getUserId();
 
     if (token == null || token.isEmpty) {
       MyLogger().log('⚠️ Aucun token trouvé. Socket non initialisé.');
@@ -44,7 +45,7 @@ class SocketService {
     );
 
     _socket.connect();
-
+_socket.emit('register', {'userId': userId});
 
     _socket.onConnect((_) {
       _isConnected = true;
@@ -66,7 +67,17 @@ class SocketService {
       _socket.emit(event, data);
     }
   }
+  void joinRoom(String event, Map<String, dynamic> data) {
+    if (_isConnected) {
+      _socket.emit(event, data);
 
+    }
+  }
+  on (String event, Function(dynamic) callback) {
+    if (_isConnected) {
+      _socket.on(event, callback);
+    }
+  }
   void dispose() {
     if (_isConnected) {
       _socket.disconnect();

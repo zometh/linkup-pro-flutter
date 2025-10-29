@@ -6,7 +6,7 @@ import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/enums/user_role.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 
-import '../entities/company.dart';
+import '../../entities/company.dart';
 
 class LocalDBService {
   final storage = FlutterSecureStorage();
@@ -81,5 +81,23 @@ class LocalDBService {
       return Member.fromJson(userInfosMap);
     }
     return Company.fromJson(userInfosMap);
+  }
+
+  Future<String> getUserProfileImage() async {
+    String imageUrl = '';
+    String? userInfos = await storage.read(key: 'user_infos');
+    UserRole role = await getUserRole();
+    Map<String, dynamic> userInfosMap = userInfos != null
+        ? jsonDecode(userInfos)
+        : {};
+    if (role == UserRole.member) {
+      Member member = Member.fromJson(userInfosMap);
+      imageUrl = member.photoUrl ?? '';
+    }else{
+      Company company = Company.fromJson(userInfosMap);
+      imageUrl = company.logo ?? '';
+    }
+    print(imageUrl);
+    return imageUrl;
   }
 }

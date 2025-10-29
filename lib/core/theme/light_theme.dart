@@ -59,13 +59,13 @@ final lightTheme = ThemeData(
     ),
   ),
   scaffoldBackgroundColor: Colors.white,
-  appBarTheme: const AppBarTheme(
+  /*appBarTheme: const AppBarTheme(
     backgroundColor: Colors.white,
     foregroundColor: Color(0xFF1E293B),
     elevation: 1,
     centerTitle: true,
     shadowColor: Color(0x1A000000),
-  ),
+  ),*/
   cardTheme: const CardThemeData(
     color: Colors.white,
     elevation: 2,
@@ -122,7 +122,7 @@ final lightTheme = ThemeData(
     foregroundColor: Colors.white,
   ),
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Colors.white,
+    //backgroundColor: Colors.white,
     selectedItemColor: Color(0xFF3B82F6),
     unselectedItemColor: Color(0xFF64748B),
     type: BottomNavigationBarType.fixed,

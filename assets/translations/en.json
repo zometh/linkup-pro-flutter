@@ -170,5 +170,11 @@
   "comment": "Comment",
   "save_post": "Save post",
   "copy_link": "Copy link",
-  "report": "Report"
+  "report": "Report",
+  "no_data_found": "No data found",
+  "comments": "Comments",
+  "add_a_comment": "Add a comment...",
+  "post": "Post",
+  "create_post": "Create Post",
+  "what_do_you_want_to_talk_about": "What do you want to talk about?"
 }

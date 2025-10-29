@@ -5,9 +5,10 @@ class Post {
   final String id;
   final String content;
   final DateTime publicationDate;
-  final int likesCount;
-  final int commentsCount;
-  final int sharesCount;
+   int likesCount;
+   int commentsCount;
+   int sharesCount;
+   bool isLiked = false;
   final List<PostFile> files;
   final String userId;
   final List<String> tags;
@@ -24,6 +25,7 @@ class Post {
     required this.userId,
     required this.tags,
     required this.owner,
+    required this.isLiked,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class Post {
       userId: json['owner']['id'], // Changed: get userId from owner.id
       tags: List<String>.from(json['tags']),
       owner: PostOwner.fromJson(json['owner']),
+        isLiked: json['isLiked'] ?? false,
     );
    
     return post;
