@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
-import 'package:linkup_pro/features/posts/presentation/pages/post_comments.dart';
+import 'package:linkup_pro/features/comments/presentation/pages/post_comments.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_one_post.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/one_post_shimmer.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_card.dart';
-import 'package:linkup_pro/features/posts/presentation/widgets/post_header.dart';
+import 'package:linkup_pro/main.dart';
 
 import '../widgets/no_data_widget.dart';
 
@@ -37,17 +37,54 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
           ? const OnePostShimmer()
           : post == null
               ? const NoDataWidget()
-              : Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: Column(
-                    children: [
-                      PostCard(post: post!, isPostDetails: true),
-                      Expanded(
+              : CustomScrollView(
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: PostCard(post: post!, isPostDetails: true),
+                          ),
+                          Container(
+                            height: 1,
+                            margin: EdgeInsets.only(
+                              bottom: 10
+                            ),
+                            color: context.isDarkMode
+                                ? const Color(0xff2F3336)
+                                : Colors.grey.shade300,
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
                         child: PostsCommentsPage(postId: post!.id),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+      bottomSheet: Container(
+
+        padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+        child: TextField(
+          decoration: InputDecoration(
+            hintText: 'Add a comment...',
+            suffixIcon: IconButton(
+              icon: const Icon(Icons.send),
+              onPressed: () {
+                // Implement comment submission logic
+              },
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+          ),
+        ),
+      ),
     );
   }
 

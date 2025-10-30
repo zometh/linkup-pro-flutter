@@ -19,7 +19,7 @@ class PostsView extends ConsumerStatefulWidget {
 
 class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  int _postsPerPage = 3;
+  int _postsPerPage = 5;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isInitialLoading = false; // used for first load or refresh

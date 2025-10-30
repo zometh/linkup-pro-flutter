@@ -6,7 +6,7 @@ class Comment{
   final String content;
   final DateTime commentDate;
   final int likesCount;
-  final String? fileUrl;
+//  final String? fileUrl;
   final bool isLikedByUser;
   final String userId;
   final PostOwner owner;
@@ -15,7 +15,7 @@ class Comment{
     required this.content,
     required this.commentDate,
     required this.likesCount,
-    this.fileUrl,
+    //this.fileUrl,
     required this.isLikedByUser,
     required this.userId,
     required this.owner,
@@ -26,7 +26,7 @@ class Comment{
       content: json['content'],
       commentDate: DateTime.parse(json['commentDate']),
       likesCount: json['likesCount'],
-      fileUrl: json['fileUrl'],
+     // fileUrl: json['fileUrl'],
       isLikedByUser: json['isLikedByUser'] ?? false,
       userId: json['owner']['id'],
       owner: PostOwner.fromJson(json['owner']),

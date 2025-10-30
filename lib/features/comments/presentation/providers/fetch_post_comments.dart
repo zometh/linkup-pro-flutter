@@ -13,11 +13,11 @@ class FetchPostComments extends _$FetchPostComments {
   @override
   bool build() => false;
 
-  Future<List<Comment>> fetchPostComments(int postId, int page, int limit) async {
+  Future<List<Comment>> fetchPostComments(String postId, int page, int limit) async {
     state = true;
     try {
       final result = await commentImplement.fetchCommentsForPost(
-          postId.toString(), page, limit);
+          postId, page, limit);
       return result.fold((failure) => <Comment>[], (comments) => comments);
     } catch (e) {
       // optionally log the error: debugPrint('fetchPostComments error: $e');
