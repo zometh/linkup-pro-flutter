@@ -20,7 +20,7 @@ class PostOwner {
     return PostOwner(
       role: userRoleFromString(json['role']),
       id: json['id'],
-      sector: json['sector'] ?? null,
+      sector: json['sector'],
       owner: userRoleFromString(json['role']) == UserRole.member ? MemberPost.fromJson(json['data']) : CompanyPost.fromJson( json['data']),
     );
   }

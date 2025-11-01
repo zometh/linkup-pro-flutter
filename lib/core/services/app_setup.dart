@@ -14,7 +14,6 @@ setupDeepLinking(){
   final appLinks = AppLinks();
   appLinks.uriLinkStream.listen((Uri? uri) {
     if (uri != null) {
-      print('Received deep link: $uri');
       // Handle the deep link URI as needed
     }
   });

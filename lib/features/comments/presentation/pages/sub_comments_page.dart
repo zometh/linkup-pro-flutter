@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
+import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/comments/data/comment.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/comment_reply.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/comment_tile.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/no_comments_found.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/one_comment_shimmer__loading.dart';
-import 'package:linkup_pro/features/comments/presentation/widgets/sub_comment_tile.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../../../core/widgets/custom_confirmation_dialog.dart';
@@ -27,7 +27,7 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
   final commentImplement = GetIt.I<CommentRepositoryImplement>();
   final io = GetIt.I<SocketService>();
 
-  int _commentsPerPage = 10;
+  final int _commentsPerPage = 10;
   int _currentPage = 1;
   bool isInitialLoading = false;
   bool isLoadingMore = false;
@@ -40,7 +40,6 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
 
     // Listen for new sub-comments
     io.on("newComment", (data) {
-      print(data);
       if(data["postId"] == widget.parentComment.postId && data["commentId"] == widget.parentComment.id) {
         Future.microtask(() {
           setState(() {
@@ -140,7 +139,7 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
   deleteComment(String commentId) async{
     final commentImplement = GetIt.I<CommentRepositoryImplement>();
     final response = await commentImplement.deleteComment(commentId);
-    response.fold((f) => print(f), (r) {
+    response.fold((f) => MyLogger().log(f.message), (r) {
       setState(() {
         subComments.removeWhere((comment) => comment.id == commentId);
       });
@@ -190,9 +189,11 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
       });
     } catch (error) {
       // handle error
-      ScaffoldMessenger.of(context).showSnackBar(
+      if(mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('error_occurred'.tr())),
       );
+      }
     } finally {
      Future.microtask(() {
        setState(() {

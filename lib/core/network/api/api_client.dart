@@ -131,12 +131,10 @@ class ApiClient {
       );
       final data = response.data;
 
-      // If the backend returned a direct array
       if (data is List) {
-        return (data as List).cast<Map<String, dynamic>>();
+        return (data).cast<Map<String, dynamic>>();
       }
 
-      // If the backend returned an object wrapping the list
       if (data is Map<String, dynamic>) {
         if (data['data'] is List) {
           return (data['data'] as List).cast<Map<String, dynamic>>();
@@ -144,7 +142,6 @@ class ApiClient {
         if (data['comments'] is List) {
           return (data['comments'] as List).cast<Map<String, dynamic>>();
         }
-        // some APIs return items directly in a 'result' key
         if (data['result'] is List) {
           return (data['result'] as List).cast<Map<String, dynamic>>();
         }

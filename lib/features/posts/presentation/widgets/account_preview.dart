@@ -1,3 +1,4 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -16,12 +17,12 @@ class AccountPreview extends StatefulWidget {
   final Post post;
 
   /// Optional callback when follow state changes. Useful to update remote state.
-  final ValueChanged<bool>? onFollowChanged;
+  final  Function() onFollowChanged;
 
   const AccountPreview({
     super.key,
     required this.post,
-    this.onFollowChanged,
+    required this.onFollowChanged,
     required this.userPreview,
   });
 
@@ -30,20 +31,7 @@ class AccountPreview extends StatefulWidget {
 }
 
 class _AccountPreviewState extends State<AccountPreview> {
-  late bool _isFollowed;
 
-  @override
-  void initState() {
-    super.initState();
-    _isFollowed = widget.post.isFollowed;
-  }
-
-  void _toggleFollow() {
-    setState(() {
-      _isFollowed = !_isFollowed;
-    });
-    if (widget.onFollowChanged != null) widget.onFollowChanged!(_isFollowed);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +55,6 @@ class _AccountPreviewState extends State<AccountPreview> {
 
     return LayoutBuilder(
       builder: (context, cx) {
-        final width = cx.maxWidth;
         final height = cx.maxHeight;
 
         return SafeArea(
@@ -177,32 +164,38 @@ class _AccountPreviewState extends State<AccountPreview> {
                     ),
                     const SizedBox(width: 8),
                     // keep button intrinsic size; don't force layout with flex
-                    ElevatedButton(
-                      onPressed: _toggleFollow,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _isFollowed
-                            ? Colors.transparent
-                            : AppColors.primary,
-                        elevation: 0,
-                        side: BorderSide(
-                          color: _isFollowed
-                              ? Color.fromRGBO(71, 85, 105, .2)
-                              : Colors.transparent,
+                    InkWell(
+                      onTap: () async {
+                        await widget.onFollowChanged();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        constraints: const BoxConstraints(
+                          minWidth: 70,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white10),
+                          color: widget.post.isFollowed
+                                ? Colors.transparent
+                                : AppColors.primary,
+                          borderRadius: BorderRadius.circular(30),
                         ),
+                        
+                          child: CustomText(
+                            text: (widget.post.isFollowed
+                                    ? 'followed'
+                                    : 'follow')
+                                .tr(),
+                            color: widget.post.isFollowed
+                                ? (isDark
+                                    ? Colors.white
+                                    : AppColors.textPrimary)
+                                : Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                      )
                       ),
-                      child: Text(
-                        _isFollowed ? 'Following' : 'Follow',
-                        style: TextStyle(
-                          color: _isFollowed
-                              ? (isDark ? Colors.white : AppColors.textPrimary)
-                              : Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
                 const SizedBox(height: 12),

@@ -45,7 +45,6 @@ class _PostCardState extends State<PostCard> {
   final io = GetIt.I<SocketService>();
 @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     io.joinRoom("postSubscribe", {"roomId": widget.post.id});
 
@@ -66,7 +65,6 @@ class _PostCardState extends State<PostCard> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final maxWidth = constraints.maxWidth;
 
         return InkWell(
           onTap: widget.isPostDetails ? null : () {

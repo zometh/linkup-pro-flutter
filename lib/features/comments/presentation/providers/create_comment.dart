@@ -1,4 +1,3 @@
-import 'package:comment_tree/comment_tree.dart';
 import 'package:get_it/get_it.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

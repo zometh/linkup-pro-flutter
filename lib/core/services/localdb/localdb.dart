@@ -1,10 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/enums/user_role.dart';
-import 'package:linkup_pro/core/network/websocket/config.dart';
 
 import '../../entities/company.dart';
 
@@ -95,9 +93,8 @@ class LocalDBService {
       imageUrl = member.photoUrl ?? '';
     }else{
       Company company = Company.fromJson(userInfosMap);
-      imageUrl = company.logo ?? '';
+      imageUrl = company.logo;
     }
-    print(imageUrl);
     return imageUrl;
   }
 }

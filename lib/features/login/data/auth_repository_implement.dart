@@ -40,7 +40,6 @@ class AuthRepositoryImplement implements AuthRepository {
 
   @override
   Future<void> signOut() {
-    // TODO: implement signOut
     throw UnimplementedError();
   }
 }

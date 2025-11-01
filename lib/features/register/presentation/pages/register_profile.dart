@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:faker/faker.dart' as _faker;
+import 'package:faker/faker.dart' as ffaker;
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -41,7 +41,7 @@ class _RegisterProfileState extends ConsumerState<RegisterProfile>{
   late TextEditingController _biographyController;
   late TextEditingController _phoneController;
   late TextEditingController _portfolioController;
-  final faker = _faker.Faker();
+  final faker = ffaker.Faker();
   File? _selectedFile;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   DateTime _selectedDate = DateTime(2010);
@@ -282,7 +282,9 @@ SizedBox(height: constraints.maxHeight * 0.03),
           final storage = FlutterSecureStorage();
           await storage.write(key: 'isRegistrationComplete', value: 'true');
 
-          MyNavigator(context).navigateToHomeAndClearStack();
+          if(mounted){
+            MyNavigator(context).navigateToHomeAndClearStack();
+          }
           //context.go( '/');
         } else {
           // Affiche un message d'erreur si la création a échoué
@@ -290,13 +292,12 @@ SizedBox(height: constraints.maxHeight * 0.03),
             SnackBar(content: Text('profile_creation_failed'.tr())),
           );
         }
-      } catch (e, st) {
+      } catch (e) {
         // Gestion d'erreur globale
         if (!mounted) return;
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('error_occurred'.tr())));
-        print('createProfile error: $e\n$st');
       }
     }
     }else{

@@ -12,8 +12,8 @@ class BottomNavbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int _currentIndex = ref.watch(bottomNavbarProvider);
-    final List<_NavItem> _items = const [
+    final int currentIndex = ref.watch(bottomNavbarProvider);
+    final List<_NavItem> items = const [
       _NavItem(icon: FontAwesomeIcons.house, label: 'Home'),
       _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'Search'),
       _NavItem(icon: FontAwesomeIcons.message, label: 'Messages'),
@@ -76,8 +76,8 @@ class BottomNavbar extends ConsumerWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(_items.length, (index) {
-                final bool active = index == _currentIndex;
+              children: List.generate(items.length, (index) {
+                final bool active = index == currentIndex;
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => ref.read(bottomNavbarProvider.notifier).setIndex(index),
@@ -99,15 +99,15 @@ class BottomNavbar extends ConsumerWidget {
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOutCubic,
                             transform: Matrix4.identity()
-                              ..scale(active ? 1.15 : 1.0),
+                              ..scaleAdjoint(active ? 1.15 : 1.0),
                             child: Icon(
-                              _items[index].icon,
+                              items[index].icon,
                               size: 22,
                               color: active ? activeColor : inactiveColor,
                             ),
                           ),
                           const SizedBox(height: 6),
-                           _currentIndex == index ? AnimatedDefaultTextStyle(
+                           currentIndex == index ? AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOutCubic,
                             style: TextStyle(
@@ -117,7 +117,7 @@ class BottomNavbar extends ConsumerWidget {
                               letterSpacing: 0.2,
                             ),
                             child: Text(
-                              _items[index].label,
+                              items[index].label,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

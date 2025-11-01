@@ -5,7 +5,7 @@ class Post {
   final String id;
   final String content;
   final DateTime publicationDate;
-  final bool isFollowed;
+   bool isFollowed;
   int likesCount;
    int commentsCount;
    int sharesCount;

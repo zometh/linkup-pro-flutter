@@ -25,7 +25,6 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar> {
   final localDb = GetIt.I<LocalDBService>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fetchUserImage();
   }

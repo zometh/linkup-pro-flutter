@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:faker/faker.dart' as _faker;
+import 'package:faker/faker.dart' as ffaker;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,7 +38,7 @@ class RegisterCompany extends ConsumerStatefulWidget {
 }
 
 class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
-  final faker = _faker.Faker();
+  final faker = ffaker.Faker();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
@@ -320,8 +320,10 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
             final storage = FlutterSecureStorage();
             await storage.write(key: 'isRegistrationComplete', value: 'true');
 
-            MyNavigator(context).navigateToHomeAndClearStack();
-            //context.go( '/');
+if(mounted){
+              MyNavigator(context).navigateToHomeAndClearStack();
+
+}            //context.go( '/');
           } else {
             // Affiche un message d'erreur si la création a échoué
             ScaffoldMessenger.of(context).showSnackBar(

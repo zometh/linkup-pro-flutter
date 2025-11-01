@@ -89,10 +89,10 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
     );
   }
   Future<void> fetch() async {
-    final _post =
+    final newPost =
         await ref.read(fetchOnePostProvider.notifier).fetchPosts(widget.postId);
     setState(() {
-      post = _post;
+      post = newPost;
     });
   }
 }

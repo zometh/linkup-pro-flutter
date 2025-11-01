@@ -11,13 +11,11 @@ class PostRepositoryImpl implements PostRepository {
 
   @override
   Future<Either<Failure, bool>> createPost(Post post) async {
-    // TODO: implement createPost
     throw UnimplementedError();
   }
 
   @override
   Future<Either<Failure, bool>> deletePost(String id) async {
-    // TODO: implement deletePost
     throw UnimplementedError();
   }
 
@@ -61,13 +59,11 @@ class PostRepositoryImpl implements PostRepository {
     int? page,
     int? limit,
   ) async {
-    // TODO: implement getPostsByUserId
     throw UnimplementedError();
   }
 
   @override
   Future<Either<Failure, bool>> updatePost(Post post) async {
-    // TODO: implement updatePost
     throw UnimplementedError();
   }
 

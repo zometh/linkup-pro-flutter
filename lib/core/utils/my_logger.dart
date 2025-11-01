@@ -27,7 +27,7 @@ class MyLogger {
   void log(String message, {LogType type = LogType.debug, dynamic error, StackTrace? stackTrace}) {
     switch (type) {
       case LogType.trace:
-        logger.v(message);
+        logger.t(message);
         break;
       case LogType.debug:
         logger.d(message);
@@ -42,7 +42,7 @@ class MyLogger {
         logger.e(message, error: error, stackTrace: stackTrace);
         break;
       case LogType.fatal:
-        logger.wtf(message, error: error, stackTrace: stackTrace);
+        logger.f(message, error: error, stackTrace: stackTrace);
         break;
     }
   }

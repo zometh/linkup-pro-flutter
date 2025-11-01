@@ -188,6 +188,7 @@
   "followers": "Abonnés",
   "following": "Abonnements",
   "follow": "Suivre",
+  "followed": "Suivi",
   "unfollow": "Ne plus suivre",
   "followed_successfully": "Vous suivez maintenant {name}",
   "unfollowed_successfully": "Vous ne suivez plus {name}"

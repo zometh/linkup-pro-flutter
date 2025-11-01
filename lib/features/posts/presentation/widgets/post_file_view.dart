@@ -20,7 +20,7 @@ class _BuildPostFileState extends State<BuildPostFile> {
   final PageController _pageController = PageController();
   @override
   Widget build(BuildContext context) {
-    Widget _buildSingleMedia(String url, String fileType) {
+    Widget buildSingleMedia(String url, String fileType) {
       return Container(
         width: double.infinity,
         height: 300,
@@ -86,7 +86,7 @@ class _BuildPostFileState extends State<BuildPostFile> {
           },
           child: Hero(
             tag: widget.files[0].url,
-            child: _buildSingleMedia(widget.files[0].url, widget.files[0].fileType),
+            child: buildSingleMedia(widget.files[0].url, widget.files[0].fileType),
           ),
         );
       }
@@ -112,7 +112,7 @@ class _BuildPostFileState extends State<BuildPostFile> {
                       ),
                     );
                   },
-                  child: _buildSingleMedia(
+                  child: buildSingleMedia(
                     widget.files[index].url,
                     widget.files[index].fileType,
                   ),

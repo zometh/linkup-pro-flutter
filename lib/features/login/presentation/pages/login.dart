@@ -297,7 +297,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             _passwordController.text.trim().toLowerCase(),
           );
       if (result) {
-        context.go("/");
+        if(mounted){
+                  context.go("/");
+
+        }
       } else {}
     } else {
       showToast(

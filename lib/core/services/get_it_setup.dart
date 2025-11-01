@@ -7,6 +7,7 @@ import 'package:linkup_pro/features/comments/data/comment_repository_implement.d
 import 'package:linkup_pro/features/login/data/auth_repository_implement.dart';
 import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implementations/post_repository_implementaion.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
+import 'package:linkup_pro/features/users/domain/user_repos_implement.dart';
 
 void setupGetIt() {
   final getIt = GetIt.I;
@@ -20,5 +21,7 @@ void setupGetIt() {
   getIt.registerLazySingleton<SocketService>(() => SocketService());
   getIt.registerLazySingleton<PostRepositoryImpl>(() => PostRepositoryImpl());
   getIt.registerLazySingleton<CommentRepositoryImplement>(() => CommentRepositoryImplement());
+  getIt.registerLazySingleton<UsersRepositoryImpl>(() => UsersRepositoryImpl());
+
 
 }

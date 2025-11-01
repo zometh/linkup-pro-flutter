@@ -21,13 +21,11 @@ class _CommentReplyState extends State<CommentReply> {
   late TextEditingController _replyController;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _replyController = getInstance();
   }
   @override
   void dispose() {
-    // TODO: implement dispose
     _replyController.dispose();
     super.dispose();
   }
