@@ -6,7 +6,7 @@ import '../../data/comment.dart';
 
 part 'fetch_post_comments.g.dart';
 
-@Riverpod()
+@Riverpod(keepAlive: true)
 class FetchPostComments extends _$FetchPostComments {
   CommentRepositoryImplement get commentImplement => GetIt.I<CommentRepositoryImplement>();
 
@@ -14,16 +14,18 @@ class FetchPostComments extends _$FetchPostComments {
   bool build() => false;
 
   Future<List<Comment>> fetchPostComments(String postId, int page, int limit) async {
-    state = true;
+    Future.microtask(() => state = true);
     try {
       final result = await commentImplement.fetchCommentsForPost(
           postId, page, limit);
-      return result.fold((failure) => <Comment>[], (comments) => comments);
+      final data =  result.fold((failure) => <Comment>[], (comments) => comments);
+      //print(data.length);
+      return data;
     } catch (e) {
       // optionally log the error: debugPrint('fetchPostComments error: $e');
       return <Comment>[];
     } finally {
-      state = false;
+      Future.microtask(() => state = false);
     }
   }
 }

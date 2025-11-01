@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 
 import '../../../../core/network/api/api_client.dart';
 import '../../../../core/network/websocket/config.dart';
@@ -30,8 +31,12 @@ class _PostsStatsState extends State<PostsStats> {
     super.initState();
     io.on("likeUpdate", (callback){
       final Map<String, dynamic> data = callback;
-
       updateCounter(data);
+    });
+
+    io.on("commentUpdate", (callback){
+      final Map<String, dynamic> data = callback;
+      updateCommentCounter(data);
     });
   }
   updateCounter(Map<String, dynamic> data) async{
@@ -48,7 +53,17 @@ class _PostsStatsState extends State<PostsStats> {
       });
     }
   }
+  updateCommentCounter(Map<String, dynamic> data) async{
+    if(data["postId"] != widget.post.id ) return;
 
+    if(mounted){
+     Future.microtask((){
+        setState(() {
+          widget.post.commentsCount = data["commentsCount"];
+        });
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
       final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -103,7 +118,6 @@ class _PostsStatsState extends State<PostsStats> {
   }) {
     final buttonColor =
         color ?? (isDark ? Colors.white70 : AppColors.textSecondary);
-    final reactionsData = FormatNumber.formatReactions(label);
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -116,20 +130,7 @@ class _PostsStatsState extends State<PostsStats> {
           children: [
              Icon(icon, size: 23, color: buttonColor),
             const SizedBox(width: 6),
-            Flexible(
-              child: AnimatedFlipCounter(value: reactionsData['value'],
-                fractionDigits: reactionsData['suffix'] != '' ? 1 : 0,
-                suffix: reactionsData['suffix'],
-
-                duration:   Duration(milliseconds: 500),
-                textStyle: GoogleFonts.manrope(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: buttonColor,
-
-                ),
-              )
-            ),
+            MyAnimatedFlipcounter(value: label),
           ],
         ),
       ),

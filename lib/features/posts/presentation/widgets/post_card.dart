@@ -71,7 +71,7 @@ class _PostCardState extends State<PostCard> {
         return InkWell(
           onTap: widget.isPostDetails ? null : () {
             // Navigate to post details page
-           context.push("/post/${post.id}");
+           if(mounted)context.push("/post/${post.id}");
           },
           child: Container(
             decoration: BoxDecoration(
@@ -174,43 +174,6 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
-
-
-
-
-
-
-
-
-
-  /*Widget _buildStatItem(IconData icon, int count, Color color, bool isDark) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: color.withOpacity(0.7)),
-        const SizedBox(width: 4),
-        CustomText(
-          text: _formatCount(count),
-
-          fontSize: 14,
-          fontWeight: FontWeight.w500,
-          color: isDark ? Colors.white70 : AppColors.textSecondary,
-        ),
-      ],
-    );
-  }
-
-
-
-
-  String _formatCount(int count) {
-    if (count >= 1000000) {
-      return '${(count / 1000000).toStringAsFixed(1)}M';
-    } else if (count >= 1000) {
-      return '${(count / 1000).toStringAsFixed(1)}K';
-    }
-    return count.toString();
-  }*/
-
 
 
  

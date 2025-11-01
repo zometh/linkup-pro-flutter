@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -49,7 +50,7 @@ backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSur
                     backgroundImage: _imageProvider(),
                   ),
                   SizedBox(width: widget.avaibleHeight * 0.2),
-                  Expanded(child: CustomTextField(controller: TextEditingController(), hintText: "ss")),
+                  Expanded(child: CustomTextField(controller: TextEditingController(), hintText: "what_do_you_want_to_talk_about".tr())),
                   IconButton(
                     onPressed: () {
                       ref.read(authProvider).logout();
@@ -96,8 +97,10 @@ backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSur
 
   _fetchUserImage() async {
     final img = await localDb.getUserProfileImage();
-    setState(() {
-      imageUrl = img;
+    Future.microtask((){
+      setState(() {
+        imageUrl = img;
+      });
     });
   }
 }

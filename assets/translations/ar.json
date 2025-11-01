@@ -11,6 +11,7 @@
   "how_are_you": "كيف حالك؟",
   "continue": "متابعة",
   "cancel": "إلغاء",
+  "confirm": "تأكيد",
   "submit": "إرسال",
   "search": "بحث",
   "settings": "الإعدادات",
@@ -173,7 +174,17 @@
   "no_data_found": "لم يتم العثور على بيانات",
   "comments": "التعليقات",
   "add_a_comment": "أضف تعليق...",
-  "post": "Publier",
+  "post": "نشر",
   "create_post": "إنشاء منشور",
-  "what_do_you_want_to_talk_about": "عن ماذا تريد أن تتحدث؟"
+  "what_do_you_want_to_talk_about": "عن ماذا تريد أن تتحدث؟",
+  "reply_to": "الرد على",
+  "edit_post": "تحرير المنشور",
+  "reply": "رد",
+  "view_replies": "عرض الردود",
+  "add_reply": "أضف ردًا",
+  "replies": "الردود",
+  "error_occurred": "حدث خطأ",
+  "reply_added": "تمت إضافة الرد بنجاح",
+  "delete_comment": "حذف التعليق",
+  "delete_comment_message": "هل أنت متأكد من أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء."
 }

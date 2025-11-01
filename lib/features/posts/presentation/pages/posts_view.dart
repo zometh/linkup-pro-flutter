@@ -19,7 +19,7 @@ class PostsView extends ConsumerStatefulWidget {
 
 class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  int _postsPerPage = 5;
+  int _postsPerPage = 3;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isInitialLoading = false; // used for first load or refresh
@@ -167,18 +167,26 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
           .fetchPosts(_currentPage, _postsPerPage);
-      setState(() {
-        _currentPage++;
-        posts.addAll(newPosts);
-        hasMore = newPosts.length == _postsPerPage;
+      Future.microtask((){
+        if(mounted){
+          setState(() {
+            _currentPage++;
+            posts.addAll(newPosts);
+            hasMore = newPosts.length == _postsPerPage;
+          });
+        }
       });
     } catch (error) {
       // handle error if needed (e.g., show a snackbar)
     } finally {
       // Reset loading flags
-      setState(() {
-        isInitialLoading = false;
-        isLoadingMore = false;
+      Future.microtask(() {
+        if(mounted) {
+          setState(() {
+            isInitialLoading = false;
+            isLoadingMore = false;
+          });
+        }
       });
     }
   }
