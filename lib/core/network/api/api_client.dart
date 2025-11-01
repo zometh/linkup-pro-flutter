@@ -16,22 +16,22 @@ class ApiClient {
   final localDb = GetIt.instance.get<LocalDBService>();
 
   ApiClient()
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: ApiConstants.baseUrl,
-          sendTimeout: const Duration(seconds: 10),
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-          responseType: ResponseType.json,
-        ),
-      ) {
+      : _dio = Dio(
+    BaseOptions(
+      baseUrl: ApiConstants.baseUrl,
+      sendTimeout: const Duration(seconds: 10),
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+      responseType: ResponseType.json,
+    ),
+  ) {
     _dio.interceptors.add(ApiInterceptors());
   }
 
   Future<Map<String, dynamic>> delete(
-    String path, {
-    Map<String, dynamic>? queryParams,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParams,
+      }) async {
     try {
       final token = await localDb.getToken();
       if (token == null) {
@@ -72,9 +72,9 @@ class ApiClient {
   }
 
   Future<Map<String, dynamic>> post(
-    String path, {
-    required dynamic data,
-  }) async {
+      String path, {
+        required dynamic data,
+      }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.post(
@@ -111,10 +111,12 @@ class ApiClient {
     }
   }
 
+  /// Robust get: accepts responses that are either a List (direct array)
+  /// or an object containing the list under `data` or `comments` keys.
   Future<List<Map<String, dynamic>>> get(
-    String path, {
-    Map<String, dynamic>? queryParams,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParams,
+      }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.get(
@@ -129,7 +131,27 @@ class ApiClient {
       );
       final data = response.data;
 
-      return data.cast<Map<String, dynamic>>();
+      // If the backend returned a direct array
+      if (data is List) {
+        return (data as List).cast<Map<String, dynamic>>();
+      }
+
+      // If the backend returned an object wrapping the list
+      if (data is Map<String, dynamic>) {
+        if (data['data'] is List) {
+          return (data['data'] as List).cast<Map<String, dynamic>>();
+        }
+        if (data['comments'] is List) {
+          return (data['comments'] as List).cast<Map<String, dynamic>>();
+        }
+        // some APIs return items directly in a 'result' key
+        if (data['result'] is List) {
+          return (data['result'] as List).cast<Map<String, dynamic>>();
+        }
+      }
+
+      // If nothing matched, return empty list instead of throwing.
+      return <Map<String, dynamic>>[];
     } on DioException catch (e) {
       NetworkException exception = NetworkException(exception: e);
 
@@ -148,7 +170,6 @@ class ApiClient {
           );
         }
       }
-      
 
       throw NetworkException(exception: e);
     }
@@ -156,9 +177,9 @@ class ApiClient {
 
   // Méthode pour récupérer un seul objet (au lieu d'une liste)
   Future<Map<String, dynamic>> getOne(
-    String path, {
-    Map<String, dynamic>? queryParams,
-  }) async {
+      String path, {
+        Map<String, dynamic>? queryParams,
+      }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.get(

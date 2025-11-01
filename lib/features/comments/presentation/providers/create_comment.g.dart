@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'fetch_post_comments.dart';
+part of 'create_comment.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,28 +9,28 @@ part of 'fetch_post_comments.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(FetchPostComments)
-const fetchPostCommentsProvider = FetchPostCommentsProvider._();
+@ProviderFor(CreateComment)
+const createCommentProvider = CreateCommentProvider._();
 
-final class FetchPostCommentsProvider
-    extends $NotifierProvider<FetchPostComments, bool> {
-  const FetchPostCommentsProvider._()
+final class CreateCommentProvider
+    extends $NotifierProvider<CreateComment, bool> {
+  const CreateCommentProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'fetchPostCommentsProvider',
+        name: r'createCommentProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$fetchPostCommentsHash();
+  String debugGetCreateSourceHash() => _$createCommentHash();
 
   @$internal
   @override
-  FetchPostComments create() => FetchPostComments();
+  CreateComment create() => CreateComment();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
@@ -41,9 +41,9 @@ final class FetchPostCommentsProvider
   }
 }
 
-String _$fetchPostCommentsHash() => r'aeac782a16b6d7bde3b2a8bcb048455fa71d61a7';
+String _$createCommentHash() => r'b7636e58543c1a474d9cada6dfe7375800da565a';
 
-abstract class _$FetchPostComments extends $Notifier<bool> {
+abstract class _$CreateComment extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override

@@ -1,5 +1,4 @@
 import 'package:linkup_pro/features/posts/presentation/widgets/one_post_shimmer.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:flutter/material.dart';
 
 class PostShimmerLoading extends StatelessWidget {

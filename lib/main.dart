@@ -1,7 +1,9 @@
+import 'package:app_links/app_links.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/routes/go_routes.dart';
 import 'package:linkup_pro/core/services/notification_service.dart';
 import 'package:linkup_pro/core/theme/dark_theme.dart';
@@ -20,6 +22,8 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   await setup();
+  final appLinks = AppLinks();
+  final initialLink = await appLinks.getInitialLink();
   await EasyLocalization.ensureInitialized();
   await dotenv.load(fileName: ".env");
 
@@ -36,16 +40,39 @@ void main() async {
         ],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
-        child: const ProviderScope(child: MyApp()),
+        child:  ProviderScope(child: MyApp(appLinks: appLinks, initialLink: initialLink,)),
       ),
     ),
   );
 }
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+class MyApp extends ConsumerStatefulWidget {
+  final Uri? initialLink;
+  final AppLinks appLinks;
+
+  const MyApp({super.key, required this.initialLink, required this.appLinks});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    widget.appLinks.uriLinkStream.listen((Uri? uri) {
+      print('Received deep link: $uri');
+      if (uri != null) {
+       GoRouter.of(context).push(uri.path);
+      }
+    });
+    if(widget.initialLink != null){
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        GoRouter.of(context).push(widget.initialLink!.path);
+      });
+    }
+  }
+  @override
+  Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final routerConfig = router(auth);
 

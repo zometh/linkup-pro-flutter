@@ -5,7 +5,8 @@ class Post {
   final String id;
   final String content;
   final DateTime publicationDate;
-   int likesCount;
+  final bool isFollowed;
+  int likesCount;
    int commentsCount;
    int sharesCount;
    bool isLiked = false;
@@ -26,11 +27,13 @@ class Post {
     required this.tags,
     required this.owner,
     required this.isLiked,
+    this.isFollowed = false,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
     // print(json);
     final post = Post(
+      isFollowed: json['isFollowed'] ?? false,
       id: json['id'],
       content: json['content'],
       publicationDate: DateTime.parse(json['publicationDate']),

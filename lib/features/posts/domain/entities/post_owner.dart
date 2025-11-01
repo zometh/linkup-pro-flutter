@@ -5,13 +5,13 @@ import 'package:linkup_pro/features/posts/domain/entities/member_post.dart';
 class PostOwner {
   final UserRole role;
   final String id;
-  final String sector;
+  final String? sector;
   final dynamic owner;
 
   PostOwner({
     required this.role,
     required this.id,
-    required this.sector,
+     this.sector,
     required this.owner,
 
   });
@@ -20,7 +20,7 @@ class PostOwner {
     return PostOwner(
       role: userRoleFromString(json['role']),
       id: json['id'],
-      sector: json['sector'],
+      sector: json['sector'] ?? null,
       owner: userRoleFromString(json['role']) == UserRole.member ? MemberPost.fromJson(json['data']) : CompanyPost.fromJson( json['data']),
     );
   }

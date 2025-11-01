@@ -5,28 +5,37 @@ class Comment{
   final String id;
   final String content;
   final DateTime commentDate;
-  final int likesCount;
-  final String? fileUrl;
-  final bool isLikedByUser;
+  final String postId;
+   String? commentId;
+   int likesCount;
+//  final String? fileUrl;
+   bool isLikedByUser;
   final String userId;
+  int subCommentsCount;
   final PostOwner owner;
   Comment({
     required this.id,
     required this.content,
     required this.commentDate,
-    required this.likesCount,
-    this.fileUrl,
-    required this.isLikedByUser,
+    this.likesCount = 0,
+    required this.postId,
+     this.isLikedByUser = false,
     required this.userId,
     required this.owner,
+    this.subCommentsCount  = 0,
+    this.commentId,
+
   });
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
+      postId: json['postId'],
       id: json['id'],
       content: json['content'],
       commentDate: DateTime.parse(json['commentDate']),
       likesCount: json['likesCount'],
-      fileUrl: json['fileUrl'],
+     subCommentsCount: json["subCommentsCount"],
+      commentId: json['commentId'],
+     // fileUrl: json['fileUrl'],
       isLikedByUser: json['isLikedByUser'] ?? false,
       userId: json['owner']['id'],
       owner: PostOwner.fromJson(json['owner']),
