@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/utils/assets_path.dart';
-import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -31,7 +29,7 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface /*const Color(0xFF121212) : Colors.white*/,
+backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
         //elevation: 5,
         title: Padding(
           padding:  EdgeInsets.symmetric(
@@ -48,8 +46,10 @@ backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSur
                     backgroundColor: Colors.grey.shade300,
                     backgroundImage: _imageProvider(),
                   ),
-                  SizedBox(width: widget.avaibleHeight * 0.2),
-                  Expanded(child: CustomTextField(controller: TextEditingController(), hintText: "what_do_you_want_to_talk_about".tr())),
+                  SizedBox(width: widget.avaibleHeight * 0.2)
+                  /*Expanded(child: Container(
+
+                  ),)*/,
                   IconButton(
                     onPressed: () {
                       ref.read(authProvider).logout();

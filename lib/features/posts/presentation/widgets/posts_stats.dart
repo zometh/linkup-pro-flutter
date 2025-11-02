@@ -98,7 +98,7 @@ class _PostsStatsState extends State<PostsStats> {
   likeOrDislike() async{
     final apiClient = GetIt.I<ApiClient>();
     try{
-      final response = await apiClient.post('/posts/like/${widget.post.id}', data: {});
+      await apiClient.post('/posts/like/${widget.post.id}', data: {});
 
 
     }catch(e){

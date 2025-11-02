@@ -17,6 +17,7 @@ class BottomNavbar extends ConsumerWidget {
       _NavItem(icon: FontAwesomeIcons.house, label: 'Home'),
       _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'Search'),
       _NavItem(icon: FontAwesomeIcons.message, label: 'Messages'),
+      
       _NavItem(icon: FontAwesomeIcons.bell, label: 'Notifications'),
       _NavItem(icon: FontAwesomeIcons.user, label: "Profile"),
     ];
