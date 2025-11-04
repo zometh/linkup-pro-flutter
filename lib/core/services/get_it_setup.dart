@@ -9,6 +9,8 @@ import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implem
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:linkup_pro/features/users/domain/user_repos_implement.dart';
 
+import '../../features/posts_actions/domain/repos_implementation/post_action_repository_implementation.dart';
+
 void setupGetIt() {
   final getIt = GetIt.I;
 
@@ -22,6 +24,7 @@ void setupGetIt() {
   getIt.registerLazySingleton<PostRepositoryImpl>(() => PostRepositoryImpl());
   getIt.registerLazySingleton<CommentRepositoryImplement>(() => CommentRepositoryImplement());
   getIt.registerLazySingleton<UsersRepositoryImpl>(() => UsersRepositoryImpl());
+  getIt.registerLazySingleton<PostActionRepositoryImplementation>(() => PostActionRepositoryImplementation());
 
 
 }

@@ -188,9 +188,11 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
       // handle error if needed (e.g., show a snackbar)
     } finally {
       // Reset loading flags
-      setState(() {
-        isInitialLoading = false;
-        isLoadingMore = false;
+      Future.microtask(() {
+        setState(() {
+          isInitialLoading = false;
+          isLoadingMore = false;
+        });
       });
     }
   }

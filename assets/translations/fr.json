@@ -191,5 +191,13 @@
   "followed": "Suivi",
   "unfollow": "Ne plus suivre",
   "followed_successfully": "Vous suivez maintenant {name}",
-  "unfollowed_successfully": "Vous ne suivez plus {name}"
+  "unfollowed_successfully": "Vous ne suivez plus {name}",
+"messages": "Messages",
+"publish": "Publier",
+"post_type": "Type de publication",
+"select_post_type": "Sélectionnez le type de publication",
+  "announcement": "Annonce",
+  "simple" : "Simple",
+  "add_tags": "Ajouter des tags",
+  "post_deleted_successfully" : "Publication supprimée avec succès"
 }

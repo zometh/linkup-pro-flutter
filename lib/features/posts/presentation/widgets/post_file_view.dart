@@ -1,10 +1,12 @@
+
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post_file.dart';
+import 'package:linkup_pro/main.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/widgets/custom_text.dart';
 import 'image_preview.dart';
 
 class BuildPostFile extends StatefulWidget {
@@ -15,86 +17,120 @@ class BuildPostFile extends StatefulWidget {
   State<BuildPostFile> createState() => _BuildPostFileState();
 }
 
-class _BuildPostFileState extends State<BuildPostFile> {
+class _BuildPostFileState extends State<BuildPostFile> with SingleTickerProviderStateMixin {
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
+  final Map<int, double> _aspectRatios = {};
   @override
   Widget build(BuildContext context) {
-    Widget buildSingleMedia(String url, String fileType) {
-      return Container(
-        width: double.infinity,
-        height: 300,
-        decoration: BoxDecoration(
-          color: Colors.black12,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        margin: const EdgeInsets.symmetric(horizontal: 16),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: fileType.startsWith('image')
-              ? CachedNetworkImage(
-            imageUrl: url,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(
-              color: AppColors.darkInput,
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
-              ),
-            ),
-            errorWidget: (context, url, error) => Container(
-              color: AppColors.darkInput,
-              child: const Icon(
-                Icons.broken_image,
-                size: 50,
-                color: Colors.white54,
-              ),
-            ),
-          )
-              : Container(
-            color: AppColors.darkInput,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.play_circle_filled,
-                  size: 64,
-                  color: AppColors.primary,
-                ),
-                const SizedBox(height: 12),
-                CustomText(
-                  text: 'Video',
+    Widget buildSingleMedia(String url, String fileType, {int? index}) {
+      const horizontalMargin = 16.0;
+      final screenWidth = context.screenWidth;
+      final availableWidth = screenWidth - horizontalMargin * 2;
 
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: "Poppins",
+      double height = 300;
+      if (index != null && _aspectRatios.containsKey(index)) {
+        final ratio = _aspectRatios[index]!; // width / height
+        if (ratio > 0) {
+          height = (availableWidth / ratio).clamp(120.0, MediaQuery.of(context).size.height * 0.8);
+        }
+      }
+
+      return AnimatedSize(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+        alignment: Alignment.topCenter,
+        child: Container(
+          width: double.infinity,
+          height: height,
+          decoration: BoxDecoration(
+            color: Colors.black12,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          margin: const EdgeInsets.symmetric(horizontal: horizontalMargin),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: CachedNetworkImage(
+              imageUrl: url,
+              fit: BoxFit.cover,
+              placeholder: (context, url) => Container(
+                color: AppColors.darkInput,
+                child: const Center(
+                  child: CircularProgressIndicator(color: AppColors.primary),
                 ),
-              ],
+              ),
+              errorWidget: (context, url, error) => Container(
+                color: AppColors.darkInput,
+                child: const Icon(
+                  Icons.broken_image,
+                  size: 50,
+                  color: Colors.white54,
+                ),
+              ),
             ),
           ),
         ),
       );
     }
+
+    void _resolveImage(int index, String url) {
+      if (_aspectRatios.containsKey(index)) return;
+      final provider = CachedNetworkImageProvider(url);
+      final resolver = provider.resolve(const ImageConfiguration());
+      ImageStreamListener? listener;
+      listener = ImageStreamListener((ImageInfo info, bool synchronousCall) {
+        final img = info.image;
+        if (img.height != 0) {
+          final ratio = img.width / img.height; // width / height
+          // avoid calling setState synchronously during build
+          if (synchronousCall) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              setState(() => _aspectRatios[index] = ratio);
+            });
+          } else {
+            if (mounted) setState(() => _aspectRatios[index] = ratio);
+          }
+        }
+        try {
+          resolver.removeListener(listener!);
+        } catch (_) {}
+      }, onError: (dynamic _, __) {
+        try {
+          resolver.removeListener(listener!);
+        } catch (_) {}
+      });
+      resolver.addListener(listener);
+    }
     if (widget.files.length == 1) {
+        _resolveImage(0, widget.files[0].url);
         return InkWell(
           onTap: () {
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ImagePreview(imageUrls: [widget.files[0].url]),
+                builder: (context) => ImagePreview(imageUrls: transformFiles(widget.files)),
               ),
             );
           },
           child: Hero(
             tag: widget.files[0].url,
-            child: buildSingleMedia(widget.files[0].url, widget.files[0].fileType),
+            child: buildSingleMedia(widget.files[0].url, widget.files[0].fileType, index: 0),
           ),
         );
       }
 
+      const horizontalMargin = 16.0;
+      final screenWidth = MediaQuery.of(context).size.width;
+      final availableWidth = screenWidth - horizontalMargin * 2;
+      final ratio = _aspectRatios[_currentImageIndex];
+      final double currentHeight = (ratio != null && ratio > 0)
+          ? (availableWidth / ratio).clamp(120.0, MediaQuery.of(context).size.height * 0.8)
+          : 300.0;
+
       return Column(
         children: [
           SizedBox(
-            height: 300,
+            height: currentHeight,
             child: PageView.builder(
               controller: _pageController,
               onPageChanged: (index) {
@@ -102,12 +138,13 @@ class _BuildPostFileState extends State<BuildPostFile> {
               },
               itemCount: widget.files.length,
               itemBuilder: (context, index) {
+                _resolveImage(index, widget.files[index].url);
                 return InkWell(
                   onTap: () {
                     Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (context) => ImagePreview(
-                          imageUrls: widget.files.map((f) => f.url).toList(),
+                          imageUrls: transformFiles(widget.files),
                         ),
                       ),
                     );
@@ -115,6 +152,7 @@ class _BuildPostFileState extends State<BuildPostFile> {
                   child: buildSingleMedia(
                     widget.files[index].url,
                     widget.files[index].fileType,
+                    index: index,
                   ),
                 );
               },
@@ -146,5 +184,10 @@ class _BuildPostFileState extends State<BuildPostFile> {
           ],
         ],
       );
-    }}
+    }
+  List<String> transformFiles(List<PostFile> files) {
+    return files.map((file) => file.url).toList();
+  }
+
+}
 

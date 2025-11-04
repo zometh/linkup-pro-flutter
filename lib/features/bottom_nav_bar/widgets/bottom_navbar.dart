@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -14,12 +15,11 @@ class BottomNavbar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final int currentIndex = ref.watch(bottomNavbarProvider);
     final List<_NavItem> items = const [
-      _NavItem(icon: FontAwesomeIcons.house, label: 'Home'),
-      _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'Search'),
-      _NavItem(icon: FontAwesomeIcons.message, label: 'Messages'),
-      
-      _NavItem(icon: FontAwesomeIcons.bell, label: 'Notifications'),
-      _NavItem(icon: FontAwesomeIcons.user, label: "Profile"),
+      _NavItem(icon: FontAwesomeIcons.house, label: 'home'),
+      _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'search'),
+      _NavItem(icon: FontAwesomeIcons.message, label: 'messages'),
+      _NavItem(icon: FontAwesomeIcons.bell, label: 'notifications'),
+      _NavItem(icon: FontAwesomeIcons.user, label: "profile"),
     ];
 
     final double width = context.screenWidth;
@@ -41,7 +41,7 @@ class BottomNavbar extends ConsumerWidget {
       margin: EdgeInsets.only(
         left: width * 0.03,
         right: width * 0.03,
-        bottom: height * 0.02,
+        bottom: height * 0.01,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
@@ -103,7 +103,7 @@ class BottomNavbar extends ConsumerWidget {
                               ..scaleAdjoint(active ? 1.15 : 1.0),
                             child: Icon(
                               items[index].icon,
-                              size: 22,
+                              size: 15 + (active ? 4 : 0),
                               color: active ? activeColor : inactiveColor,
                             ),
                           ),
@@ -118,7 +118,7 @@ class BottomNavbar extends ConsumerWidget {
                               letterSpacing: 0.2,
                             ),
                             child: Text(
-                              items[index].label,
+                              items[index].label.tr(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/network/websocket/config.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_post.dart';
@@ -18,7 +21,7 @@ class PostsView extends ConsumerStatefulWidget {
 
 class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  int _postsPerPage = 3;
+  int _postsPerPage = 5;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isInitialLoading = false; // used for first load or refresh
@@ -26,15 +29,29 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
   bool hasMore = true;
   List<Post> posts = [];
   double _lastScrollPosition = 0;
-
+  final io = GetIt.I<SocketService>();
+  String? connectedUserId;
   @override
   void initState() {
     super.initState();
-
+  getUserId();
     fetchPosts();
     _scrollController.addListener(_onScroll);
+    io.on("newPost", (d){
+      print("newPost event received: $d");
+      insertNewPost(d);
+    });
+    io.on("deletePost", (v){
+      print("deletePost event received: $v");
+     removePost(v as String);
+    });
   }
-
+  removePost(String postId) {
+    print(postId);
+    setState(() {
+      posts.removeWhere((post) => post.id == postId);
+    });
+  }
   void _onScroll() {
     final currentScrollPosition = _scrollController.position.pixels;
     final maxScrollExtent = _scrollController.position.maxScrollExtent;
@@ -115,7 +132,7 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
                           }
                         }
                         final post = posts[index];
-                        return PostCard(post: post);
+                        return PostCard(post: post, userId: connectedUserId!,);
                       },
                     ),
                   ],
@@ -147,6 +164,13 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
         ,
       ),
     );
+  }
+  Future<void> getUserId() async {
+    final storage = GetIt.I<LocalDBService>();
+    final userId = await storage.getUserId();
+    setState(() {
+      connectedUserId = userId;
+    });
   }
   fetchPosts() async {
     // Prevent concurrent loads
@@ -189,7 +213,16 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
       });
     }
   }
-
+  void insertNewPost(Map<String, dynamic> data) {
+    setState(() {
+      posts.insert(0, Post.fromJson(data));
+    });
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
   @override
   bool get wantKeepAlive => true;
 }

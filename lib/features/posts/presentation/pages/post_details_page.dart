@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/add_comment.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
@@ -22,6 +24,8 @@ class PostDetailsPage extends ConsumerStatefulWidget {
 }
 
 class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
+  String? userId;
+  final db = GetIt.I<LocalDBService>();
   Post? post;
 
   @override
@@ -46,7 +50,7 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
                     SliverToBoxAdapter(
                       child: Column(
                         children: [
-                          PostCard(post: post!, isPostDetails: true),
+                          PostCard(post: post!, isPostDetails: true, userId: userId!,),
                           Container(
                             height: 1,
 
@@ -89,10 +93,14 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
     );
   }
   Future<void> fetch() async {
+    final connectedUser = await db.getUserId();
     final newPost =
         await ref.read(fetchOnePostProvider.notifier).fetchPosts(widget.postId);
-    setState(() {
-      post = newPost;
+    Future.microtask(() {
+      setState(() {
+        userId = connectedUser;
+        post = newPost;
+      });
     });
   }
 }

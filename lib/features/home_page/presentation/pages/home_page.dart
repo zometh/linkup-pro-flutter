@@ -97,7 +97,7 @@ class _HomePageState extends ConsumerState<HomePage>
                 child: HomeAppbar(avaibleHeight: availableHeight),
               ))
           : null,
-      body: Stack(
+    body: Stack(
         children: [
           // Main content avec IndexedStack pour garder l'état des pages
           IndexedStack(
@@ -120,31 +120,16 @@ class _HomePageState extends ConsumerState<HomePage>
                     opacity: _controller,
                     child: Padding(
                       padding: EdgeInsets.only(
-                        bottom: MediaQuery.of(context).viewPadding.bottom + 8,
-                        left: 2,
-                        right: 2,
+                        bottom: 0,
+                        left: 1,
+                        right: 1,
                       ),
                       child:SizedBox(
                         width: context.screenWidth,
-                        height: navBarHeight * 0.12,
+                        height: navBarHeight * 0.11,
                        // width: 300,
                         child: const navbar_widget.BottomNavbar(),
-                      ) /*Center(
-                        child: Material(
-                          elevation: 10,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .surface
-                              .withAlpha((0.98 * 255).round()),
-                         /* shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),*/
-                          child: SizedBox(
-                            height: navBarHeight,
-                            width: double.infinity,
-                            child: const navbar_widget.BottomNavbar(),
-                          ),
-                        ),
-                      ),*/
+                      )
                     ),
                   ),
                 ),
@@ -153,6 +138,7 @@ class _HomePageState extends ConsumerState<HomePage>
           ),
         ],
       ),
+      
     );
   }
 }

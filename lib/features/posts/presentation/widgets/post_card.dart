@@ -17,6 +17,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 
 class PostCard extends StatefulWidget {
+  final String userId;
   final bool isPostDetails;
   final Post post;
   final VoidCallback? onLike;
@@ -27,6 +28,7 @@ class PostCard extends StatefulWidget {
   const PostCard({
     super.key,
     required this.post,
+    required this.userId,
     this.onLike,
     this.onComment,
     this.onShare,
@@ -39,6 +41,7 @@ class PostCard extends StatefulWidget {
 }
 
 class _PostCardState extends State<PostCard> {
+  String get userId => widget.userId;
   bool _isExpanded = false;
 
 
@@ -68,7 +71,6 @@ class _PostCardState extends State<PostCard> {
 
         return InkWell(
           onTap: widget.isPostDetails ? null : () {
-            // Navigate to post details page
            if(mounted)context.push("/post/${post.id}");
           },
           child: Container(
@@ -91,7 +93,7 @@ class _PostCardState extends State<PostCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Header Section
-                 PostHeader(post: post),
+                 PostHeader(post: post, userId: userId,),
 
                 // Content Section
                 _buildContent(isDark),

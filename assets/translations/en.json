@@ -193,5 +193,14 @@
   "follow": "Follow",
   "unfollow": "Unfollow",
   "followed_successfully": "You are now following {name}",
-  "unfollowed_successfully": "You have unfollowed {name}"
+  "unfollowed_successfully": "You have unfollowed {name}",
+"messages": "Messages",
+"publish": "Publish",
+  "select_post_type": "Select Post Type",
+  "announcement": "Announcement",
+  "simple" : "Simple",
+  "add_tags" : "Add tags",
+  "post_deleted_successfully" : "Post deleted successfully"
+
+
 }

@@ -9,15 +9,7 @@ import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/repos/
 class PostRepositoryImpl implements PostRepository {
   final _apiClient = GetIt.I<ApiClient>();
 
-  @override
-  Future<Either<Failure, bool>> createPost(Post post) async {
-    throw UnimplementedError();
-  }
 
-  @override
-  Future<Either<Failure, bool>> deletePost(String id) async {
-    throw UnimplementedError();
-  }
 
   @override
   Future<Either<Failure, Post>> getPostById(String id) async {
@@ -62,10 +54,6 @@ class PostRepositoryImpl implements PostRepository {
     throw UnimplementedError();
   }
 
-  @override
-  Future<Either<Failure, bool>> updatePost(Post post) async {
-    throw UnimplementedError();
-  }
 
   @override
   Future<Either<Failure, UserPreviewAdds>> getUserPreview(String userId) async{
