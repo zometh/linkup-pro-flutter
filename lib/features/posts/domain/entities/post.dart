@@ -1,5 +1,6 @@
 import 'package:linkup_pro/features/posts/domain/entities/post_file.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post_owner.dart';
+import 'package:linkup_pro/features/posts_actions/domain/enums/post_type.dart';
 
 class Post {
   final String id;
@@ -12,6 +13,7 @@ class Post {
    bool isLiked = false;
   final List<PostFile> files;
   final String userId;
+  final PostType type;
   final List<String> tags;
   final PostOwner owner;
 
@@ -28,10 +30,11 @@ class Post {
     required this.owner,
     required this.isLiked,
     this.isFollowed = false,
+    required this.type,
   });
 
   factory Post.fromJson(Map<String, dynamic> json) {
-    // print(json);
+    //print(json["type"]);
     final post = Post(
       isFollowed: json['isFollowed'] ?? false,
       id: json['id'],
@@ -40,6 +43,7 @@ class Post {
       likesCount: json['likesCount'],
       commentsCount: json['commentsCount'],
       sharesCount: json['sharesCount'],
+      type: getPostType(json["type"]),
       files: (json['files'] as List)
           .map((fileJson) => PostFile.fromJson(fileJson))
           .toList(),
@@ -63,5 +67,23 @@ class Post {
       'userId': userId,
       'tags': tags,
     };
+  }
+  @override
+  String toString() {
+    // TODO: implement toString
+    return ""
+        "id: $id\n"
+        "content: $content\n"
+        "publicationDate: $publicationDate\n"
+        "likesCount: $likesCount\n"
+        "commentsCount: $commentsCount\n"
+        "sharesCount: $sharesCount\n"
+        "files: $files\n"
+        "userId: $userId\n"
+        "tags: $tags\n"
+        "isLiked: $isLiked\n"
+        "isFollowed: $isFollowed\n"
+        "type: $type\n"
+        ;
   }
 }

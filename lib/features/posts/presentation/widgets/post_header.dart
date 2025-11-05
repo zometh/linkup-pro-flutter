@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/widgets/custom_snack_bar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implementations/post_repository_implementaion.dart';
@@ -12,11 +13,11 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../../core/enums/user_role.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text.dart';
+import '../../../posts_actions/presentation/pages/post_action_page.dart';
 import '../../domain/entities/company_post.dart';
 import '../../domain/entities/member_post.dart';
 import '../../domain/entities/post.dart';
 import 'account_preview.dart';
-
 
 class PostHeader extends StatefulWidget {
   final String userId;
@@ -33,13 +34,11 @@ class _PostHeaderState extends State<PostHeader> {
   bool isUserPostOwner = false;
 
   @override
-  initState()  {
+  initState() {
     super.initState();
   }
 
-
-      String displayName = '';
-
+  String displayName = '';
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +56,7 @@ class _PostHeaderState extends State<PostHeader> {
       avatarUrl = memberData.photo;
     }
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
-     isUserPostOwner = widget.post.userId == userId;
+    isUserPostOwner = widget.post.userId == userId;
 
     return LayoutBuilder(
       builder: (_, cx) {
@@ -178,7 +177,6 @@ class _PostHeaderState extends State<PostHeader> {
               ),
 
               PopupMenuButton<int>(
-
                 popUpAnimationStyle: AnimationStyle(
                   reverseCurve: Curves.easeInOut,
                   curve: Curves.easeInOut,
@@ -189,29 +187,40 @@ class _PostHeaderState extends State<PostHeader> {
                 itemBuilder: (context) => [
                   // PopupMenuItem 1
                   PopupMenuItem(
-
                     value: 1,
                     // row with 2 children
                     child: Row(
                       children: [
-                         isUserPostOwner ? const Icon(Icons.delete) : Icon(widget.post.isFollowed ? Icons.person_remove : Icons.person_add ),
+                        isUserPostOwner
+                            ? const Icon(Icons.delete)
+                            : Icon(
+                                widget.post.isFollowed
+                                    ? Icons.person_remove
+                                    : Icons.person_add,
+                              ),
                         SizedBox(width: 10),
-                         Text(isUserPostOwner ? "delete" : (widget.post.isFollowed ? "unfollow" : "follow")).tr(),
+                        Text(
+                          isUserPostOwner
+                              ? "delete"
+                              : (widget.post.isFollowed
+                                    ? "unfollow"
+                                    : "follow"),
+                        ).tr(),
                       ],
                     ),
                   ),
-                  // PopupMenuItem 2
-                  /*PopupMenuItem(
+
+                  if(isUserPostOwner) PopupMenuItem(
                     value: 2,
                     // row with two children
                     child: Row(
                       children: [
-                        const Icon(Icons.chrome_reader_mode),
+                        const Icon(Icons.edit),
                         SizedBox(width: 10),
-                        const Text("About"),
+                        Text("edit".tr()),
                       ],
                     ),
-                  ),*/
+                  ),
                 ],
               ),
             ],
@@ -224,7 +233,7 @@ class _PostHeaderState extends State<PostHeader> {
   previewUser() async {
     final postImplement = GetIt.I<PostRepositoryImpl>();
     final response = await postImplement.getUserPreview(widget.post.userId);
-     userPreviewAdds = response.fold(
+    userPreviewAdds = response.fold(
       (failure) {
         // Handle failure
         return null;
@@ -233,59 +242,53 @@ class _PostHeaderState extends State<PostHeader> {
         return data;
       },
     );
-    if(mounted){
+    if (mounted) {
       showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      isScrollControlled: true,
-      builder: (ctx) => AccountPreview(
-        userPreview: userPreviewAdds!,
-        post: widget.post,
-        onFollowChanged: () async =>
-          await action(0)
-        ,
-      ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
-    );
+        context: context,
+        backgroundColor: Colors.transparent,
+        isScrollControlled: true,
+        builder: (ctx) => AccountPreview(
+          userPreview: userPreviewAdds!,
+          post: widget.post,
+          onFollowChanged: () async => await action(0),
+        ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
+      );
     }
   }
-  deletePost() async {
 
+  deletePost() async {
     final postActionImplements = GetIt.I<PostActionRepositoryImplementation>();
     final response = await postActionImplements.deleteUser(widget.post.id);
-    response.fold(
-      (failure) {
-      },
-      (isDeleted) {
-        if(mounted){
-          showSnackBar(context, message: "post_deleted_successfully".tr());
-        }
+    response.fold((failure) {}, (isDeleted) {
+      if (mounted) {
+        showSnackBar(context, message: "post_deleted_successfully".tr());
       }
-    );
-
+    });
   }
-  action(int value) async{
-    if(isUserPostOwner){
+
+  action(int value) async {
+    if (isUserPostOwner && value == 1) {
       await deletePost();
       return;
     }
+    if(isUserPostOwner && value == 2){
+      MyNavigator(context).navigateTo( PostActionPage(isEdit: true, postId: widget.post.id,));
+      return ;
+    }
+    
     final usersImplements = GetIt.I<UsersRepositoryImpl>();
     final response = await usersImplements.followOrUnfollow(widget.post.userId);
-    response.fold(
-      (failure) {
-      },
-      (isFollowed) {
-        
-        setState(() {
-          widget.post.isFollowed = isFollowed;
-          userPreviewAdds!.followersCount += isFollowed ? 1 : -1;
-        });
-        showSnackBar(context, message: (isFollowed ? "followed_successfully" : "unfollowed_successfully").tr(
-          namedArgs: {"name": displayName}
-        ));
-
-      }
-    );
+    response.fold((failure) {}, (isFollowed) {
+      setState(() {
+        widget.post.isFollowed = isFollowed;
+        userPreviewAdds!.followersCount += isFollowed ? 1 : -1;
+      });
+      showSnackBar(
+        context,
+        message:
+            (isFollowed ? "followed_successfully" : "unfollowed_successfully")
+                .tr(namedArgs: {"name": displayName}),
+      );
+    });
   }
-
-
 }

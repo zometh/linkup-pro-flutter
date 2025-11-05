@@ -9,28 +9,37 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_snack_bar.dart';
 import 'package:faker/faker.dart' as f;
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
+import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/image_preview.dart';
 import 'package:linkup_pro/features/posts_actions/domain/entities/post_action_entity.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/create_post.dart';
+import 'package:linkup_pro/features/posts_actions/presentation/widgets/post_action_image_preview.dart';
+import 'package:linkup_pro/features/posts_actions/presentation/widgets/post_type_button.dart';
+import 'package:linkup_pro/features/posts_actions/presentation/widgets/toolbar_button.dart';
+import '../../../posts/presentation/providers/fetch_one_post.dart';
+import '../../domain/enums/post_type.dart';
 import '../widgets/posts_tags_view.dart';
 
-enum PostType { publication, annonce }
 
-class CreatePostPage extends ConsumerStatefulWidget {
-  const CreatePostPage({super.key});
+class PostActionPage extends ConsumerStatefulWidget {
+  final bool isEdit;
+  final String? postId;
+
+  const PostActionPage({super.key,   this.isEdit = false, this.postId});
 
   @override
-  ConsumerState<CreatePostPage> createState() => _CreatePostPageState();
+  ConsumerState<PostActionPage> createState() => _PostActionPageState();
 }
 
-class _CreatePostPageState extends ConsumerState<CreatePostPage> {
+class _PostActionPageState extends ConsumerState<PostActionPage> {
   final faker = f.Faker();
   late TextEditingController _controller;
   final int _maxChars = 200;
   File? _imageFile;
   PostType _selectedPostType = PostType.publication;
+  String? imageUrl;
   List<String> _selectedTags = [];
-
+  Post? post;
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage(ImageSource source) async {
@@ -84,6 +93,9 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
     // TODO: implement initState
     super.initState();
     _controller = getInstance(initial: faker.lorem.sentence());
+    fetch();
+
+
 
   }
   @override
@@ -95,11 +107,13 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
   @override
   Widget build(BuildContext context) {
     final isPosting = ref.watch(createPostProviderProvider);
+    final bool isLoading = ref.watch(fetchOnePostProvider);
+
     final int remaining = _maxChars - _controller.text.length;
     final theme = Theme.of(context);
     final bool canPost = _controller.text.trim().isNotEmpty || _imageFile != null;
-
-    return isPosting ?
+    final loading= widget.isEdit ? isLoading : isPosting;
+    return loading ?
     const CustomProgress() :
     Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -135,7 +149,7 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
                       ),
                     )
                   : Text(
-                      "publish".tr(),
+                (widget.isEdit ? "edit" : "publish").tr(),
                       style: const TextStyle(
                         fontSize: 15,
                         fontWeight: FontWeight.bold,
@@ -159,21 +173,22 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
               child: Row(
                 children: [
                   Expanded(
-                    child: _buildPostTypeButton(
-                      context,
-                      PostType.publication,
-                      "simple".tr(),
-                      Icons.article_outlined,
+                    child: PostTypeButton(
+                      type: PostType.publication,
+                      label:"simple".tr(),
+                      icon: Icons.article_outlined,
+                      selectedPostType: _selectedPostType,
+                      onChanged: (type) => setState(() => _selectedPostType = type),
                     ).animate().fadeIn( duration: 300.ms)
                   ),
-                  Expanded(
-                    child: _buildPostTypeButton(
-                      context,
-                      PostType.annonce,
-                      "announcement".tr(),
-                      Icons.campaign_outlined,
+                  PostTypeButton(
+                      type: PostType.annonce,
+                      label: "announcement".tr(),
+                      icon: Icons.campaign_outlined,
+                    selectedPostType: _selectedPostType,
+                    onChanged: (type) => setState(() => _selectedPostType = type),
                     ).animate().fadeIn(duration: 300.ms),
-                  ),
+
                 ],
               ),
             ),
@@ -237,8 +252,6 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
 
                   const SizedBox(height: 20),
 
-                  // Aperçu image
-
 
                   // Tags
                   PostsTagsView(
@@ -247,7 +260,7 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
                     maxTags: 5,
                   ),
                   const SizedBox(height: 20),
-                  _buildImagePreview(),
+                  PostActionImagePreview(imageFile: _imageFile, removeImage: _removeImage,imageUrl: imageUrl,),
 
                   if (_imageFile != null) const SizedBox(height: 20),
                 ],
@@ -268,21 +281,18 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: Row(
               children: [
-                _buildToolbarButton(
-                  context,
-                  Icons.image_outlined,
-                  "Galerie",
-                  () => _pickImage(ImageSource.gallery),
+                ToolbarButton(
+                  icon: Icons.image_outlined,
+                  tooltip:"Galerie",
+                  onTap :() => _pickImage(ImageSource.gallery),
                 ),
                 const SizedBox(width: 4),
-                _buildToolbarButton(
-                  context,
-                  Icons.camera_alt_outlined,
-                  "Caméra",
-                  () => _pickImage(ImageSource.camera),
+                ToolbarButton(
+                  icon:Icons.camera_alt_outlined,
+                  tooltip:"Caméra",
+                  onTap :() => _pickImage(ImageSource.camera),
                 ),
                 const Spacer(),
-                // Compteur circulaire
                 Stack(
                   alignment: Alignment.center,
                   children: [
@@ -320,123 +330,29 @@ class _CreatePostPageState extends ConsumerState<CreatePostPage> {
       ),
     );
   }
+  Future<void> fetch() async {
+    print("POST ID : ${widget.postId}");
+    final newPost =
+    await ref.read(fetchOnePostProvider.notifier).fetchPosts(widget.postId!);
+    if(newPost == null) {
+      if(mounted){
+        showSnackBar(context, message: "Erreur lors de la récupération du post.",
+            isError: true);
+        Navigator.of(context).pop();
+        return ;
+      }
+    }
 
-  Widget _buildPostTypeButton(
-    BuildContext context,
-    PostType type,
-    String label,
-    IconData icon,
-  ) {
-    final theme = Theme.of(context);
-    final isSelected = _selectedPostType == type;
-
-    return GestureDetector(
-      onTap: () => setState(() => _selectedPostType = type),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: isSelected ? theme.colorScheme.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(26),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              icon,
-              size: 18,
-              color: isSelected ? Colors.white : theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: 6),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                color: isSelected ? Colors.white : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    Future.microtask(() {
+      setState(() {
+        post = newPost;
+        _controller.text = post!.content;
+        _selectedTags = post!.tags;
+        _selectedPostType = post!.type;
+        _imageFile = post!.files.isNotEmpty ? File(post!.files.first.url) : null;
+      });
+    });
   }
 
-  Widget _buildToolbarButton(
-    BuildContext context,
-    IconData icon,
-    String tooltip,
-    VoidCallback onTap,
-  ) {
-    final theme = Theme.of(context);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(24),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: Icon(
-            icon,
-            size: 24,
-            color: theme.colorScheme.primary,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildImagePreview() {
-    if (_imageFile == null) return const SizedBox.shrink();
-
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: Stack(
-        children: [
-          InkWell(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => ImagePreview(
-                    imageUrls: [_imageFile!.path],
-                    isAssets: true,
-                  ),
-                ),
-              );
-            },
-            child: Container(
-              constraints: const BoxConstraints(maxHeight: 400),
-              child: Image.file(
-                _imageFile!,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-          Positioned(
-            top: 12,
-            right: 12,
-            child: Material(
-              color: Colors.black.withValues(alpha: 0.6),
-              shape: const CircleBorder(),
-              child: InkWell(
-                onTap: _removeImage,
-                customBorder: const CircleBorder(),
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 20,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }

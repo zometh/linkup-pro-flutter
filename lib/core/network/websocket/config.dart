@@ -1,12 +1,9 @@
-
-
 import 'package:get_it/get_it.dart';
 import 'package:socket_io_client/socket_io_client.dart' as socket_io;
 
 import '../../services/localdb/localdb.dart';
 import '../../utils/my_logger.dart';
 import '../api/api_constants.dart';
-
 
 class SocketService {
   final localDb = GetIt.I<LocalDBService>();
@@ -16,6 +13,7 @@ class SocketService {
   socket_io.Socket? _socket;
   bool _isConnected = false;
   final List<Map<String, dynamic>> _pendingEmits = [];
+  final Map<String, List<Function(dynamic)>> _pendingListeners = {};
 
   SocketService._internal();
 
@@ -59,7 +57,16 @@ class SocketService {
     _socket!.onConnect((_) {
       _isConnected = true;
       MyLogger().log('✅ Socket connecté');
-      if (userId != null) _socket!.emit('register', {'userId': userId});
+      if (userId != null) {
+        MyLogger().log('📤 Émission événement register avec userId: $userId');
+        _socket!.emit('register', {'userId': userId});
+      } else {
+        MyLogger().log('⚠️ userId est null, impossible d\'émettre register');
+      }
+
+      // Attacher les listeners en attente
+      _attachPendingListeners();
+
       _flushPendingEmits();
     });
 
@@ -93,7 +100,10 @@ class SocketService {
 
     _socket!.on('unauthorized', (data) async {
       MyLogger().log('Socket unauthorized: $data');
+    });
 
+    _socket!.on('registered', (data) {
+      MyLogger().log('✅ Registered confirmation received: $data');
     });
   }
 
@@ -109,6 +119,20 @@ class SocketService {
     }
   }
 
+  void _attachPendingListeners() {
+    if (_socket == null) return;
+    MyLogger().log(
+      '🔧 Attaching ${_pendingListeners.length} pending listeners...',
+    );
+    _pendingListeners.forEach((event, callbacks) {
+      for (var callback in callbacks) {
+        MyLogger().log('✅ Attaching pending listener for: $event');
+        _socket!.on(event, callback);
+      }
+    });
+    _pendingListeners.clear();
+  }
+
   void emit(String event, dynamic data, {bool queueIfDisconnected = true}) {
     if (_socket != null && _isConnected) {
       _socket!.emit(event, data);
@@ -121,15 +145,25 @@ class SocketService {
     }
   }
 
-  void joinRoom(String event, Map<String, dynamic> data, {bool queueIfDisconnected = true}) {
+  void joinRoom(
+    String event,
+    Map<String, dynamic> data, {
+    bool queueIfDisconnected = true,
+  }) {
     emit(event, data, queueIfDisconnected: queueIfDisconnected);
   }
 
   void on(String event, Function(dynamic) callback) {
     if (_socket != null) {
+      MyLogger().log('✅ Attaching listener for event: $event (socket exists)');
       _socket!.on(event, callback);
     } else {
-      MyLogger().log('Listener attached before socket init for event: $event');
+      MyLogger().log('⚠️ Socket is null, storing listener for event: $event');
+      // Stocker le listener pour l'attacher plus tard
+      if (!_pendingListeners.containsKey(event)) {
+        _pendingListeners[event] = [];
+      }
+      _pendingListeners[event]!.add(callback);
     }
   }
 

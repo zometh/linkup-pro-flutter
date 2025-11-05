@@ -33,6 +33,9 @@ class _BuildPostFileState extends State<BuildPostFile> with SingleTickerProvider
         final ratio = _aspectRatios[index]!; // width / height
         if (ratio > 0) {
           height = (availableWidth / ratio).clamp(120.0, MediaQuery.of(context).size.height * 0.8);
+          if(height > 450){
+            height = 450;
+          }
         }
       }
 

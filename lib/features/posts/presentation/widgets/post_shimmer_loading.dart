@@ -7,7 +7,7 @@ class PostShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-        separatorBuilder: (_, index) => Divider(),
+        separatorBuilder: (_, index) => Divider(color: Colors.grey.shade200,),
         itemCount: 4,
         itemBuilder: (_, index) => OnePostShimmer());
   }

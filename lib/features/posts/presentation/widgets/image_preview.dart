@@ -8,9 +8,10 @@ import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/main.dart';
 
 class ImagePreview extends StatelessWidget {
+  File? image;
   final bool  isAssets;
   final List<String> imageUrls;
-  const ImagePreview({super.key, required this.imageUrls, this.isAssets = false});
+   ImagePreview({super.key, required this.imageUrls, this.isAssets = false, this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +32,7 @@ class ImagePreview extends StatelessWidget {
                 child: Hero(
                   tag: imageUrls[index],
                   child:
-                  InteractiveViewer(child: isAssets ? Image.asset(imageUrl, fit: BoxFit.contain,) : CachedNetworkImage(imageUrl: imageUrl,
+                  InteractiveViewer(child: isAssets ? Image.file(image!, fit: BoxFit.contain,) : CachedNetworkImage(imageUrl: imageUrl,
 
                     fit: BoxFit.contain,)),
 
