@@ -14,7 +14,7 @@ import 'package:linkup_pro/core/enums/user_role.dart';
 class UserPreviewAdds {
   final String username;
   final UserRole role;
-  final int followersCount;
+   int followersCount;
   final int followingCount;
   final String? biography;
   final String? portfolio;

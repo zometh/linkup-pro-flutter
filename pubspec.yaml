@@ -38,7 +38,7 @@ dependencies:
   logger: ^2.6.1
   toastification: ^3.0.3
   country_picker: ^2.0.27
-  image_picker: ^1.2.0
+  image_picker: ^0.8.7+5
   intl_phone_number_input: ^0.7.5
   faker: ^2.2.0
   cached_network_image: ^3.4.1

@@ -64,7 +64,6 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
     usernameController.dispose();
@@ -384,7 +383,9 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
         final route = MaterialPageRoute(
           builder: (_) => SectorGridView(isEntreprise: widget.isEntreprise),
         );
-        Navigator.push(context, route);
+        if(mounted){
+          Navigator.push(context, route);
+        }
         //showToast(description: "success_register".tr(),);
       } else {} /*else{
         showToast(description: "error_register".tr(),

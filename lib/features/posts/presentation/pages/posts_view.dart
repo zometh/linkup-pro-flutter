@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:linkup_pro/core/widgets/custom_progress.dart';
+import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/network/websocket/config.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_post.dart';
@@ -17,9 +19,10 @@ class PostsView extends ConsumerStatefulWidget {
   ConsumerState<PostsView> createState() => _PostsViewState();
 }
 
-class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveClientMixin {
+class _PostsViewState extends ConsumerState<PostsView>
+    with AutomaticKeepAliveClientMixin {
   final ScrollController _scrollController = ScrollController();
-  int _postsPerPage = 3;
+  int _postsPerPage = 5;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isInitialLoading = false; // used for first load or refresh
@@ -27,42 +30,25 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
   bool hasMore = true;
   List<Post> posts = [];
   double _lastScrollPosition = 0;
-
+  final io = GetIt.I<SocketService>();
+  String? connectedUserId;
   @override
   void initState() {
     super.initState();
-
+    getUserId();
     fetchPosts();
     _scrollController.addListener(_onScroll);
+
+    _setupSocketListeners();
   }
 
-  void _onScroll() {
-    final currentScrollPosition = _scrollController.position.pixels;
-    final maxScrollExtent = _scrollController.position.maxScrollExtent;
-    ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
-    // Gérer la visibilité du navbar en fonction de la direction du scroll
-    if (currentScrollPosition > _lastScrollPosition && currentScrollPosition > 100) {
-      // Scroll vers le bas - cacher le navbar
-      ref.read(bottomNavbarVisibilityProvider.notifier).state = false;
-    } else if (currentScrollPosition < _lastScrollPosition) {
-      // Scroll vers le haut - afficher le navbar
-      ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
-    }
-
-    // Load more posts when near the bottom
-    if (currentScrollPosition >= maxScrollExtent - 350 &&
-        !isInitialLoading &&
-        !isLoadingMore &&
-        hasMore) {
-      fetchPosts();
-    }
-
-    _lastScrollPosition = currentScrollPosition;
-  }
 
   @override
   void dispose() {
     _scrollController.dispose();
+    // Nettoyer les listeners WebSocket
+    io.off("newPost");
+    io.off("deletePost");
     super.dispose();
   }
 
@@ -82,47 +68,46 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
         await fetchPosts();
       },
       child: isInitialLoading
-          ?  PostShimmerLoading()
+          ? PostShimmerLoading()
           : posts.isEmpty
-              ? const NoDataWidget()
-              : CustomScrollView(
-                  controller: _scrollController,
-                  slivers: [
-                    SliverList.separated(
-                      separatorBuilder: (context, index) => Container(
-                        height: 1,
-                        color: context.isDarkMode
-                            ? const Color(0xff2F3336)
-                            : Colors.grey.shade300,
-                      ),
-                      itemCount: posts.length + (hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == posts.length) {
-                          if (isLoadingMore) {
-                            // constrain footer height so the spinner doesn't center vertically over the whole screen
-                            return const SizedBox(
-                              height: 80,
-                              child: Center(child: LinearProgressIndicator()),
-                            );
-                          } else if (!hasMore) {
-                            return const SizedBox(
-                              height: 80,
-                              child: Center(
-                                child: Text("Aucun post disponible."),
-                              ),
-                            );
-                          } else {
-                            return const SizedBox(); // rien tant qu’on n’a pas déclenché le chargement
-                          }
-                        }
-                        final post = posts[index];
-                        return PostCard(post: post);
-                      },
-                    ),
-                  ],
+          ? const NoDataWidget()
+          : CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                SliverList.separated(
+                  separatorBuilder: (context, index) => Container(
+                    height: 1,
+                    color: context.isDarkMode
+                        ? const Color(0xff2F3336)
+                        : Colors.grey.shade300,
+                  ),
+                  itemCount: posts.length + (hasMore ? 1 : 0),
+                  itemBuilder: (context, index) {
+                    if (index == posts.length) {
+                      if (isLoadingMore) {
+                        // constrain footer height so the spinner doesn't center vertically over the whole screen
+                        return const SizedBox(
+                          height: 80,
+                          child: Center(child: LinearProgressIndicator()),
+                        );
+                      } else if (!hasMore) {
+                        return const SizedBox(
+                          height: 80,
+                          child: Center(child: Text("Aucun post disponible.")),
+                        );
+                      } else {
+                        return const SizedBox(); // rien tant qu’on n’a pas déclenché le chargement
+                      }
+                    }
+                    final post = posts[index];
+                    return PostCard(post: post, userId: connectedUserId!);
+                  },
                 ),
+              ],
+            ),
     );
   }
+
   Widget showShimmer() {
     return ListView.builder(
       itemCount: 5,
@@ -137,23 +122,25 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
             child: const Text(
               'Shimmer',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 40.0,
-                fontWeight:
-                FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 40.0, fontWeight: FontWeight.bold),
             ),
           ),
-        )
-        ,
+        ),
       ),
     );
   }
+
+  Future<void> getUserId() async {
+    final storage = GetIt.I<LocalDBService>();
+    final userId = await storage.getUserId();
+    setState(() {
+      connectedUserId = userId;
+    });
+  }
+
   fetchPosts() async {
-    // Prevent concurrent loads
     if (isInitialLoading || isLoadingMore) return;
 
-    // Determine if this is the initial load (no posts yet) or a pagination load
     final bool isInitial = posts.isEmpty;
     setState(() {
       if (isInitial) {
@@ -167,8 +154,8 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
           .fetchPosts(_currentPage, _postsPerPage);
-      Future.microtask((){
-        if(mounted){
+      Future.microtask(() {
+        if (mounted) {
           setState(() {
             _currentPage++;
             posts.addAll(newPosts);
@@ -177,11 +164,9 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
         }
       });
     } catch (error) {
-      // handle error if needed (e.g., show a snackbar)
     } finally {
-      // Reset loading flags
       Future.microtask(() {
-        if(mounted) {
+        if (mounted) {
           setState(() {
             isInitialLoading = false;
             isLoadingMore = false;
@@ -190,8 +175,115 @@ class _PostsViewState extends ConsumerState<PostsView> with AutomaticKeepAliveCl
       });
     }
   }
+  void _setupSocketListeners() {
+
+    io.off("newPost");
+    io.off("deletePost");
+    io.off("postUpdated");
+
+    // Puis attacher les nouveaux
+    io.on("newPost", (d) {
+      if (d is Map<String, dynamic>) {
+        insertNewPost(d);
+        io.joinRoom("postSubscribe", {"roomId": d["id"]});
+      } else {
+        print("⚠️ Invalid data format for newPost: $d");
+      }
+    });
+    io.on("postUpdated", (v){
+      if (v is Map<String, dynamic>) {
+        updatePost(v);
+      } else {
+        print("⚠️ Invalid data format for postUpdated: $v");
+      }
+    });
+    io.on("deletePost", (v) {
+      if (v is String) {
+        removePost(v);
+      } else {
+        print("⚠️ Invalid data format for deletePost: $v");
+      }
+    });
+  }
+
+  removePost(String postId) {
+    print('🗑️ Tentative de suppression du post: $postId');
+    print('📋 Nombre de posts avant suppression: ${posts.length}');
+
+    final existingIndex = posts.indexWhere((post) => post.id == postId);
+
+    if (existingIndex != -1) {
+      print('✅ Post trouvé à l\'index $existingIndex, suppression en cours');
+      setState(() {
+        posts.removeAt(existingIndex);
+      });
+      print(
+        '✅ Post supprimé avec succès. Nombre de posts restants: ${posts.length}',
+      );
+    } else {
+      print('⚠️ Post $postId non trouvé dans la liste');
+      print(
+        '📋 IDs des posts actuels: ${posts.map((p) => p.id).take(5).toList()}...',
+      );
+    }
+  }
+
+  void _onScroll() {
+    final currentScrollPosition = _scrollController.position.pixels;
+    final maxScrollExtent = _scrollController.position.maxScrollExtent;
+    ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
+    if (currentScrollPosition > _lastScrollPosition &&
+        currentScrollPosition > 100) {
+      ref.read(bottomNavbarVisibilityProvider.notifier).state = false;
+    } else if (currentScrollPosition < _lastScrollPosition) {
+      ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
+    }
+
+    if (currentScrollPosition >= maxScrollExtent - 350 &&
+        !isInitialLoading &&
+        !isLoadingMore &&
+        hasMore) {
+      fetchPosts();
+    }
+
+    _lastScrollPosition = currentScrollPosition;
+  }
+
+  void insertNewPost(Map<String, dynamic> data) {
+    final newPost = Post.fromJson(data);
+
+    final existingIndex = posts.indexWhere((post) => post.id == newPost.id);
+
+    if (existingIndex != -1) {
+
+      setState(() {
+        posts[existingIndex] = newPost;
+      });
+      return;
+    }
+
+    setState(() {
+      posts.insert(0, newPost);
+    });
+    _scrollController.animateTo(
+      0,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOut,
+    );
+  }
+  updatePost(Map<String, dynamic> data) {
+    final updatedPost = Post.fromJson(data);
+
+    final existingIndex = posts.indexWhere((post) => post.id == updatedPost.id);
+
+    if (existingIndex != -1) {
+
+      setState(() {
+        posts[existingIndex] = updatedPost;
+      });
+    }
+  }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

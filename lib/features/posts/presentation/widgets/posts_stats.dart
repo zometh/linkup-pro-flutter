@@ -1,15 +1,12 @@
-import 'package:animated_flip_counter/animated_flip_counter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 
 import '../../../../core/network/api/api_client.dart';
 import '../../../../core/network/websocket/config.dart';
 import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/formatters/format_number.dart';
 import '../../../../core/utils/my_logger.dart';
 import '../../domain/entities/post.dart';
 
@@ -27,7 +24,6 @@ class _PostsStatsState extends State<PostsStats> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     io.on("likeUpdate", (callback){
       final Map<String, dynamic> data = callback;
@@ -102,7 +98,7 @@ class _PostsStatsState extends State<PostsStats> {
   likeOrDislike() async{
     final apiClient = GetIt.I<ApiClient>();
     try{
-      final response = await apiClient.post('/posts/like/${widget.post.id}', data: {});
+      await apiClient.post('/posts/like/${widget.post.id}', data: {});
 
 
     }catch(e){

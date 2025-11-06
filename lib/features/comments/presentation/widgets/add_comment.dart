@@ -1,10 +1,13 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/comments/presentation/providers/create_comment.dart';
+import 'package:toastification/toastification.dart';
 
-import '../../data/comment.dart';
+import '../../../../core/widgets/custom_toast.dart';
+
 
 class AddComment extends ConsumerStatefulWidget {
   final String postId;
@@ -18,7 +21,6 @@ class _AddCommentState extends ConsumerState<AddComment> {
   late TextEditingController _controller;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = getInstance();
   }
@@ -46,8 +48,18 @@ class _AddCommentState extends ConsumerState<AddComment> {
   addComment() async{
     final content = _controller.text.trim();
     if(content.isEmpty) return;
-    final Comment? comment = await ref.read(createCommentProvider.notifier).createComment(widget.postId, content, null);
+    await ref.read(createCommentProvider.notifier).createComment(widget.postId, content, null)
+    .then((v) {
+      _controller.clear();
+    })
+    .catchError((e){
+      // Handle error, e.g., show a snackbar
+      if(mounted){
+        showToast(description: 'error_occurred'.tr(),
+            type: ToastificationType.error
+        );
 
-    _controller.clear();
+      }
+    });
   }
 }

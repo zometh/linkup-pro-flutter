@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:faker/faker.dart' as _faker;
+import 'package:faker/faker.dart' as ffaker;
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/routes/app_routes.dart';
-import 'package:linkup_pro/core/widgets/custom_toast.dart';
 import 'package:linkup_pro/core/utils/date_picker.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
@@ -17,6 +16,7 @@ import 'package:linkup_pro/core/widgets/custom_phone_picker.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/custom_toast.dart';
 import 'package:linkup_pro/core/widgets/profile_picker.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/core/widgets/textfield_label.dart';
@@ -38,7 +38,7 @@ class RegisterCompany extends ConsumerStatefulWidget {
 }
 
 class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
-  final faker = _faker.Faker();
+  final faker = ffaker.Faker();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
@@ -227,6 +227,13 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
                                       });
                                     },
                                     context: context,
+                                    onAdjusted: (){
+                                      showToast(
+                                          description: 'selected_date_was_adjusted'.tr(),
+                                          type: ToastificationType.error,
+
+                                      );
+                                    }
                                   );
                                 },
                                 child: Container(
@@ -320,27 +327,30 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
             final storage = FlutterSecureStorage();
             await storage.write(key: 'isRegistrationComplete', value: 'true');
 
-            MyNavigator(context).navigateToHomeAndClearStack();
-            //context.go( '/');
+if(mounted){
+              MyNavigator(context).navigateToHomeAndClearStack();
+
+}            //context.go( '/');
           } else {
-            // Affiche un message d'erreur si la création a échoué
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('profile_creation_failed'.tr())),
+            showToast(description: 'profile_creation_failed'.tr(),
+                type: ToastificationType.error
             );
+
           }
         }
       } else {
-        showToast(
-          description: "please_enter_a_valid_phone_number".tr(),
-          type: ToastificationType.warning,
+        showToast(description: 'please_enter_a_valid_phone_number'.tr(),
+            type: ToastificationType.error
         );
+
+
         return;
       }
     } else {
-      showToast(
-        description: "please_upload_company_logo".tr(),
-        type: ToastificationType.warning,
+      showToast(description: 'please_upload_company_logo'.tr(),
+          type: ToastificationType.error
       );
+
       return;
     }
   }

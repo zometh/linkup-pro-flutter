@@ -6,9 +6,6 @@ import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart
 abstract class PostRepository {
   Future<Either<Failure, List<Post>>> getPosts(int? page, int? limit);
   Future<Either<Failure, Post>> getPostById(String id);
-  Future<Either<Failure, bool>> createPost(Post post);
-  Future<Either<Failure, bool>> updatePost(Post post);
-  Future<Either<Failure, bool>> deletePost(String id);
   Future<Either<Failure, List<Post>>> getPostsByUserId(String userId, int? page, int? limit);
   Future<Either<Failure, UserPreviewAdds>> getUserPreview(String userId);
 }

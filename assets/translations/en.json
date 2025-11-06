@@ -171,7 +171,6 @@
   "comment": "Comment",
   "save_post": "Save post",
   "copy_link": "Copy link",
-  "report": "Report",
   "no_data_found": "No data found",
   "comments": "Comments",
   "add_a_comment": "Add a comment...",
@@ -193,5 +192,41 @@
   "follow": "Follow",
   "unfollow": "Unfollow",
   "followed_successfully": "You are now following {name}",
-  "unfollowed_successfully": "You have unfollowed {name}"
+  "unfollowed_successfully": "You have unfollowed {name}",
+"messages": "Messages",
+"publish": "Publish",
+  "select_post_type": "Select Post Type",
+  "announcement": "Announcement",
+  "simple" : "Simple",
+  "add_tags" : "Add tags",
+  "post_deleted_successfully" : "Post deleted successfully",
+  "report" : "Report",
+  "report_content": "Report Content",
+  "report_reason": "Report Reason",
+  "select_report_reason": "Select a reason",
+  "spam": "Spam",
+  "harassment": "Harassment",
+  "hate_speech": "Hate Speech",
+  "violence": "Violence",
+  "inappropriate_content": "Inappropriate Content",
+  "false_information": "False Information",
+  "copyright_violation": "Copyright Violation",
+  "other_reason": "Other Reason",
+  "describe_issue": "Describe the issue (optional)",
+  "report_submitted": "Report submitted successfully",
+  "report_error": "Error submitting report",
+  "add_more_details": "Add more details to your report",
+  "fetching_post_error": "Error fetching post details",
+  "no_posts_found": "No posts found",
+  "updating_post_error": "Error updating post",
+  "creating_post_error" : "Error creating post",
+  "add_a_text_or_image" : "Add a text or image to your post",
+  "my_profile": "My Profile",
+  "edit_profile": "Edit Profile",
+  "profile_updated_successfully": "Profile updated successfully"
+
+
+
+
+
 }

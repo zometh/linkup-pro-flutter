@@ -131,12 +131,10 @@ class ApiClient {
       );
       final data = response.data;
 
-      // If the backend returned a direct array
       if (data is List) {
-        return (data as List).cast<Map<String, dynamic>>();
+        return (data).cast<Map<String, dynamic>>();
       }
 
-      // If the backend returned an object wrapping the list
       if (data is Map<String, dynamic>) {
         if (data['data'] is List) {
           return (data['data'] as List).cast<Map<String, dynamic>>();
@@ -144,7 +142,6 @@ class ApiClient {
         if (data['comments'] is List) {
           return (data['comments'] as List).cast<Map<String, dynamic>>();
         }
-        // some APIs return items directly in a 'result' key
         if (data['result'] is List) {
           return (data['result'] as List).cast<Map<String, dynamic>>();
         }
@@ -198,6 +195,44 @@ class ApiClient {
     } on DioException catch (e) {
       NetworkException exception = NetworkException(exception: e);
 
+      if (exception.errors == null) {
+        showToast(
+          description: exception.message,
+          type: ToastificationType.error,
+          style: ToastificationStyle.fillColored,
+        );
+      } else {
+        for (final error in exception.errors!) {
+          showToast(
+            description: error,
+            type: ToastificationType.error,
+            style: ToastificationStyle.fillColored,
+          );
+        }
+      }
+
+      throw NetworkException(exception: e);
+    }
+  }
+
+  Future<Map<String, dynamic>> put( String path,
+    dynamic data,
+  ) async {
+    final token = await localDb.getToken();
+    try {
+      final response = await _dio.patch(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      NetworkException exception = NetworkException(exception: e);
       if (exception.errors == null) {
         showToast(
           description: exception.message,

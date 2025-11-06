@@ -255,7 +255,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         _passwordController.text.trim().toLowerCase(),
       );
       if (result) {
+        if(mounted){
         MyNavigator(context).navigateTo(const AuthCheckerService());
+
+        }
       }else{
 
       }

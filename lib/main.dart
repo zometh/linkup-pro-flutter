@@ -57,12 +57,12 @@ class MyApp extends ConsumerStatefulWidget {
 class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     widget.appLinks.uriLinkStream.listen((Uri? uri) {
-      print('Received deep link: $uri');
       if (uri != null) {
-       GoRouter.of(context).push(uri.path);
+      if(mounted){
+        GoRouter.of(context).push(uri.path);
+      }
       }
     });
     if(widget.initialLink != null){

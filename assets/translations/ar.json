@@ -171,6 +171,20 @@
   "save_post": "حفظ المنشور",
   "copy_link": "نسخ الرابط",
   "report": "إبلاغ",
+  "report_content": "الإبلاغ عن المحتوى",
+  "report_reason": "سبب الإبلاغ",
+  "select_report_reason": "اختر السبب",
+  "spam": "رسائل غير مرغوب فيها",
+  "harassment": "تحرش",
+  "hate_speech": "خطاب كراهية",
+  "violence": "عنف",
+  "inappropriate_content": "محتوى غير لائق",
+  "false_information": "معلومات خاطئة",
+  "copyright_violation": "انتهاك حقوق النشر",
+  "other_reason": "سبب آخر",
+  "describe_issue": "صف المشكلة (اختياري)",
+  "report_submitted": "تم إرسال البلاغ بنجاح",
+  "report_error": "خطأ في إرسال البلاغ",
   "no_data_found": "لم يتم العثور على بيانات",
   "comments": "التعليقات",
   "add_a_comment": "أضف تعليق...",
@@ -186,5 +200,9 @@
   "error_occurred": "حدث خطأ",
   "reply_added": "تمت إضافة الرد بنجاح",
   "delete_comment": "حذف التعليق",
-  "delete_comment_message": "هل أنت متأكد من أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء."
+  "delete_comment_message": "هل أنت متأكد من أنك تريد حذف هذا التعليق؟ لا يمكن التراجع عن هذا الإجراء.",
+  "messages": "الرسائل",
+  "publish": "نشر",
+  "add_more_details": "أضف المزيد من التفاصيل إلى تقريرك"
+
 }

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -12,13 +13,13 @@ class BottomNavbar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int _currentIndex = ref.watch(bottomNavbarProvider);
-    final List<_NavItem> _items = const [
-      _NavItem(icon: FontAwesomeIcons.house, label: 'Home'),
-      _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'Search'),
-      _NavItem(icon: FontAwesomeIcons.message, label: 'Messages'),
-      _NavItem(icon: FontAwesomeIcons.bell, label: 'Notifications'),
-      _NavItem(icon: FontAwesomeIcons.user, label: "Profile"),
+    final int currentIndex = ref.watch(bottomNavbarProvider);
+    final List<_NavItem> items = const [
+      _NavItem(icon: FontAwesomeIcons.house, label: 'home'),
+      _NavItem(icon: FontAwesomeIcons.magnifyingGlass, label: 'search'),
+      _NavItem(icon: FontAwesomeIcons.message, label: 'messages'),
+      _NavItem(icon: FontAwesomeIcons.bell, label: 'notifications'),
+      _NavItem(icon: FontAwesomeIcons.user, label: "profile"),
     ];
 
     final double width = context.screenWidth;
@@ -40,7 +41,7 @@ class BottomNavbar extends ConsumerWidget {
       margin: EdgeInsets.only(
         left: width * 0.03,
         right: width * 0.03,
-        bottom: height * 0.02,
+        bottom: height * 0.01,
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(30),
@@ -76,8 +77,8 @@ class BottomNavbar extends ConsumerWidget {
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: List.generate(_items.length, (index) {
-                final bool active = index == _currentIndex;
+              children: List.generate(items.length, (index) {
+                final bool active = index == currentIndex;
                 return Expanded(
                   child: GestureDetector(
                     onTap: () => ref.read(bottomNavbarProvider.notifier).setIndex(index),
@@ -99,15 +100,15 @@ class BottomNavbar extends ConsumerWidget {
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOutCubic,
                             transform: Matrix4.identity()
-                              ..scale(active ? 1.15 : 1.0),
+                              ..scaleAdjoint(active ? 1.15 : 1.0),
                             child: Icon(
-                              _items[index].icon,
-                              size: 22,
+                              items[index].icon,
+                              size: 15 + (active ? 4 : 0),
                               color: active ? activeColor : inactiveColor,
                             ),
                           ),
                           const SizedBox(height: 6),
-                           _currentIndex == index ? AnimatedDefaultTextStyle(
+                           currentIndex == index ? AnimatedDefaultTextStyle(
                             duration: const Duration(milliseconds: 250),
                             curve: Curves.easeInOutCubic,
                             style: TextStyle(
@@ -117,7 +118,7 @@ class BottomNavbar extends ConsumerWidget {
                               letterSpacing: 0.2,
                             ),
                             child: Text(
-                              _items[index].label,
+                              items[index].label.tr(),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),

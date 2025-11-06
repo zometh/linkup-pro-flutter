@@ -1,5 +1,4 @@
 import 'package:dartz/dartz.dart';
-import 'package:easy_localization/easy_localization.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/utils/types/error_api_type.dart';
 import 'package:linkup_pro/features/comments/data/comment.dart';
@@ -17,7 +16,6 @@ class CommentRepositoryImplement implements CommentRepository {
       final comments = response.map<Comment>((commentJson) {
         return Comment.fromJson(commentJson);
       }).toList();
-      print(comments);
       return Right(comments);
     }catch(e){
       return Left(Failure(e.toString()));

@@ -105,9 +105,9 @@ class TextStylesExample extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppTheme.paddingM),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: .1),
                 borderRadius: BorderRadius.circular(AppTheme.radiusM),
-                border: Border.all(color: AppColors.primary.withOpacity(0.3)),
+                border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

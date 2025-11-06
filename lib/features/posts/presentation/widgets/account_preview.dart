@@ -1,10 +1,13 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text.dart';
 import '../../domain/entities/company_post.dart';
@@ -16,12 +19,12 @@ class AccountPreview extends StatefulWidget {
   final Post post;
 
   /// Optional callback when follow state changes. Useful to update remote state.
-  final ValueChanged<bool>? onFollowChanged;
+  final  Function() onFollowChanged;
 
   const AccountPreview({
     super.key,
     required this.post,
-    this.onFollowChanged,
+    required this.onFollowChanged,
     required this.userPreview,
   });
 
@@ -30,19 +33,12 @@ class AccountPreview extends StatefulWidget {
 }
 
 class _AccountPreviewState extends State<AccountPreview> {
-  late bool _isFollowed;
-
+  String connectedUserId = '';
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    _isFollowed = widget.post.isFollowed;
-  }
-
-  void _toggleFollow() {
-    setState(() {
-      _isFollowed = !_isFollowed;
-    });
-    if (widget.onFollowChanged != null) widget.onFollowChanged!(_isFollowed);
+    getConnectedUserId();
   }
 
   @override
@@ -50,7 +46,6 @@ class _AccountPreviewState extends State<AccountPreview> {
     final owner = widget.post.owner;
     final isCompany = owner.role == UserRole.entreprise;
     final String content = widget.userPreview.companyDescription ?? widget.userPreview.biography ?? '';
-
     String displayName;
     String? avatarUrl;
     if (isCompany) {
@@ -67,7 +62,6 @@ class _AccountPreviewState extends State<AccountPreview> {
 
     return LayoutBuilder(
       builder: (context, cx) {
-        final width = cx.maxWidth;
         final height = cx.maxHeight;
 
         return SafeArea(
@@ -177,32 +171,38 @@ class _AccountPreviewState extends State<AccountPreview> {
                     ),
                     const SizedBox(width: 8),
                     // keep button intrinsic size; don't force layout with flex
-                    ElevatedButton(
-                      onPressed: _toggleFollow,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: _isFollowed
-                            ? Colors.transparent
-                            : AppColors.primary,
-                        elevation: 0,
-                        side: BorderSide(
-                          color: _isFollowed
-                              ? Color.fromRGBO(71, 85, 105, .2)
-                              : Colors.transparent,
+                    if(connectedUserId != widget.post.userId)InkWell(
+                      onTap: () async {
+                        await widget.onFollowChanged();
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        constraints: const BoxConstraints(
+                          minWidth: 70,
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.white10),
+                          color: widget.post.isFollowed
+                                ? Colors.transparent
+                                : AppColors.primary,
+                          borderRadius: BorderRadius.circular(30),
                         ),
+                        
+                          child: CustomText(
+                            text: (widget.post.isFollowed
+                                    ? 'followed'
+                                    : 'follow')
+                                .tr(),
+                            color: widget.post.isFollowed
+                                ? (isDark
+                                    ? Colors.white
+                                    : AppColors.textPrimary)
+                                : Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                      )
                       ),
-                      child: Text(
-                        _isFollowed ? 'Following' : 'Follow',
-                        style: TextStyle(
-                          color: _isFollowed
-                              ? (isDark ? Colors.white : AppColors.textPrimary)
-                              : Colors.white,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
+                    
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -264,6 +264,16 @@ class _AccountPreviewState extends State<AccountPreview> {
         );
       },
     );
+  }
+  getConnectedUserId() async {
+    final storage = GetIt.I<LocalDBService>();
+    final String? userId = await storage.getUserId();
+    if (userId != null) {
+      setState(() {
+        connectedUserId = userId;
+      });
+    }
+
   }
   String? formatContent(String? content){
     final int max = 200;

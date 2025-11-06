@@ -16,7 +16,7 @@ class FetchOnePost extends _$FetchOnePost {
     try {
       final result = await _postImplement.getPostById(id);
       final post = result.fold(
-            (failure) {
+            (failure) { 
           // Handle failure
           return null;
         },

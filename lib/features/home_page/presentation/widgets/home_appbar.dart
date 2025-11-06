@@ -1,15 +1,16 @@
-import 'dart:io';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/utils/assets_path.dart';
-import 'package:linkup_pro/core/widgets/custom_textfield.dart';
+import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../../../core/theme/app_colors.dart';
-import '../../../auth/presentation/providers/auth_provider.dart';
+import '../../../posts_actions/presentation/pages/post_action_page.dart';
 
 class HomeAppbar extends ConsumerStatefulWidget {
   final double avaibleHeight;
@@ -21,86 +22,48 @@ class HomeAppbar extends ConsumerStatefulWidget {
 }
 
 class _HomeAppbarState extends ConsumerState<HomeAppbar> {
-  String? imageUrl;
   final localDb = GetIt.I<LocalDBService>();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _fetchUserImage();
   }
   @override
   Widget build(BuildContext context) {
     return AppBar(
-backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface /*const Color(0xFF121212) : Colors.white*/,
+
+backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
         //elevation: 5,
-        title: Padding(
+        title: Container(
+          width: double.infinity,
           padding:  EdgeInsets.symmetric(
-            vertical: widget.avaibleHeight * 0.3,
+            vertical: widget.avaibleHeight * 0.2,
             horizontal: 0
           ),
           child: Row(
-            mainAxisSize: MainAxisSize.min,
+          //  mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  CircleAvatar(
-                    radius: widget.avaibleHeight * 0.3,
-                    backgroundColor: Colors.grey.shade300,
-                    backgroundImage: _imageProvider(),
+
+                  Image.asset(  AssetsPath.logo,
+
+                    height: widget.avaibleHeight * 0.6,
                   ),
-                  SizedBox(width: widget.avaibleHeight * 0.2),
-                  Expanded(child: CustomTextField(controller: TextEditingController(), hintText: "what_do_you_want_to_talk_about".tr())),
-                  IconButton(
-                    onPressed: () {
-                      ref.read(authProvider).logout();
+                  ElevatedButton.icon(
+                    onPressed: (){
+                      MyNavigator(context).navigateTo(const PostActionPage());
                     },
-                    icon: const Icon(Icons.logout),
-                  )
+                    label: CustomText(text: "publish".tr()), icon: Icon(FontAwesomeIcons.plus))
+
                 ],
 
           ),
+
         ),
         centerTitle: true,
 
     );
   }
 
-  ImageProvider<Object> _imageProvider() {
-    // Defensive: handle null, empty, http(s) urls and local file paths.
-    if (imageUrl == null || imageUrl!.trim().isEmpty) {
-      return const AssetImage(AssetsPath.defaultProfile);
-    }
 
-    final url = imageUrl!.trim();
-
-    // network image
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return NetworkImage(url);
-    }
-
-    // file:// URI
-    if (url.startsWith('file://')) {
-      final path = url.replaceFirst('file://', '');
-      return FileImage(File(path));
-    }
-
-    // plain absolute/local path
-    try {
-      final f = File(url);
-      if (f.existsSync()) return FileImage(f);
-    } catch (_) {}
-
-    // fallback to asset
-    return const AssetImage(AssetsPath.defaultProfile);
-  }
-
-  _fetchUserImage() async {
-    final img = await localDb.getUserProfileImage();
-    Future.microtask((){
-      setState(() {
-        imageUrl = img;
-      });
-    });
-  }
 }

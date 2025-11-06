@@ -1,8 +1,8 @@
-import 'package:clipboard/clipboard.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/core/widgets/custom_confirmation_dialog.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
 import 'package:linkup_pro/features/comments/presentation/providers/fetch_post_comments.dart';
@@ -27,7 +27,7 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
   bool _attachedToPrimary = false;
   bool _listenerAttached = false;
 
-  int _commentsPerPage = 3;
+  final int _commentsPerPage = 3;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
   bool isInitialLoading = false; // used for first load or refresh
@@ -155,7 +155,7 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
   deleteComment(String commentId) async{
     final commentImplement = GetIt.I<CommentRepositoryImplement>();
     final response = await commentImplement.deleteComment(commentId);
-    response.fold((f) => print(f), (r) {
+    response.fold((f) => MyLogger().log(f.message), (r) {
       setState(() {
         comments.removeWhere((comment) => comment.id == commentId);
       });
@@ -188,9 +188,11 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
       // handle error if needed (e.g., show a snackbar)
     } finally {
       // Reset loading flags
-      setState(() {
-        isInitialLoading = false;
-        isLoadingMore = false;
+      Future.microtask(() {
+        setState(() {
+          isInitialLoading = false;
+          isLoadingMore = false;
+        });
       });
     }
   }
