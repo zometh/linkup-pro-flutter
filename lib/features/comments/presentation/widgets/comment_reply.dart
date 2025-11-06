@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/comments/data/comment.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/custom_textfield.dart';
+import '../../../../core/widgets/custom_toast.dart';
 import '../../data/comment_repository_implement.dart';
 import '../utils/display_name.dart';
 
@@ -71,15 +73,13 @@ class _CommentReplyState extends State<CommentReply> {
         widget.comment.postId, _replyController.text.trim(), widget.comment.id);
     result.fold((failure) {
       // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('error_occurred'.tr())),
+
+      showToast(description: 'error_occurred'.tr(),
+          type: ToastificationType.error
       );
     }, (comment) {
       // Successfully added reply
       Navigator.of(context).pop(); // Close the reply modal
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('reply_added'.tr())),
-      );
     });
 
   }

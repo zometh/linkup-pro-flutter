@@ -8,7 +8,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
 import 'package:linkup_pro/core/routes/app_routes.dart';
-import 'package:linkup_pro/core/widgets/custom_toast.dart';
 import 'package:linkup_pro/core/utils/date_picker.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
@@ -27,6 +26,8 @@ import 'package:linkup_pro/features/register/presentation/providers/register_pro
 import 'package:linkup_pro/features/register/widgets/register_header.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
+
+import '../../../../core/widgets/custom_toast.dart';
 import '../../data/entities/sector.dart';
 
 class RegisterProfile extends ConsumerStatefulWidget {
@@ -176,7 +177,15 @@ SizedBox(height: constraints.maxHeight * 0.03),
                                       setState(() {
                                         _selectedDate = pickedDate;
                                       });
-                                    }, context: context);
+                                    }, context: context,
+                                    onAdjusted: (){
+                                      // Affiche un SnackBar pour informer l'utilisateur
+                                      showToast(description: 'selected_date_was_adjusted'.tr(),
+                                          type: ToastificationType.info
+                                      );
+
+                                    }
+                                    );
                                   },
                                   child: Container(
                                     width: double.infinity,
@@ -287,21 +296,22 @@ SizedBox(height: constraints.maxHeight * 0.03),
           }
           //context.go( '/');
         } else {
-          // Affiche un message d'erreur si la création a échoué
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('profile_creation_failed'.tr())),
+          showToast(description: 'profile_creation_failed'.tr(),
+              type: ToastificationType.error
           );
         }
       } catch (e) {
-        // Gestion d'erreur globale
-        if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('error_occurred'.tr())));
+        showToast(description: 'error_occurred'.tr(),
+            type: ToastificationType.error
+        );
+
       }
     }
     }else{
-        showToast(description:  "please_enter_a_valid_phone_number".tr(), type: ToastificationType.error);
+      showToast(description: 'please_enter_a_valid_phone_number'.tr(),
+          type: ToastificationType.error
+      );
+
     }
   }
 }

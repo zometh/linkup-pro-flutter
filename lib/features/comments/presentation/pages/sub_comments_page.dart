@@ -11,8 +11,10 @@ import 'package:linkup_pro/features/comments/presentation/widgets/comment_tile.d
 import 'package:linkup_pro/features/comments/presentation/widgets/no_comments_found.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/one_comment_shimmer__loading.dart';
 import 'package:linkup_pro/main.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../../core/widgets/custom_confirmation_dialog.dart';
+import '../../../../core/widgets/custom_toast.dart';
 
 class SubCommentsPage extends ConsumerStatefulWidget {
   final Comment parentComment;
@@ -168,10 +170,11 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
 
       final newSubComments = response.fold(
         (failure) {
-          // Handle error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('error_occurred'.tr())),
+
+          showToast(description: 'error_occurred'.tr(),
+              type: ToastificationType.error
           );
+
           return <Comment>[];
         },
         (d) => d,
@@ -190,9 +193,10 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
     } catch (error) {
       // handle error
       if(mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('error_occurred'.tr())),
-      );
+        showToast(description: 'error_occurred'.tr(),
+            type: ToastificationType.error
+        );
+
       }
     } finally {
      Future.microtask(() {

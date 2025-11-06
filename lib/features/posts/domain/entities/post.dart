@@ -4,17 +4,17 @@ import 'package:linkup_pro/features/posts_actions/domain/enums/post_type.dart';
 
 class Post {
   final String id;
-  final String content;
+   String content;
   final DateTime publicationDate;
    bool isFollowed;
   int likesCount;
    int commentsCount;
    int sharesCount;
    bool isLiked = false;
-  final List<PostFile> files;
+   List<PostFile> files;
   final String userId;
-  final PostType type;
-  final List<String> tags;
+   PostType type;
+   List<String> tags;
   final PostOwner owner;
 
   Post({

@@ -2,10 +2,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 
 import '../../../../core/enums/user_role.dart';
+import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text.dart';
 import '../../domain/entities/company_post.dart';
@@ -31,14 +33,19 @@ class AccountPreview extends StatefulWidget {
 }
 
 class _AccountPreviewState extends State<AccountPreview> {
-
+  String connectedUserId = '';
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getConnectedUserId();
+  }
 
   @override
   Widget build(BuildContext context) {
     final owner = widget.post.owner;
     final isCompany = owner.role == UserRole.entreprise;
     final String content = widget.userPreview.companyDescription ?? widget.userPreview.biography ?? '';
-
     String displayName;
     String? avatarUrl;
     if (isCompany) {
@@ -164,7 +171,7 @@ class _AccountPreviewState extends State<AccountPreview> {
                     ),
                     const SizedBox(width: 8),
                     // keep button intrinsic size; don't force layout with flex
-                    InkWell(
+                    if(connectedUserId != widget.post.userId)InkWell(
                       onTap: () async {
                         await widget.onFollowChanged();
                       },
@@ -257,6 +264,16 @@ class _AccountPreviewState extends State<AccountPreview> {
         );
       },
     );
+  }
+  getConnectedUserId() async {
+    final storage = GetIt.I<LocalDBService>();
+    final String? userId = await storage.getUserId();
+    if (userId != null) {
+      setState(() {
+        connectedUserId = userId;
+      });
+    }
+
   }
   String? formatContent(String? content){
     final int max = 200;

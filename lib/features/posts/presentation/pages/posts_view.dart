@@ -39,80 +39,9 @@ class _PostsViewState extends ConsumerState<PostsView>
     fetchPosts();
     _scrollController.addListener(_onScroll);
 
-    // Attacher les listeners WebSocket
     _setupSocketListeners();
   }
 
-  void _setupSocketListeners() {
-    print("🔧 Setting up socket listeners...");
-    print("🔌 Socket connected: ${io.isConnected}");
-
-    // D'abord, retirer les anciens listeners pour éviter les doublons
-    io.off("newPost");
-    io.off("deletePost");
-
-    // Puis attacher les nouveaux
-    io.on("newPost", (d) {
-      print("✅ newPost event received: $d");
-      if (d is Map<String, dynamic>) {
-        insertNewPost(d);
-      } else {
-        print("⚠️ Invalid data format for newPost: $d");
-      }
-    });
-
-    io.on("deletePost", (v) {
-      print("❌ deletePost event received: $v");
-      if (v is String) {
-        removePost(v);
-      } else {
-        print("⚠️ Invalid data format for deletePost: $v");
-      }
-    });
-  }
-
-  removePost(String postId) {
-    print('🗑️ Tentative de suppression du post: $postId');
-    print('📋 Nombre de posts avant suppression: ${posts.length}');
-
-    final existingIndex = posts.indexWhere((post) => post.id == postId);
-
-    if (existingIndex != -1) {
-      print('✅ Post trouvé à l\'index $existingIndex, suppression en cours');
-      setState(() {
-        posts.removeAt(existingIndex);
-      });
-      print(
-        '✅ Post supprimé avec succès. Nombre de posts restants: ${posts.length}',
-      );
-    } else {
-      print('⚠️ Post $postId non trouvé dans la liste');
-      print(
-        '📋 IDs des posts actuels: ${posts.map((p) => p.id).take(5).toList()}...',
-      );
-    }
-  }
-
-  void _onScroll() {
-    final currentScrollPosition = _scrollController.position.pixels;
-    final maxScrollExtent = _scrollController.position.maxScrollExtent;
-    ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
-    if (currentScrollPosition > _lastScrollPosition &&
-        currentScrollPosition > 100) {
-      ref.read(bottomNavbarVisibilityProvider.notifier).state = false;
-    } else if (currentScrollPosition < _lastScrollPosition) {
-      ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
-    }
-
-    if (currentScrollPosition >= maxScrollExtent - 350 &&
-        !isInitialLoading &&
-        !isLoadingMore &&
-        hasMore) {
-      fetchPosts();
-    }
-
-    _lastScrollPosition = currentScrollPosition;
-  }
 
   @override
   void dispose() {
@@ -246,6 +175,79 @@ class _PostsViewState extends ConsumerState<PostsView>
       });
     }
   }
+  void _setupSocketListeners() {
+
+    io.off("newPost");
+    io.off("deletePost");
+    io.off("postUpdated");
+
+    // Puis attacher les nouveaux
+    io.on("newPost", (d) {
+      if (d is Map<String, dynamic>) {
+        insertNewPost(d);
+        io.joinRoom("postSubscribe", {"roomId": d["id"]});
+      } else {
+        print("⚠️ Invalid data format for newPost: $d");
+      }
+    });
+    io.on("postUpdated", (v){
+      if (v is Map<String, dynamic>) {
+        updatePost(v);
+      } else {
+        print("⚠️ Invalid data format for postUpdated: $v");
+      }
+    });
+    io.on("deletePost", (v) {
+      if (v is String) {
+        removePost(v);
+      } else {
+        print("⚠️ Invalid data format for deletePost: $v");
+      }
+    });
+  }
+
+  removePost(String postId) {
+    print('🗑️ Tentative de suppression du post: $postId');
+    print('📋 Nombre de posts avant suppression: ${posts.length}');
+
+    final existingIndex = posts.indexWhere((post) => post.id == postId);
+
+    if (existingIndex != -1) {
+      print('✅ Post trouvé à l\'index $existingIndex, suppression en cours');
+      setState(() {
+        posts.removeAt(existingIndex);
+      });
+      print(
+        '✅ Post supprimé avec succès. Nombre de posts restants: ${posts.length}',
+      );
+    } else {
+      print('⚠️ Post $postId non trouvé dans la liste');
+      print(
+        '📋 IDs des posts actuels: ${posts.map((p) => p.id).take(5).toList()}...',
+      );
+    }
+  }
+
+  void _onScroll() {
+    final currentScrollPosition = _scrollController.position.pixels;
+    final maxScrollExtent = _scrollController.position.maxScrollExtent;
+    ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
+    if (currentScrollPosition > _lastScrollPosition &&
+        currentScrollPosition > 100) {
+      ref.read(bottomNavbarVisibilityProvider.notifier).state = false;
+    } else if (currentScrollPosition < _lastScrollPosition) {
+      ref.read(bottomNavbarVisibilityProvider.notifier).state = true;
+    }
+
+    if (currentScrollPosition >= maxScrollExtent - 350 &&
+        !isInitialLoading &&
+        !isLoadingMore &&
+        hasMore) {
+      fetchPosts();
+    }
+
+    _lastScrollPosition = currentScrollPosition;
+  }
 
   void insertNewPost(Map<String, dynamic> data) {
     final newPost = Post.fromJson(data);
@@ -268,6 +270,18 @@ class _PostsViewState extends ConsumerState<PostsView>
       duration: const Duration(milliseconds: 300),
       curve: Curves.easeOut,
     );
+  }
+  updatePost(Map<String, dynamic> data) {
+    final updatedPost = Post.fromJson(data);
+
+    final existingIndex = posts.indexWhere((post) => post.id == updatedPost.id);
+
+    if (existingIndex != -1) {
+
+      setState(() {
+        posts[existingIndex] = updatedPost;
+      });
+    }
   }
 
   @override

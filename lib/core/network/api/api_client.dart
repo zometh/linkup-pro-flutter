@@ -214,4 +214,42 @@ class ApiClient {
       throw NetworkException(exception: e);
     }
   }
+
+  Future<Map<String, dynamic>> put( String path,
+    dynamic data,
+  ) async {
+    final token = await localDb.getToken();
+    try {
+      final response = await _dio.patch(
+        path,
+        data: data,
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        ),
+      );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      NetworkException exception = NetworkException(exception: e);
+      if (exception.errors == null) {
+        showToast(
+          description: exception.message,
+          type: ToastificationType.error,
+          style: ToastificationStyle.fillColored,
+        );
+      } else {
+        for (final error in exception.errors!) {
+          showToast(
+            description: error,
+            type: ToastificationType.error,
+            style: ToastificationStyle.fillColored,
+          );
+        }
+      }
+
+      throw NetworkException(exception: e);
+    }
+  }
 }

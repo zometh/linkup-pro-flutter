@@ -1,8 +1,12 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/comments/presentation/providers/create_comment.dart';
+import 'package:toastification/toastification.dart';
+
+import '../../../../core/widgets/custom_toast.dart';
 
 
 class AddComment extends ConsumerStatefulWidget {
@@ -51,9 +55,10 @@ class _AddCommentState extends ConsumerState<AddComment> {
     .catchError((e){
       // Handle error, e.g., show a snackbar
       if(mounted){
-        ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add comment: $e')),
-      );
+        showToast(description: 'error_occurred'.tr(),
+            type: ToastificationType.error
+        );
+
       }
     });
   }

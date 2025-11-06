@@ -6,16 +6,17 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
-import 'package:linkup_pro/core/widgets/custom_snack_bar.dart';
 import 'package:faker/faker.dart' as f;
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
-import 'package:linkup_pro/features/posts/presentation/widgets/image_preview.dart';
 import 'package:linkup_pro/features/posts_actions/domain/entities/post_action_entity.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/create_post.dart';
+import 'package:linkup_pro/features/posts_actions/presentation/providers/update_post.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/widgets/post_action_image_preview.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/widgets/post_type_button.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/widgets/toolbar_button.dart';
+import 'package:toastification/toastification.dart';
+import '../../../../core/widgets/custom_toast.dart';
 import '../../../posts/presentation/providers/fetch_one_post.dart';
 import '../../domain/enums/post_type.dart';
 import '../widgets/posts_tags_view.dart';
@@ -42,52 +43,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
   Post? post;
   final ImagePicker _picker = ImagePicker();
 
-  Future<void> _pickImage(ImageSource source) async {
-    final XFile? picked = await _picker.pickImage(source: source, imageQuality: 80);
-    if (picked != null) {
-      setState(() {
-        _imageFile = File(picked.path);
-      });
-    }
-  }
 
-  void _removeImage() {
-    setState(() {
-      _imageFile = null;
-    });
-  }
-
-  Future<void> _post() async {
-    final String content = _controller.text.trim();
-    if (content.isEmpty && _imageFile == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Le post est vide. Ajoutez du texte ou une image.')),
-      );
-      return;
-    }
-
-
-    try {
-        final post = PostCreationEntity(
-            content: content,
-            tags: _selectedTags,
-            files: _imageFile != null ? [_imageFile!] : [],
-            type: _selectedPostType == PostType.publication ? 'POST' : 'ANNOUNCEMENT',
-        );
-        final response = await ref.read(createPostProviderProvider.notifier).createPost(post);
-        if(response == null){
-          showSnackBar(context, message: "Erreur lors de la publication du post.", isError: true);
-          return;
-        }
-      if (mounted) {
-        Navigator.of(context).pop(true); // renvoyer succès
-      }
-    } catch (e) {
-      if (mounted) {
-        showSnackBar(context, message: "Erreur lors de la publication du post.", isError: true);
-      }
-    }
-  }
 @override
   void initState() {
     // TODO: implement initState
@@ -106,7 +62,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isPosting = ref.watch(createPostProviderProvider);
+    final isPosting = ref.watch(widget.isEdit ? updatePostProviderProvider : createPostProviderProvider);
     final bool isLoading = ref.watch(fetchOnePostProvider);
 
     final int remaining = _maxChars - _controller.text.length;
@@ -128,7 +84,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: ElevatedButton(
-              onPressed: (isPosting || !canPost) ? null : _post,
+              onPressed: (isPosting || !canPost) ? null : _submit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.colorScheme.primary,
                 foregroundColor: Colors.white,
@@ -331,16 +287,15 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
     );
   }
   Future<void> fetch() async {
-    print("POST ID : ${widget.postId}");
     final newPost =
     await ref.read(fetchOnePostProvider.notifier).fetchPosts(widget.postId!);
     if(newPost == null) {
-      if(mounted){
-        showSnackBar(context, message: "Erreur lors de la récupération du post.",
-            isError: true);
-        Navigator.of(context).pop();
+      showToast(description: 'fetching_post_error'.tr(),
+          type: ToastificationType.error
+      );
+
         return ;
-      }
+
     }
 
     Future.microtask(() {
@@ -349,10 +304,125 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
         _controller.text = post!.content;
         _selectedTags = post!.tags;
         _selectedPostType = post!.type;
-        _imageFile = post!.files.isNotEmpty ? File(post!.files.first.url) : null;
+        imageUrl = post!.files.isNotEmpty ? post!.files.first.url : null;
       });
     });
   }
+  Future<void> _pickImage(ImageSource source) async {
+    final XFile? picked = await _picker.pickImage(source: source, imageQuality: 80);
+    if (picked != null) {
+      setState(() {
+        _imageFile = File(picked.path);
+      });
+    }
+  }
 
+  void _removeImage() {
+    setState(() {
+      _imageFile = null;
+      imageUrl = null;
+    });
+  }
+
+  _createPost(String content)async{
+    try {
+      final post = PostCreationEntity(
+        content: content,
+        tags: _selectedTags,
+        files: _imageFile != null ? [_imageFile!] : [],
+        type: _selectedPostType == PostType.publication ? 'POST' : 'ANNOUNCEMENT',
+      );
+      final response = await ref.read(createPostProviderProvider.notifier).createPost(post);
+      if(response == null){
+        showToast(description: 'fetching_post_error'.tr(),
+            type: ToastificationType.error
+        );
+        return;
+      }
+      if (mounted) {
+        Navigator.of(context).pop(true); // renvoyer succès
+      }
+    } catch (e) {
+      if (mounted) {
+        showToast(description: 'fetching_post_error'.tr(),
+            type: ToastificationType.error
+        );
+      }
+    }
+  }
+  _editPost(String content) async{
+
+    try {
+      final updatedPost = PostCreationEntity(
+          content: content,
+          tags: _selectedTags,
+          files: _imageFile != null ? [_imageFile!] : [],
+          type: _selectedPostType == PostType.publication
+              ? 'POST'
+              : 'ANNOUNCEMENT');
+      // Determine which files should be removed when editing a post.
+      // Cases:
+      // 1) If user selected a new image (_imageFile != null) and the post had an existing file -> remove the old file id.
+      // 2) Else if no new image and imageUrl != null -> user kept the existing image -> remove nothing.
+      // 3) Else (no new image and imageUrl == null) and post had an existing file -> user removed the image -> remove the old file id.
+      List<String> filesToRemove = [];
+      if (post != null && post!.files.isNotEmpty) {
+        if (_imageFile != null) {
+          // New image chosen: delete previous file
+          filesToRemove = [post!.files.first.fileId];
+        } else {
+          // No new image chosen
+          if (imageUrl != null) {
+            // Existing image kept: nothing to remove
+            filesToRemove = [];
+          } else {
+            // imageUrl is null (user removed image) -> remove previous file
+            if(post!.files.isNotEmpty){
+              filesToRemove = [post!.files.first.fileId];
+              }
+          }
+        }
+      }
+
+      final response = await ref
+          .read(updatePostProviderProvider.notifier)
+          .updatePost(updatedPost, filesToRemove, widget.postId!);
+     if (response == null) {
+
+       showToast(description: 'creating_post_error'.tr(),
+           type: ToastificationType.error
+       );
+       return;
+     }
+     if (mounted) {
+       Navigator.of(context).pop(true); // renvoyer succès
+     }
+    }catch(e){
+      if (mounted) {
+        //updating_post_error
+        showToast(description: 'updating_post_error'.tr(),
+            type: ToastificationType.error
+        );
+      }
+    }
+
+  }
+  Future<void> _submit() async {
+    final String content = _controller.text.trim();
+    if (content.isEmpty && _imageFile == null) {
+      showToast(description: 'add_a_text_or_image'.tr(),
+          type: ToastificationType.error
+      );
+
+      return;
+    }
+    if (widget.isEdit) {
+      await _editPost(content);
+    } else {
+      await _createPost(content);
+    }
+
+
+  }
 
 }

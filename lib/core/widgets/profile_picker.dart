@@ -6,6 +6,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/core/widgets/custom_toast.dart';
+import 'package:toastification/toastification.dart';
 
 class ProfilePicker extends StatelessWidget {
   final File? imageFile;
@@ -150,28 +152,10 @@ class ProfilePicker extends StatelessWidget {
         _imageFile = File(image.path);
       });*/
     } else {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.red,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          content: Row(
-            children: [
-              const Icon(Icons.error_outline, color: Colors.white),
-              const SizedBox(width: 12),
-              Expanded(
-                child: CustomText(
-                  color: Colors.white,
-                  text: 'max_file_size'.tr(namedArgs: {'max': '3'}),
-                ),
-              ),
-            ],
-          ),
-        ),
+      showToast(description: 'max_file_size'.tr(namedArgs: {'max': '3'}),
+      type: ToastificationType.error
       );
+
     }
   }
 }

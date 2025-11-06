@@ -19,7 +19,7 @@ IconButton(
           )
  */
 final List<Widget> pages = [
-  const PostsView(),
+  const FlutterLogo()/*PostsView()*/,
   const SearchHome(),
   const MessagesHome(),
   const NotificationHome(),
@@ -49,11 +49,9 @@ class _HomePageState extends ConsumerState<HomePage>
     _offsetAnimation = Tween<Offset>(begin: const Offset(0, 1), end: Offset.zero)
         .animate(CurvedAnimation(parent: _controller, curve: Curves.easeInOut));
 
-    // Initialise la valeur du controller selon l'état courant
     final bool visible = ref.read(bottomNavbarVisibilityProvider);
     _controller.value = visible ? 1.0 : 0.0;
 
-    // Pour mettre à jour l'UI pendant l'animation (par ex. Offstage condition)
     _controller.addListener(() {
       if (mounted) setState(() {});
     });
@@ -67,10 +65,8 @@ class _HomePageState extends ConsumerState<HomePage>
 
   @override
   Widget build(BuildContext context) {
-    // Lire la visibilité via watch
     final bool isNavbarVisible = ref.watch(bottomNavbarVisibilityProvider);
 
-    // Piloter l'animation après le frame courant (évite appels ref.listen non permis)
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       if (isNavbarVisible && _controller.isDismissed) {
@@ -84,19 +80,18 @@ class _HomePageState extends ConsumerState<HomePage>
     final int currentIndex = ref.watch(bottomNavbarProvider);
     final availableHeight = MediaQuery.of(context).size.height * 0.08;
 
-    // Offstage quand la barre est complètement masquée (animation terminée)
     final bool offstage = !isNavbarVisible && _controller.isDismissed;
 
     return Scaffold(
       extendBody: true, // permet au body de s'étendre sous la barre (overlay)
-      appBar: isNavbarVisible
+      appBar:currentIndex == 0 ?  (isNavbarVisible
           ? PreferredSize(
               preferredSize: Size.fromHeight(availableHeight),
               child: Offstage(
                 offstage: !isNavbarVisible,
                 child: HomeAppbar(avaibleHeight: availableHeight),
               ))
-          : null,
+          : null) : null,
     body: Stack(
         children: [
           // Main content avec IndexedStack pour garder l'état des pages

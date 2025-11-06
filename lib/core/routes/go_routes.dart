@@ -6,6 +6,7 @@ import 'package:linkup_pro/features/login/presentation/pages/login.dart';
 import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 import 'package:linkup_pro/features/home_page/presentation/pages/home_page.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/pages/post_action_page.dart';
+import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart';
 import 'package:linkup_pro/features/register/data/entities/sector.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
@@ -62,6 +63,15 @@ GoRouter router(AuthProvider authProvider) {
          return PostDetailsPage(postId: postId);
 
       }),
+      GoRoute(
+          path: "user/:id",
+          name: "user-profile",
+          builder: (context, state) {
+            final userId = state.pathParameters['id']!;
+            return ProfileHome(userId: userId,isOwnProfile: false);
+          }
+      )
+      ,
       GoRoute(
         path: "/post/new",
         name: "create-post",
