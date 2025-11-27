@@ -19,5 +19,16 @@ class UsersRepositoryImpl implements UsersRepository {
     }
   }
 
+  @override
+  Future<Either<Failure, Map<String, dynamic>>> getOneUser(String userId) async{
+    try{
+      final response = await apiClient.getOne('/users/$userId');
+      print(response);
+      return Right(response);
+    } catch (e) {
+      return Future.value(Left(Failure(e.toString())));
+    }
+  }
+
  
 }

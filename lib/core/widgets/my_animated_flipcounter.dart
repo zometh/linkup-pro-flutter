@@ -17,19 +17,16 @@ class MyAnimatedFlipcounter extends StatelessWidget {
   Widget build(BuildContext context) {
     final reactionsData = FormatNumber.formatReactions(value);
     final buttonColor = color??  (context.isDarkMode ? Colors.white70 : AppColors.textSecondary);
-    return Flexible(
-        child: AnimatedFlipCounter(value: reactionsData['value'],
-          fractionDigits: reactionsData['suffix'] != '' ? 1 : 0,
-          suffix: reactionsData['suffix'],
-
-          duration:   Duration(milliseconds: 500),
-          textStyle: GoogleFonts.manrope(
-            fontSize: fontSize,
-            fontWeight: FontWeight.w600,
-            color: buttonColor,
-
-          ),
-        )
+    return AnimatedFlipCounter(
+      value: reactionsData['value'],
+      fractionDigits: reactionsData['suffix'] != '' ? 1 : 0,
+      suffix: reactionsData['suffix'],
+      duration: Duration(milliseconds: 500),
+      textStyle: GoogleFonts.manrope(
+        fontSize: fontSize,
+        fontWeight: FontWeight.w600,
+        color: buttonColor,
+      ),
     );
   }
 }

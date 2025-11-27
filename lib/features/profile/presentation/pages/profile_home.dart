@@ -19,14 +19,14 @@ class ProfileHome extends StatelessWidget {
           body: SingleChildScrollView(
             child: Column(
               children: [
-                // Profile Header
                  ProfileHeader(
+                  userId: userId,
                   cx: cx,
-                  isOwnProfile: true, // Change to false to see other profile view
+                  isOwnProfile: isOwnProfile,
                 ),
 
                 // Tabs ou contenu supplémentaire
-                Padding(
+                /*Padding(
                   padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
@@ -100,7 +100,7 @@ class ProfileHome extends StatelessWidget {
                       ),
                     ],
                   ),
-                ),
+                ),*/
               ],
             ),
           ),

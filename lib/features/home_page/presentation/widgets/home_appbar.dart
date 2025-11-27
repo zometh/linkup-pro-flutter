@@ -3,10 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/utils/assets_path.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/features/auth/presentation/providers/auth_provider.dart';
+import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -40,7 +43,6 @@ backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSur
             horizontal: 0
           ),
           child: Row(
-          //  mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -53,7 +55,18 @@ backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSur
                     onPressed: (){
                       MyNavigator(context).navigateTo(const PostActionPage());
                     },
-                    label: CustomText(text: "publish".tr()), icon: Icon(FontAwesomeIcons.plus))
+                    label: CustomText(text: "publish".tr()), icon: Icon(FontAwesomeIcons.plus)
+                  ),
+                  IconButton(
+                      onPressed: () async{
+                        final db = GetIt.I<LocalDBService>();
+                        await db.clearAllData().then((_) {
+                          context.go("/splash");
+                        });
+                       
+                      },
+                      icon: Icon(Icons.logout)
+                  )
 
                 ],
 

@@ -223,7 +223,9 @@
   "add_a_text_or_image" : "Add a text or image to your post",
   "my_profile": "My Profile",
   "edit_profile": "Edit Profile",
-  "profile_updated_successfully": "Profile updated successfully"
+  "profile_updated_successfully": "Profile updated successfully",
+  "joined" : "Member since "
+
 
 
 

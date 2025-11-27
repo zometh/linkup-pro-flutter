@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 
@@ -92,31 +93,34 @@ class _AccountPreviewState extends State<AccountPreview> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Avatar
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: avatarUrl == null
-                            ? AppGradients.primaryGradient
-                            : null,
-                      ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.transparent,
-                        backgroundImage: avatarUrl != null
-                            ? CachedNetworkImageProvider(avatarUrl)
-                            : null,
-                        child: avatarUrl == null
-                            ? Text(
-                                displayName.isNotEmpty
-                                    ? displayName[0].toUpperCase()
-                                    : '',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              )
-                            : null,
+                    InkWell(
+                      onTap: _visitProfile,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: avatarUrl == null
+                              ? AppGradients.primaryGradient
+                              : null,
+                        ),
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: avatarUrl != null
+                              ? CachedNetworkImageProvider(avatarUrl)
+                              : null,
+                          child: avatarUrl == null
+                              ? Text(
+                                  displayName.isNotEmpty
+                                      ? displayName[0].toUpperCase()
+                                      : '',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                )
+                              : null,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -283,5 +287,9 @@ class _AccountPreviewState extends State<AccountPreview> {
     }else {
       return content;
     }
+  }
+  _visitProfile() async{
+    Navigator.of(context);
+    context.push('/user/${widget.post.userId}');
   }
 }

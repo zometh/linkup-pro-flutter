@@ -10,20 +10,12 @@ import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart
 import 'package:linkup_pro/features/search/presentation/pages/search_home.dart';
 import 'package:linkup_pro/main.dart';
 
-/*
-IconButton(
-            onPressed: () {
-              ref.read(authProvider).logout();
-            },
-            icon: const Icon(Icons.logout),
-          )
- */
 final List<Widget> pages = [
-  const FlutterLogo()/*PostsView()*/,
+  const PostsView(),
   const SearchHome(),
   const MessagesHome(),
   const NotificationHome(),
-  const ProfileHome()
+  const ProfileHome(isOwnProfile: true,)
 
 ];
 

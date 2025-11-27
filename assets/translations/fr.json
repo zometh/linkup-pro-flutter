@@ -222,7 +222,8 @@
   "add_a_text_or_image" : "Ajoutez un texte ou une image à votre publication",
   "my_profile": "Mon profil",
   "edit_profile": "Éditer le profil",
-  "profile_updated_successfully": "Profil mis à jour avec succès"
+  "profile_updated_successfully": "Profil mis à jour avec succès",
+  "joined" : "Membre depuis "
 
 
 }

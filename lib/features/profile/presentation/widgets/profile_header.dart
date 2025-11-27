@@ -1,13 +1,23 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/entities/company.dart';
 import 'package:linkup_pro/core/entities/member.dart';
-import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/core/enums/user_role.dart';
-import 'package:linkup_pro/core/enums/user_visibility.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:linkup_pro/core/widgets/custom_progress.dart';
+import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/core/widgets/custom_toast.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_action_button.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_meta_info.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_more_option.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_stats.dart';
+import 'package:linkup_pro/features/users/presentation/providers/users.dart';
+import 'package:toastification/toastification.dart';
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends ConsumerStatefulWidget {
   final String? userId;
   final BoxConstraints cx;
   final bool isOwnProfile;
@@ -21,59 +31,53 @@ class ProfileHeader extends StatelessWidget {
   });
 
   @override
+  ConsumerState<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends ConsumerState<ProfileHeader> {
+  bool get isOwnProfile => widget.isOwnProfile;
+  String?  get userId => widget.userId;
+  bool isMember = false;
+  bool hasError =  false;
+  bool isLoading = false;
+  Member? memberInfos;
+  Company? companyInfos;
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      fetchCurrentUserInfos();
+    });
+  }
+  @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    final mockMember =  Member(
-      id: '1',
-      biography: 'Passionate software developer | Flutter enthusiast 🚀 | Building the future one app at a time',
-      birthDate: DateTime(1995, 3, 15),
-      phone: '+221 77 123 45 67',
-      portfolio: 'https://portfolio.example.com',
-      photoUrl: null,
-      sector: 'Tech & Digital',
-      profileVisibility: UserVisibility.public,
-      user: User(
-        id: '1',
-        email: 'john.doe@example.com',
-        username: 'johndoe',
-        firstName: 'John',
-        lastName: 'Doe',
-        address: 'Dakar, Senegal',
-        role: UserRole.member,
-        password: '',
-      ),
-    );
 
-    final mockCompany =  Company(
-      id: '1',
-      name: 'TechCorp Solutions',
-      creationDate: DateTime(2018, 6, 1),
-      website: 'https://techcorp.example.com',
-      logo: '',
-      profileFileId: '123',
-      phone: '+221 33 123 45 67',
-      isValidated: true,
-      description: 'Leading technology company 💼 | Digital transformation experts | Building innovative solutions for tomorrow',
-      size: 'medium_business',
-      sector: 'Tech & Digital',
-      user: User(
-        id: '2',
-        email: 'contact@techcorp.com',
-        username: 'techcorp',
-        firstName: 'Tech',
-        lastName: 'Corp',
-        address: 'Plateau, Dakar',
-        role: UserRole.entreprise,
-        password: '',
-      ),
-    );
+    final loadingWidget = const CustomProgress();
+    if(hasError){
+      return Center(
+        child: CustomText(text: "error_occured".tr()),
+      );
+    }
+    if(isOwnProfile){
+      if(ref.watch(usersProvider)){
+        return loadingWidget;
+      }
+    }
+    if(isLoading){
+      return loadingWidget;
+    }
 
-    final isMember = member != null || company == null;
-    final displayMember = isMember ? mockMember : null;
-    final displayCompany = !isMember ? mockCompany : null;
-    final width = cx.maxWidth;
-    final height = cx.maxHeight;
+    // Vérifier que les données sont chargées
+    if (isMember && memberInfos == null) {
+      return loadingWidget;
+    }
+    if (!isMember && companyInfos == null) {
+      return loadingWidget;
+    }
+    final width = widget.cx.maxWidth;
+    final height = widget.cx.maxHeight;
     return Column(
       children: [
         // Cover Banner - Twitter style
@@ -82,7 +86,7 @@ class ProfileHeader extends StatelessWidget {
           children: [
             // Cover Image
             Container(
-              height: height * 0.2,
+              height: height * 0.18,
               width: double.infinity,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
@@ -101,7 +105,7 @@ class ProfileHeader extends StatelessWidget {
             ),
 
             // Back button (if not own profile)
-            if (!isOwnProfile)
+            if (!widget.isOwnProfile)
               Positioned(
                 top: MediaQuery.of(context).padding.top + 8,
                 left: 8,
@@ -119,8 +123,8 @@ class ProfileHeader extends StatelessWidget {
 
             // Profile Avatar - positioned at bottom overlapping
             Positioned(
-              bottom: -40,
-              left: 16,
+              bottom: -50,
+              left: 5,
               child: Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
@@ -130,39 +134,29 @@ class ProfileHeader extends StatelessWidget {
                   ),
                 ),
                 child: Stack(
+                  clipBehavior: Clip.none,
                   children: [
                     CircleAvatar(
-                      radius: 45,
+                      radius: 37,
                       backgroundColor: isDarkMode ? AppColors.darkCard : Colors.grey[200],
-                      child: displayMember != null && displayMember.photoUrl != null
-                          ? ClipOval(
-                              child: Image.network(
-                                displayMember.photoUrl!,
-                                fit: BoxFit.cover,
-                                width: 136,
-                                height: 136,
-                              ),
+                      backgroundImage: isMember && memberInfos!.photoUrl != null
+                          ? NetworkImage(memberInfos!.photoUrl!)
+                          : companyInfos != null && companyInfos!.logo.isNotEmpty
+                              ? NetworkImage(companyInfos!.logo)
+                              : null,
+                      child: (isMember && memberInfos!.photoUrl == null) ||
+                             (companyInfos != null && companyInfos!.logo.isEmpty)
+                          ? Icon(
+                              isMember ? Icons.person : Icons.business,
+                              size: 50,
+                              color: AppColors.primary,
                             )
-                          : displayCompany != null && displayCompany.logo.isNotEmpty
-                              ? ClipOval(
-                                  child: Image.network(
-                                    displayCompany.logo,
-                                    fit: BoxFit.cover,
-                                    width: 136,
-                                    height: 136,
-                                  ),
-                                )
-                              : Icon(
-                                  isMember ? Icons.person : Icons.business,
-                                  size: 60,
-                                  color: AppColors.primary,
-                                ),
+                          : null,
                     ),
-                    // Verified badge for companies
-                    if (displayCompany != null && displayCompany.isValidated)
+                    if (companyInfos != null && companyInfos!.isValidated)
                       Positioned(
-                        bottom: 4,
-                        right: 4,
+                        bottom: 2,
+                        right: 2,
                         child: Container(
                           padding: const EdgeInsets.all(4),
                           decoration: BoxDecoration(
@@ -188,8 +182,8 @@ class ProfileHeader extends StatelessWidget {
             Positioned(
               bottom: 16,
               right: 16,
-              child: isOwnProfile
-                  ? ActionButton(
+              child: widget.isOwnProfile
+                  ? ProfileActionButton(
                       label: 'edit'.tr(),
                       onPressed: () {},
                       isDarkMode: isDarkMode,
@@ -235,7 +229,7 @@ class ProfileHeader extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        ActionButton(
+                        ProfileActionButton(
                           label: 'follow'.tr(),
                           onPressed: () {},
                           isDarkMode: isDarkMode,
@@ -249,8 +243,8 @@ class ProfileHeader extends StatelessWidget {
 
         Container(
           width: double.infinity,
-          color: isDarkMode ? AppColors.darkBackground : Colors.white,
-          padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
+          //color: Colors.transparent/*isDarkMode ? AppColors.darkBackground : Colors.white*/,
+          padding: const EdgeInsets.fromLTRB(12, 50, 16, 0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -258,19 +252,19 @@ class ProfileHeader extends StatelessWidget {
               Row(
                 children: [
                   Flexible(
-                    child: Text(
-                      displayMember != null
-                          ? '${displayMember.user.firstName} ${displayMember.user.lastName}'
-                          : displayCompany!.name,
-                      style: TextStyle(
-                        fontSize: 22,
+                    child: CustomText(
+                      text: isMember
+                          ? '${memberInfos!.user.firstName} ${memberInfos!.user.lastName}'
+                          : companyInfos!.name,
+
+                        fontSize: 20,
                         fontWeight: FontWeight.w800,
                         color: isDarkMode ? Colors.white : Colors.black,
-                        height: 1.2,
-                      ),
+                        //height: 1.2,
+
                     ),
                   ),
-                  if (displayCompany != null && displayCompany.isValidated)
+                  if (!isMember && companyInfos!.isValidated)
                     Padding(
                       padding: const EdgeInsets.only(left: 4),
                       child: Icon(
@@ -284,93 +278,40 @@ class ProfileHeader extends StatelessWidget {
               const SizedBox(height: 2),
 
               // Username
-              Text(
-                '@${displayMember?.user.username ?? displayCompany!.user.username}',
-                style: TextStyle(
+              CustomText(
+                text:'@${memberInfos?.user.username ?? companyInfos!.user.username}',
+
                   fontSize: 15,
                   color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-                ),
+
               ),
 
-              const SizedBox(height: 12),
+              const SizedBox(height: 6),
 
               // Bio/Description
-              if (displayMember?.biography != null || displayCompany?.description != null)
-                Text(
-                  displayMember?.biography ?? displayCompany!.description,
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.4,
+              if (memberInfos?.biography != null || companyInfos?.description != null)
+                CustomText(
+                  text: memberInfos?.biography ?? companyInfos!.description,
+                    fontSize: 14,
+                   fontFamily: "Roboto",
+                   fontWeight: FontWeight.w300,
+                   // height: 1.4,
                     color: isDarkMode ? Colors.white : Colors.black,
-                  ),
                 ),
 
               const SizedBox(height: 12),
 
               // Meta info (location, link, joined date) - Twitter style
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  if (displayMember?.user.address != null || displayCompany?.user.address != null)
-                    ProfileMetaInfo(
-                      icon: Icons.location_on_outlined,
-                      text: displayMember?.user.address ?? displayCompany!.user.address!,
-                      isDarkMode: isDarkMode,
-                    ),
-                  if (displayMember?.portfolio != null)
-                    ProfileMetaInfo(
-                      icon: Icons.link,
-                      text: 'portfolio.example.com',
-                      isDarkMode: isDarkMode,
-                      isLink: true,
-                    ),
-                  if (displayCompany?.website != null)
-                    ProfileMetaInfo(
-                      icon: Icons.link,
-                      text: 'techcorp.example.com',
-                      isDarkMode: isDarkMode,
-                      isLink: true,
-                    ),
-                  ProfileMetaInfo(
-                    icon: Icons.calendar_today_outlined,
-                    text: displayCompany != null
-                        ? 'Joined ${DateFormat('MMMM yyyy').format(displayCompany.creationDate)}'
-                        : 'Joined March 2020',
-                    isDarkMode: isDarkMode,
-                  ),
-                  ProfileMetaInfo(
-                    icon: Icons.work_outline,
-                    text: (displayMember?.sector ?? displayCompany!.sector).tr(),
-                    isDarkMode: isDarkMode,
-                  ),
-                ],
-              ),
+              ProfileMetaWidget(isMember: isMember, company: companyInfos, member: memberInfos),
 
-              const SizedBox(height: 16),
+             // const SizedBox(height: 5),
 
-              // Following/Followers count - Twitter style
-              Row(
-                children: [
-                  ProfileStats(
-                    count: '567',
-                    label: 'following'.tr(),
-                    isDarkMode: isDarkMode,
-                    onTap: () {},
-                  ),
-                  const SizedBox(width: 20),
-                  ProfileStats(
-                    count: '1.2K',
-                    label: 'followers'.tr(),
-                    isDarkMode: isDarkMode,
-                    onTap: () {},
-                  ),
-                ],
-              ),
+             GlobalProfileStats(followers: isMember ? memberInfos!.user.followers! : companyInfos!.user.followers!,
 
-              const SizedBox(height: 16),
+             following: isMember ? memberInfos!.user.following! : companyInfos!.user.following!),
 
-              // Divider
+              const SizedBox(height: 5),
+
               Divider(
                 height: 1,
                 thickness: 0.5,
@@ -431,188 +372,77 @@ class ProfileHeader extends StatelessWidget {
       ),
     );
   }
-}
+  initLocalData() async{
+    final localdb = GetIt.I<LocalDBService>();
+    final localData = await localdb.getUserInfos();
+    if(localData == null){
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+      return;
+    }
+    final role = await localdb.getUserRole();
+    if(role == UserRole.member){
+      setState(() {
+        isMember = true;
+        memberInfos = localData as Member;
+        isLoading = false;
+      });
+    }else{
+      setState(() {
+        isMember = false;
+        companyInfos = localData as Company;
+        isLoading = false;
+      });
+    }
 
-// Twitter-style button
-class ActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-  final bool isDarkMode;
-  final bool isPrimary;
-  final bool isOutlined;
+  }
+  fetchCurrentUserInfos() async{
 
-  const ActionButton({super.key,
-    required this.label,
-    required this.onPressed,
-    required this.isDarkMode,
-    this.isPrimary = false,
-    this.isOutlined = false,
-  });
+    if(!isOwnProfile){
+      await initRemoteData();
+    }
+    else{
+      await initLocalData();
+    }
+  }
+  initRemoteData() async{
+    setState(() {
+      isLoading = true;
+    });
 
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isPrimary
-                ? (isDarkMode ? Colors.white : Colors.black)
-                : isOutlined
-                    ? Colors.transparent
-                    : (isDarkMode ? AppColors.darkCard : Colors.white),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isOutlined || !isPrimary
-                  ? (isDarkMode
-                      ? Colors.white.withValues(alpha: 0.3)
-                      : Colors.black.withValues(alpha: 0.2))
-                  : Colors.transparent,
-              width: 1,
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: isPrimary
-                  ? (isDarkMode ? Colors.black : Colors.white)
-                  : (isDarkMode ? Colors.white : Colors.black),
-            ),
-          ),
-        ),
-      ),
-    );
+    try{
+      print("userId in profile header: $userId");
+      final response = await ref.read(usersProvider.notifier).getUserById(userId!);
+      final role = userRoleFromString(response!["user"]['role']);
+      if(role == UserRole.member) {
+        setState(() {
+          isMember = true;
+          memberInfos = Member.fromJson(response);
+          isLoading = false;
+        });
+      }
+      else{
+        setState(() {
+          isMember = false;
+          companyInfos = Company.fromJson(response);
+          isLoading = false;
+        });
+      }
+    }catch(e){
+      showToast(description: "error_occured".tr(),
+      type: ToastificationType.error,
+      );
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+      rethrow;
+    }
   }
 }
 
-class ProfileMetaInfo extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final bool isDarkMode;
-  final bool isLink;
-
-  const ProfileMetaInfo({super.key,
-    required this.icon,
-    required this.text,
-    required this.isDarkMode,
-    this.isLink = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(
-          icon,
-          size: 16,
-          color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-        ),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            color: isLink
-                ? AppColors.primary
-                : (isDarkMode ? Colors.grey[500] : Colors.grey[600]),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// Twitter-style follow count
-class ProfileStats extends StatelessWidget {
-  final String count;
-  final String label;
-  final bool isDarkMode;
-  final VoidCallback onTap;
-
-  const ProfileStats({super.key,
-    required this.count,
-    required this.label,
-    required this.isDarkMode,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: count,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-              TextSpan(
-                text: ' $label',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Twitter-style more option item
-class ProfileMoreOption extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isDarkMode;
-  final bool isDestructive;
-  final VoidCallback onTap;
-
-  const ProfileMoreOption({super.key,
-    required this.icon,
-    required this.label,
-    required this.isDarkMode,
-    this.isDestructive = false,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive
-            ? AppColors.error
-            : (isDarkMode ? Colors.white : Colors.black),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          color: isDestructive
-              ? AppColors.error
-              : (isDarkMode ? Colors.white : Colors.black),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
-}
 
 
 
