@@ -1,4 +1,3 @@
-
 import 'package:linkup_pro/core/enums/user_role.dart';
 
 class User {
@@ -31,16 +30,20 @@ class User {
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
-      followers: json['followers'],
-      following: json['following'],
+      followers: json['followers'] ?? 0,
+      following: json['following'] ?? 0,
       email: json['email'],
       firstName: json['firstName'],
       lastName: json['lastName'],
       username: json['username'],
       address: json['address'],
-      role: json['role'] != null ? userRoleFromString(json["role"]) : UserRole.member,
-        registrationDate : json['registrationDate'] != null ? DateTime.tryParse(json['registrationDate']) : DateTime.now(),
-      password: json['password'] ?? ''
+      role: json['role'] != null
+          ? userRoleFromString(json["role"])
+          : UserRole.member,
+      registrationDate: json['registrationDate'] != null
+          ? DateTime.tryParse(json['registrationDate'])
+          : DateTime.now(),
+      password: json['password'] ?? '',
     );
   }
   Map<String, dynamic> toJson() {
@@ -51,7 +54,7 @@ class User {
       if (firstName != null) 'firstName': firstName,
       if (lastName != null) 'lastName': lastName,
       if (address != null) 'address': address,
-       'role': role.toString().split('.').last.toUpperCase(),
+      'role': role.toString().split('.').last.toUpperCase(),
     };
   }
 }

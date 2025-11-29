@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'users.g.dart';
 
-@Riverpod()
+@Riverpod(keepAlive: true)
 class Users extends _$Users {
   final usersImplement = GetIt.I<UsersRepositoryImpl>();
   @override
@@ -13,6 +13,9 @@ class Users extends _$Users {
   }
 
   Future<Map<String, dynamic>?> getUserById(String userId) async {
+    if(!ref.isFirstBuild){
+      return null;
+    }
     Future.microtask(() => state = true);
     try{
       final response = await usersImplement.getOneUser(userId);
