@@ -1,4 +1,3 @@
-
 import 'package:linkup_pro/core/entities/user.dart';
 
 class Company {
@@ -58,7 +57,11 @@ class Company {
       'description': description,
       'size': size,
       'sector': sector,
-      
     };
+  }
+
+  @override
+  String toString() {
+    return 'Company(id: $id, name: $name, user: $user, creationDate: $creationDate, website: $website, logo: $logo, profileFileId: $profileFileId, phone: $phone, size: $size, isValidated: $isValidated, description: $description, sector: $sector)';
   }
 }
