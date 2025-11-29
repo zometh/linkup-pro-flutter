@@ -69,6 +69,7 @@ GoRouter router(AuthProvider authProvider) {
           builder: (context, state) {
             
             final userId = state.pathParameters['id']!;
+          
             return ProfileHome(userId: userId,isOwnProfile: false);
           }
       )

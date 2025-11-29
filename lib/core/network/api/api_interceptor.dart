@@ -23,7 +23,6 @@ class ApiInterceptors extends Interceptor {
     super.onRequest(options, handler);
   }
 
-  // Exécuté quand une réponse est reçue avec succès
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     logger.log(' RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}', type: LogType.info);

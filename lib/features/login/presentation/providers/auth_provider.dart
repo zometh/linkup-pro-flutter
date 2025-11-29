@@ -40,6 +40,7 @@ class Auth extends _$Auth {
         },
       );
       final data = results[1] as Map<String, dynamic>;
+      
       await _db.saveToken(data['access_token'] as String);
       final String role = data["data"]['user']['role'] as String;
       //print('User role: $role'); // Debug print

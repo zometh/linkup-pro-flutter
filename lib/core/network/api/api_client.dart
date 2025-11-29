@@ -1,4 +1,4 @@
-// lib/core/network/api_client.dart
+
 
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
@@ -111,8 +111,7 @@ class ApiClient {
     }
   }
 
-  /// Robust get: accepts responses that are either a List (direct array)
-  /// or an object containing the list under `data` or `comments` keys.
+
   Future<List<Map<String, dynamic>>> get(
       String path, {
         Map<String, dynamic>? queryParams,
@@ -147,7 +146,6 @@ class ApiClient {
         }
       }
 
-      // If nothing matched, return empty list instead of throwing.
       return <Map<String, dynamic>>[];
     } on DioException catch (e) {
       NetworkException exception = NetworkException(exception: e);
@@ -172,7 +170,6 @@ class ApiClient {
     }
   }
 
-  // Méthode pour récupérer un seul objet (au lieu d'une liste)
   Future<Map<String, dynamic>> getOne(
       String path, {
         Map<String, dynamic>? queryParams,
@@ -190,7 +187,6 @@ class ApiClient {
         ),
       );
 
-      // Retourne directement les données sans cast en liste
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       NetworkException exception = NetworkException(exception: e);
