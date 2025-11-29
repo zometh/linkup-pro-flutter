@@ -19,28 +19,13 @@ class PostsTags extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: tags.map((tag) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: .15),
-                    AppColors.primaryLight.withValues(alpha: .1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: CustomText(
+            return CustomText(
                 text: '#$tag',
 
                 color: AppColors.primary,
-                fontSize: 13,
+                fontSize: 15,
                 fontWeight: FontWeight.w500,
-              ),
+              //),
             );
           }).toList(),
         ),

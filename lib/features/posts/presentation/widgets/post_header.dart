@@ -71,7 +71,6 @@ class _PostHeaderState extends State<PostHeader> {
             //crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              // Avatar
               GestureDetector(
                 onTap: previewUser,
                 child: Hero(
@@ -127,13 +126,9 @@ class _PostHeaderState extends State<PostHeader> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        /* if (isCompany) ...[
-                      const SizedBox(width: 4),
-                      Icon(Icons.verified, size: 18, color: AppColors.primary),
-                    ],*/
+          
                       ],
                     ),
-                    // >>> Changed: avoid spaceBetween overflow by letting right text use remaining space
                     Row(
                       children: [
                         Container(
@@ -154,7 +149,6 @@ class _PostHeaderState extends State<PostHeader> {
                           ),
                         ),
                         const SizedBox(width: 8),
-                        // Allow time text to shrink and ellipsize instead of forcing spaceBetween
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
@@ -189,10 +183,8 @@ class _PostHeaderState extends State<PostHeader> {
                 style: ButtonStyle(),
                 onSelected: action,
                 itemBuilder: (context) => [
-                  // PopupMenuItem 1
                   if(isUserPostOwner)PopupMenuItem(
                     value: 1,
-                    // row with 2 children
                     child: Row(
                       spacing: 10,
                       children: [
@@ -209,7 +201,6 @@ class _PostHeaderState extends State<PostHeader> {
 
                   if(isUserPostOwner) PopupMenuItem(
                     value: 2,
-                    // row with two children
                     child: Row(
                       spacing: 10,
                       children: [
@@ -244,24 +235,26 @@ class _PostHeaderState extends State<PostHeader> {
     final response = await postImplement.getUserPreview(widget.post.userId);
     userPreviewAdds = response.fold(
       (failure) {
-        // Handle failure
+      
         return null;
       },
       (data) {
         return data;
       },
     );
-    if (mounted) {
-      showModalBottomSheet(
-        context: context,
-        backgroundColor: Colors.transparent,
-        isScrollControlled: true,
-        builder: (ctx) => AccountPreview(
-          userPreview: userPreviewAdds!,
-          post: widget.post,
-          onFollowChanged: () async => await action(0),
-        ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
-      );
+    if(userPreviewAdds != null){
+      if (mounted) {
+        showModalBottomSheet(
+          context: context,
+          backgroundColor: Colors.transparent,
+          isScrollControlled: true,
+          builder: (ctx) => AccountPreview(
+            userPreview: userPreviewAdds!,
+            post: widget.post,
+            onFollowChanged: () async => await action(0),
+          ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
+        );
+      }
     }
   }
 

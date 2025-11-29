@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
+import 'package:linkup_pro/features/posts/presentation/providers/like_post.dart';
 
 import '../../../../core/network/api/api_client.dart';
 import '../../../../core/network/websocket/config.dart';
@@ -10,128 +12,189 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/my_logger.dart';
 import '../../domain/entities/post.dart';
 
-class PostsStats extends StatefulWidget {
+class PostsStats extends ConsumerStatefulWidget {
   final Post post;
   const PostsStats({super.key, required this.post});
 
   @override
-  State<PostsStats> createState() => _PostsStatsState();
+  ConsumerState<PostsStats> createState() => _PostsStatsState();
 }
 
-class _PostsStatsState extends State<PostsStats> {
+class _PostsStatsState extends ConsumerState<PostsStats>
+    with SingleTickerProviderStateMixin {
   final io = GetIt.I<SocketService>();
   final db = GetIt.I<LocalDBService>();
+  late AnimationController _likeAnimController;
+  bool _isLikeAnimating = false;
 
   @override
   void initState() {
     super.initState();
-    io.on("likeUpdate", (callback){
+    _likeAnimController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+
+    io.on("likeUpdate", (callback) {
       final Map<String, dynamic> data = callback;
       updateCounter(data);
     });
 
-    io.on("commentUpdate", (callback){
+    io.on("commentUpdate", (callback) {
       final Map<String, dynamic> data = callback;
       updateCommentCounter(data);
     });
   }
-  updateCounter(Map<String, dynamic> data) async{
+
+  @override
+  void dispose() {
+    _likeAnimController.dispose();
+    super.dispose();
+  }
+
+  updateCounter(Map<String, dynamic> data) async {
     final userId = await db.getUserId();
-    if(data["postId"] != widget.post.id ) return;
-    if(mounted){
-      Future.microtask((){
+    if (data["postId"] != widget.post.id) return;
+    if (mounted) {
+      Future.microtask(() {
         setState(() {
           widget.post.likesCount = data["likesCount"];
-          if(data["userId"] == userId){
+          if (data["userId"] == userId) {
             widget.post.isLiked = data["isLiked"];
           }
         });
       });
     }
   }
-  updateCommentCounter(Map<String, dynamic> data) async{
-    if(data["postId"] != widget.post.id ) return;
 
-    if(mounted){
-     Future.microtask((){
+  updateCommentCounter(Map<String, dynamic> data) async {
+    if (data["postId"] != widget.post.id) return;
+
+    if (mounted) {
+      Future.microtask(() {
         setState(() {
           widget.post.commentsCount = data["commentsCount"];
         });
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
-      final isDark = Theme.of(context).brightness == Brightness.dark;
-      return Padding(
-        padding: const EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 6),
-        child: Row(
-          children: [
-            _buildActionButton(
-                icon: widget.post.isLiked ? Icons.thumb_up : Icons.thumb_up_outlined,
-                label:  widget.post.likesCount,
-                color:  widget.post.isLiked ? AppColors.primary : Colors.grey,
-                isDark: isDark,
-                onTap:likeOrDislike
-            ),
-            const SizedBox(width: 16),
-            _buildActionButton(
-                icon:Icons.comment,
-                label:widget.post.commentsCount,
-                color: AppColors.info,
-                isDark: isDark
-            ),
-            const SizedBox(width: 16),
-            _buildActionButton(
-              icon: Icons.share,
-              label:widget.post.sharesCount,
-              color:AppColors.success,
-              isDark :isDark,
-            ),
-          ],
-        ),
-      );
-    }
-  likeOrDislike() async{
-    final apiClient = GetIt.I<ApiClient>();
-    try{
-      await apiClient.post('/posts/like/${widget.post.id}', data: {});
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Row(
+        spacing: 10,
+        children: [
+          _buildStatButton(
+            icon: widget.post.isLiked
+                ? Icons.favorite_rounded
+                : Icons.favorite_border_rounded,
+            count: widget.post.likesCount,
+            isActive: widget.post.isLiked,
+            activeColor: const Color(0xFFE91E63),
+            isDark: isDark,
+            onTap: () {
+              HapticFeedback.lightImpact();
+              _triggerLikeAnimation();
+              likeOrDislike();
+            },
+            animationController: _likeAnimController,
+            isAnimating: _isLikeAnimating,
+          ),
 
-    }catch(e){
-      MyLogger().log(e.toString(), type: LogType.error);
-    }
+          _buildStatButton(
+            icon: Icons.mode_comment_outlined,
+            count: widget.post.commentsCount,
+            isDark: isDark,
+            onTap: () => HapticFeedback.lightImpact(),
+          ),
+          _buildStatButton(
+            icon: Icons.share,
+            count: widget.post.sharesCount,
+            isDark: isDark,
+            onTap: () => HapticFeedback.lightImpact(),
+          ),
+        ],
+      ),
+    );
   }
-  Widget _buildActionButton({
+
+  Widget _buildStatButton({
     required IconData icon,
-    required int label,
-    Color? color,
-    VoidCallback? onTap,
+    required int count,
     required bool isDark,
+    VoidCallback? onTap,
+    bool isActive = false,
+    Color? activeColor,
+    AnimationController? animationController,
+    bool isAnimating = false,
   }) {
-    final buttonColor =
-        color ?? (isDark ? Colors.white70 : AppColors.textSecondary);
+    final defaultColor = isDark
+        ? Colors.white.withValues(alpha: .6)
+        : AppColors.textTertiary;
+    final color = isActive ? activeColor! : defaultColor;
+
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-
-        padding: const EdgeInsets.symmetric(horizontal: 0, vertical: 10),
+      borderRadius: BorderRadius.circular(20),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         child: Row(
           mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-             Icon(icon, size: 23, color: buttonColor),
-            const SizedBox(width: 6),
-            MyAnimatedFlipcounter(value: label),
+            if (animationController != null)
+              AnimatedBuilder(
+                animation: animationController,
+                builder: (context, child) {
+                  return Transform.scale(
+                    scale: isAnimating
+                        ? 1.0 + (animationController.value * 0.25)
+                        : 1.0,
+                    child: Icon(icon, size: 25, color: color),
+                  );
+                },
+              )
+            else
+              Icon(icon, size: 20, color: color),
+            if (count > 0) ...[
+              const SizedBox(width: 6),
+              Text(
+                _formatCount(count),
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: isActive ? activeColor : defaultColor,
+                ),
+              ),
+            ],
           ],
         ),
       ),
-    )
-        .animate(/*target: color != null ? 1 : 0*/)
-        .scale(duration: 200.ms, curve: Curves.bounceInOut);
+    );
   }
+
+  String _formatCount(int count) {
+    if (count >= 1000000) {
+      return '${(count / 1000000).toStringAsFixed(1)}M';
+    } else if (count >= 1000) {
+      return '${(count / 1000).toStringAsFixed(1)}K';
+    }
+    return count.toString();
   }
+
+  void _triggerLikeAnimation() {
+    setState(() => _isLikeAnimating = true);
+    _likeAnimController.forward().then((_) {
+      _likeAnimController.reverse().then((_) {
+        if (mounted) setState(() => _isLikeAnimating = false);
+      });
+    });
+  }
+
+  likeOrDislike() async {
+    await ref.read(likePostProvider.notifier).likePost(widget.post.id);
+  }
+}

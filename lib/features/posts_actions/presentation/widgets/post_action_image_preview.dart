@@ -17,8 +17,7 @@ class PostActionImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
 
       if (imageFile == null && imageUrl == null) return const SizedBox.shrink();
-print(imageUrl);
-print(imageFile);
+
 
       return ClipRRect(
         borderRadius: BorderRadius.circular(16),

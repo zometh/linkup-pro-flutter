@@ -25,8 +25,8 @@ class _PostsViewState extends ConsumerState<PostsView>
   int _postsPerPage = 5;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
-  bool isInitialLoading = false; // used for first load or refresh
-  bool isLoadingMore = false; // used when loading additional pages (pagination)
+  bool isInitialLoading = false;
+  bool isLoadingMore = false;
   bool hasMore = true;
   List<Post> posts = [];
   double _lastScrollPosition = 0;
@@ -41,7 +41,6 @@ class _PostsViewState extends ConsumerState<PostsView>
 
     _setupSocketListeners();
   }
-
 
   @override
   void dispose() {
@@ -85,7 +84,6 @@ class _PostsViewState extends ConsumerState<PostsView>
                   itemBuilder: (context, index) {
                     if (index == posts.length) {
                       if (isLoadingMore) {
-                        // constrain footer height so the spinner doesn't center vertically over the whole screen
                         return const SizedBox(
                           height: 80,
                           child: Center(child: LinearProgressIndicator()),
@@ -96,7 +94,7 @@ class _PostsViewState extends ConsumerState<PostsView>
                           child: Center(child: Text("Aucun post disponible.")),
                         );
                       } else {
-                        return const SizedBox(); // rien tant qu’on n’a pas déclenché le chargement
+                        return const SizedBox();
                       }
                     }
                     final post = posts[index];
@@ -175,8 +173,8 @@ class _PostsViewState extends ConsumerState<PostsView>
       });
     }
   }
-  void _setupSocketListeners() {
 
+  void _setupSocketListeners() {
     io.off("newPost");
     io.off("deletePost");
     io.off("postUpdated");
@@ -190,7 +188,7 @@ class _PostsViewState extends ConsumerState<PostsView>
         print("⚠️ Invalid data format for newPost: $d");
       }
     });
-    io.on("postUpdated", (v){
+    io.on("postUpdated", (v) {
       if (v is Map<String, dynamic>) {
         updatePost(v);
       } else {
@@ -255,7 +253,6 @@ class _PostsViewState extends ConsumerState<PostsView>
     final existingIndex = posts.indexWhere((post) => post.id == newPost.id);
 
     if (existingIndex != -1) {
-
       setState(() {
         posts[existingIndex] = newPost;
       });
@@ -271,13 +268,13 @@ class _PostsViewState extends ConsumerState<PostsView>
       curve: Curves.easeOut,
     );
   }
+
   updatePost(Map<String, dynamic> data) {
     final updatedPost = Post.fromJson(data);
 
     final existingIndex = posts.indexWhere((post) => post.id == updatedPost.id);
 
     if (existingIndex != -1) {
-
       setState(() {
         posts[existingIndex] = updatedPost;
       });

@@ -11,6 +11,7 @@ import 'package:linkup_pro/features/posts/presentation/widgets/post_file_view.da
 import 'package:linkup_pro/features/posts/presentation/widgets/post_header.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_stats.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_tags.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/expansion_text.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -69,11 +70,12 @@ class _PostCardState extends State<PostCard> {
     return LayoutBuilder(
       builder: (context, constraints) {
 
-        return InkWell(
+        return GestureDetector(
           onTap: widget.isPostDetails ? null : () {
            if(mounted)context.push("/post/${post.id}");
           },
           child: Container(
+            padding: const .symmetric(vertical: 16),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(0),
               gradient: isDark
@@ -92,18 +94,14 @@ class _PostCardState extends State<PostCard> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Section
                  PostHeader(post: post, userId: userId,),
 
-                // Content Section
-                _buildContent(isDark),
+                //_buildContent(isDark),
+                ExpansionText(text: post.content),
 
-                // Media Section (Images/Videos)
                 if (post.files.isNotEmpty) BuildPostFile(files: post.files),
 
-                // Tags Section
 
-                // Stats Section
                 PostsStats(post: post,),
 
                 if (post.tags.isNotEmpty) PostsTags(tags: post.tags),
@@ -118,62 +116,6 @@ class _PostCardState extends State<PostCard> {
   }
 
 
-
-  Widget _buildContent(bool isDark) {
-    final content = widget.post.content;
-    final shouldShowMore = content.length > 200;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AnimatedCrossFade(
-            firstChild: CustomText(
-              text: content,
-
-              fontSize: 15,
-
-              color: isDark
-                  ? Colors.white.withValues(alpha: .9)
-                  : AppColors.textPrimary,
-
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-            secondChild: CustomText(
-              text: content,
-
-              fontSize: 15,
-
-              color: isDark
-                  ? Colors.white.withValues(alpha: .9)
-                  : AppColors.textPrimary,
-            ),
-            crossFadeState: _isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 300),
-          ),
-          if (shouldShowMore) ...[
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () => setState(() => _isExpanded = !_isExpanded),
-              child: Text(
-                _isExpanded ? 'show_less'.tr() : 'show_more'.tr(),
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-        ],
-      ),
-    );
-  }
 
 
  
