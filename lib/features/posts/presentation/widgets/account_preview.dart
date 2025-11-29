@@ -19,7 +19,6 @@ class AccountPreview extends StatefulWidget {
   final UserPreviewAdds userPreview;
   final Post post;
 
-  /// Optional callback when follow state changes. Useful to update remote state.
   final  Function() onFollowChanged;
 
   const AccountPreview({
@@ -289,7 +288,7 @@ class _AccountPreviewState extends State<AccountPreview> {
     }
   }
   _visitProfile() async{
-    Navigator.of(context);
+    Navigator.of(context).pop();
     context.push('/user/${widget.post.userId}');
   }
 }
