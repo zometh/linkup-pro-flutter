@@ -224,7 +224,17 @@
   "my_profile": "My Profile",
   "edit_profile": "Edit Profile",
   "profile_updated_successfully": "Profile updated successfully",
-  "joined" : "Member since "
+  "joined" : "Member since ",
+  "followed": "Followed",
+  "post_type": "Post Type",
+  "offers": "Offers",
+  "offers_description": "Find job opportunities and internships in your field of expertise.",
+  "fulltime": "Full-time",
+  "parttime": "Part-time",
+  "contract": "Contract",
+  "internship": "Internship",
+  "remote": "Remote",
+  "on-site": "On-site"
 
 
 

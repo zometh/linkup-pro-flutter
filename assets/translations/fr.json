@@ -96,6 +96,7 @@
   "full_name": "Nom complet",
   "confirm_password": "Confirmez le mot de passe",
   "choose_country" : "Choisissez votre pays",
+  "search_by_country_name" : "Rechercher par nom de pays",
   "first_name": "Prénom",
   "last_name": "Nom de famille",
   "error_form" : "Veuillez remplir correctement le formulaire",
@@ -107,6 +108,8 @@
   "Finance & Banking" : "Finance & Banque",
   "Health & Biotech" : "Santé & Biotech",
   "Education & Training" : "Éducation & Formation",
+  "Government & Non-Profit" : "Gouvernement & Associations",
+  "Science & Research" : "Science & Recherche",
   "Industry & Energy" : "Industrie & Énergie",
   "Marketing & Sales" : "Marketing & Ventes",
   "Media & Communication" : "Média & Communication",
@@ -223,7 +226,15 @@
   "my_profile": "Mon profil",
   "edit_profile": "Éditer le profil",
   "profile_updated_successfully": "Profil mis à jour avec succès",
-  "joined" : "Membre depuis "
+  "joined" : "Membre depuis ",
+  "offers": "Offres",
+  "offers_description": "Trouvez des opportunités d'emploi et des stages dans votre domaine de spécialisation.",
+  "fulltime": "Temps plein",
+  "parttime": "Temps partiel",
+  "contract": "Contrat",
+  "internship": "Stage",
+  "remote": "Remote",
+  "on-site": "Sur place"
 
 
 }
