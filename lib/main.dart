@@ -14,18 +14,19 @@ import 'package:toastification/toastification.dart';
 
 import 'core/services/app_setup.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.initialize();
+  await dotenv.load(fileName: ".env");
+  await setup();
+  await NotificationService.initialize(navigatorKey);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await setup();
   final appLinks = AppLinks();
   final initialLink = await appLinks.getInitialLink();
   await EasyLocalization.ensureInitialized();
-  await dotenv.load(fileName: ".env");
 
   runApp(
     ToastificationWrapper(
@@ -40,7 +41,9 @@ void main() async {
         ],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
-        child:  ProviderScope(child: MyApp(appLinks: appLinks, initialLink: initialLink,)),
+        child: ProviderScope(
+          child: MyApp(appLinks: appLinks, initialLink: initialLink),
+        ),
       ),
     ),
   );
@@ -54,27 +57,29 @@ class MyApp extends ConsumerStatefulWidget {
   @override
   ConsumerState<MyApp> createState() => _MyAppState();
 }
+
 class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
     widget.appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
-      if(mounted){
-        GoRouter.of(context).push(uri.path);
-      }
+        if (mounted) {
+          GoRouter.of(context).push(uri.path);
+        }
       }
     });
-    if(widget.initialLink != null){
+    if (widget.initialLink != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         GoRouter.of(context).push(widget.initialLink!.path);
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
-    final routerConfig = router(auth);
+    final routerConfig = router(auth, navigatorKey);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,

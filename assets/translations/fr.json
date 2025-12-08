@@ -234,7 +234,22 @@
   "contract": "Contrat",
   "internship": "Stage",
   "remote": "Remote",
-  "on-site": "Sur place"
+  "on-site": "Sur place",
+  "hybride": "Hybride",
+  "all_mas": "All",
+  "all_fem": "Toutes",
+  "no_comments_found": "Aucun commentaire trouvé",
+  "comment_like" : "Nouveau j'aime sur votre commentaire",
+  "comment_like_body" : "{name} a aimé votre commentaire",
+  "new_like_post_title": "Nouveau j'aime sur votre publication",
+  "new_like_post_body": "{name} a aimé votre publication.",
+  "new_comment_post_title": "Nouveau commentaire sur votre publication",
+  "new_comment_post_body": "{name} a commenté votre publication.",
+  "new_follower_title": "Nouveau follower",
+  "new_follower_body": "{name} a commencé à vous suivre.",
+  "add_comment": "Ajouter un commentaire",
+  "no_conversation": "Aucune conversation",
+  "no_conversations_found": "Aucune conversation trouvée"
 
 
 }

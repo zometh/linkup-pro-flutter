@@ -234,6 +234,18 @@
   "contract": "عقد",
   "internship": "تدريب",
   "remote": "عن بُعد",
-  "on-site": "في الموقع"
+  "on-site": "في الموقع",
+  "hybride": "مختلط",
+  "all_mas": "All",
+  "all_fem": "All",
+  "no_comments_found": "لم يتم العثور على تعليقات",
+   "new_like_post_title": "إعجاب جديد على منشورك",
+  "new_like_post_body": "{name} أعجب بمنشورك.",
+  "new_comment_post_title": "تعليق جديد على منشورك",
+  "new_comment_post_body": "{name} علق على منشورك.",
+  "new_follower_title": "متابع جديد",
+  "new_follower_body": "{name} بدأ بمتابعتك.",
+  "add_comment": ""
+
 
 }

@@ -11,7 +11,7 @@ import 'package:linkup_pro/features/comments/presentation/widgets/no_comments_fo
 import 'package:linkup_pro/features/comments/presentation/widgets/one_comment_shimmer__loading.dart';
 import 'package:linkup_pro/main.dart';
 import '../../../../core/network/websocket/config.dart';
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 
 
 class PostsCommentsPage extends ConsumerStatefulWidget {

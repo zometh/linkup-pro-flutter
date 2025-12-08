@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/offers/data/mock_offers.dart';
@@ -131,7 +130,6 @@ class _OffersHomeState extends State<OffersHome> {
             : ListView(
                 padding: const EdgeInsets.only(top: 8, bottom: 100),
                 children: [
-                  // Section Recommandées (horizontal)
                   if (_recommendedOffers.isNotEmpty) ...[
                     _buildSectionHeader('Recommandées pour vous', isDark),
                     SizedBox(
@@ -151,7 +149,6 @@ class _OffersHomeState extends State<OffersHome> {
                     ),
                     const SizedBox(height: 20),
                   ],
-                  // Section Autres offres
                   if (_otherOffers.isNotEmpty) ...[
                     _buildSectionHeader('Toutes les offres', isDark),
                     ..._otherOffers.map((o) => _buildOfferTile(o, isDark)),
@@ -164,7 +161,7 @@ class _OffersHomeState extends State<OffersHome> {
 
   Widget _buildAppBar(bool isDark) {
     return SliverAppBar(
-      expandedHeight: 185,
+      expandedHeight: 170,
       floating: true,
       pinned: true,
       elevation: 0,
@@ -174,6 +171,7 @@ class _OffersHomeState extends State<OffersHome> {
         background: Container(
           padding: const EdgeInsets.fromLTRB(20, 56, 20, 0),
           child: Column(
+            spacing: 10,
             crossAxisAlignment: .start,
             children: [
               Row(
@@ -201,13 +199,13 @@ class _OffersHomeState extends State<OffersHome> {
                   Row(
                     children: [
                       _buildSavedButton(isDark),
-                      const SizedBox(width: 8),
-                      _buildNotificationButton(isDark),
+                     /* const SizedBox(width: 8),
+                      _buildNotificationButton(isDark),*/
                     ],
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+             //const SizedBox(height: 16),
               _buildSearchField(isDark),
             ],
           ),
@@ -306,6 +304,7 @@ class _OffersHomeState extends State<OffersHome> {
                   color: isDark ? Colors.white38 : AppColors.textTertiary,
                   fontSize: 14,
                 ),
+                
                 prefixIcon: Icon(
                   Icons.search,
                   color: isDark ? Colors.white38 : AppColors.textTertiary,
@@ -326,7 +325,9 @@ class _OffersHomeState extends State<OffersHome> {
                         ),
                       )
                     : null,
-                border: InputBorder.none,
+                border: OutlineInputBorder(
+                  borderRadius: .circular(30)
+                ),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
@@ -341,9 +342,9 @@ class _OffersHomeState extends State<OffersHome> {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Icon(
-            FontAwesomeIcons.filterCircleXmark,
+            Icons.filter_list,
             color: Colors.white,
-            size: 17,
+            //size: 17,
           ),
         ),
       ],

@@ -10,7 +10,7 @@ import 'package:linkup_pro/features/profile/presentation/widgets/profile_action_
 import '../../../../core/entities/company.dart';
 import '../../../../core/entities/member.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../domain/services/profile_utils.dart';
+import '../../data/services/profile_utils.dart';
 
 class ProfileHeader extends StatelessWidget {
   final BoxConstraints cx;

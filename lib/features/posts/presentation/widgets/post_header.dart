@@ -74,7 +74,7 @@ class _PostHeaderState extends State<PostHeader> {
               GestureDetector(
                 onTap: previewUser,
                 child: Hero(
-                  tag: 'avatar_${widget.post.id}',
+                  tag: widget.post.id,
                   child: Container(
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,

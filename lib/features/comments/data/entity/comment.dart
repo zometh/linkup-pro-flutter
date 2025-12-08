@@ -1,5 +1,5 @@
 
-import '../../posts/domain/entities/post_owner.dart';
+import '../../../posts/domain/entities/post_owner.dart';
 
 class Comment{
   final String id;
@@ -8,7 +8,7 @@ class Comment{
   final String postId;
    String? commentId;
    int likesCount;
-//  final String? fileUrl;
+  final String? fileUrl;
    bool isLikedByUser;
   final String userId;
   int subCommentsCount;
@@ -24,9 +24,11 @@ class Comment{
     required this.owner,
     this.subCommentsCount  = 0,
     this.commentId,
+    this.fileUrl
 
   });
   factory Comment.fromJson(Map<String, dynamic> json) {
+    print(json["fileUrl"]);
     return Comment(
       postId: json['postId'],
       id: json['id'],
@@ -35,7 +37,7 @@ class Comment{
       likesCount: json['likesCount'],
      subCommentsCount: json["subCommentsCount"],
       commentId: json['commentId'],
-     // fileUrl: json['fileUrl'],
+     fileUrl: json['fileUrl'],
       isLikedByUser: json['isLikedByUser'] ?? false,
       userId: json['owner']['id'],
       owner: PostOwner.fromJson(json['owner']),

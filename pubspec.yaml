@@ -54,6 +54,7 @@ dependencies:
   vibration: ^3.1.4
   clipboard: ^2.0.2
   app_links: ^6.4.1
+  chat_bubbles: ^1.7.0
 
 dev_dependencies:
   flutter_test:

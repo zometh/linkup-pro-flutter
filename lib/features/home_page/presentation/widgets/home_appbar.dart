@@ -1,46 +1,18 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_animate/flutter_animate.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
+import 'package:linkup_pro/features/home_page/presentation/widgets/animated_logo.dart';
 import 'package:linkup_pro/main.dart';
 
 import '../../../../core/routes/app_routes.dart';
+import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
+import 'package:linkup_pro/core/network/websocket/config.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/assets_path.dart';
 import '../../../posts_actions/presentation/pages/post_action_page.dart';
 
-class HomeAppbar extends ConsumerStatefulWidget {
+class HomeAppbar extends StatelessWidget {
   const HomeAppbar({super.key});
-
-  @override
-  ConsumerState<HomeAppbar> createState() => _HomeAppbarState();
-}
-
-class _HomeAppbarState extends ConsumerState<HomeAppbar>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    );
-    _animation = Tween<double>(begin: 0, end: 1).animate(_controller);
-    _controller.repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -51,39 +23,9 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar>
       scrolledUnderElevation: 0.5,
       backgroundColor: isDark ? AppColors.darkSurface : AppColors.lightSurface,
       surfaceTintColor: Colors.transparent,
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              gradient: const LinearGradient(
-                colors: [AppColors.primary, AppColors.primaryDark],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: FadeTransition(
-              opacity: _animation,
-              child: Image.asset(
-                AssetsPath.logo,
-                height: 22,
-                color: Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(width: 10),
-      
-        ],
-      ),
+      title: AnimatedLogo(),
       actions: [
-        /*_buildActionButton(
-          icon: FontAwesomeIcons.magnifyingGlass,
-          onPressed: () {
-            // TODO: Implement search functionality
-          },
-          isDark: isDark,
-        ),*/
+
         _buildActionButton(
           icon: FontAwesomeIcons.plus,
           onPressed: () {
@@ -95,19 +37,14 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar>
         _buildActionButton(
           icon: FontAwesomeIcons.bell,
           onPressed: () {
-            // TODO: Implement messages functionality
+
           },
           isDark: isDark,
           showBadge: true,
         ),
         _buildActionButton(
           icon: FontAwesomeIcons.arrowLeftLong,
-          onPressed: () async {
-            final db = GetIt.I<LocalDBService>();
-            await db.clearAllData();
-            context.go("/splash");
-            // TODO: Implement messages functionality
-          },
+          onPressed: () => _logout(context),
           isDark: isDark,
         ),
         const SizedBox(width: 8),
@@ -182,5 +119,35 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar>
         ],
       ),
     );
+  }
+  _logout(BuildContext context) async{
+    final db = GetIt.I<LocalDBService>();
+    SocketService? socketService;
+    try{
+      socketService = GetIt.I<SocketService>();
+    }catch(_){
+      socketService = null;
+    }
+
+
+    try{
+      await db.clearAllData();
+    }catch(_){
+
+    }
+
+
+    try{
+      socketService?.dispose();
+    }catch(_){
+
+    }
+
+    if(context.mounted){
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => const SplashScreen()),
+        (route) => false,
+      );
+    }
   }
 }

@@ -1,127 +1,138 @@
+import 'dart:convert';
+
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
+
+import '../../features/login/data/auth_repository_implement.dart';
+
+// la fonction qui gère les messages quand l'app est complètement éteinte.
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  await NotificationService.showAwesomeNotification(message);
+}
 
 class NotificationService {
   static final FirebaseMessaging _messaging = FirebaseMessaging.instance;
-  static BuildContext? _routerContext;
 
-  static void registerContext(BuildContext context) {
-    _routerContext = context;
-  }
+  // Utiliser une GlobalKey est plus sûr que de stocker le contexte
+  static GlobalKey<NavigatorState>? navigatorKey;
 
-  static Future<void> initialize() async {
+  static Future<void> initialize(GlobalKey<NavigatorState> key) async {
+    navigatorKey = key; // On sauvegarde la clé de navigation
+
     await Firebase.initializeApp();
 
+    // 1. Configurer les canaux de notification (Le design)
     await AwesomeNotifications().initialize(
-      null,
+      null, // null = icône par défaut de l'app
       [
         NotificationChannel(
           channelKey: 'basic_channel',
           channelName: 'Notifications principales',
-          channelDescription: 'Notifications importantes de LinkUp Pro',
+          channelDescription: 'Canal principal',
           defaultColor: Colors.deepPurple,
           importance: NotificationImportance.Max,
           channelShowBadge: true,
+          playSound: true,
         ),
       ],
     );
 
-    await _requestNotificationPermissions();
+    // 2. Demander les permissions
+    await _requestPermissions();
 
+    // 3. Récupérer le token initial et écouter les changements
+    String? token = await _messaging.getToken();
+    if (token != null) _sendTokenToBackend(token);
+
+    _messaging.onTokenRefresh.listen((newToken) {
+      _sendTokenToBackend(newToken);
+    });
+
+    // 4. Écouter les messages Firebase
+    // Quand l'app est en arrière-plan/tuée (défini tout en haut du fichier)
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen(_onMessageHandler);
-    FirebaseMessaging.onMessageOpenedApp.listen(_onMessageOpenedAppHandler);
 
+    // Quand l'app est ouverte devant les yeux de l'utilisateur
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      showAwesomeNotification(message);
+    });
+
+    // 5. Gérer les clics sur les notifications (Awesome Notifications)
     AwesomeNotifications().setListeners(
-      onActionReceivedMethod: (receivedAction) {
-        final route = receivedAction.payload?['route'];
-        final id = receivedAction.payload?['id'];
-
-        if (route != null && _routerContext != null) {
-          _routerContext!.push('$route/${id ?? ''}');
-        }
-        return Future.value();
-      },
-      onNotificationCreatedMethod: (receivedNotification){
-        // Handle notification creation
-        return Future.value();
-      },
-      onNotificationDisplayedMethod: (receivedNotification) {
-        // Handle notification display
-        return Future.value();
-      },
-      onDismissActionReceivedMethod: (receivedNotification) {
-        // Handle notification dismissal
-        return Future.value();
-      },
+      onActionReceivedMethod: onActionReceivedMethod,
     );
   }
 
-  static Future<void> _requestNotificationPermissions() async {
-    final settings = await _messaging.requestPermission(alert: true, badge: true, sound: true);
+  // Méthode appelée quand on clique sur la notification
+  @pragma('vm:entry-point')
+  static Future<void> onActionReceivedMethod(
+    ReceivedAction receivedAction,
+  ) async {
+    final route = receivedAction.payload?['route'];
+    //print(route);
+    if (route != null && navigatorKey?.currentContext != null) {
+      GoRouter.of(navigatorKey!.currentContext!).push(route);
+    }
+  }
+
+  static Future<void> _requestPermissions() async {
+    await _messaging.requestPermission(alert: true, badge: true, sound: true);
 
     bool isAllowed = await AwesomeNotifications().isNotificationAllowed();
     if (!isAllowed) {
       await AwesomeNotifications().requestPermissionToSendNotifications();
     }
-
-    debugPrint('🔔 Permissions notifications : ${settings.authorizationStatus}');
   }
 
-  static Future<void> _onMessageHandler(RemoteMessage message) async {
-    await _showAwesomeNotification(message);
-  }
+  // Crée l'affichage visuel de la notif
+  static Future<void> showAwesomeNotification(RemoteMessage message) async {
 
-  static Future<void> _onMessageOpenedAppHandler(RemoteMessage message) async {
-    final route = message.data['route'];
-    final id = message.data['id'];
-    if (route != null) _navigateToRoute(route, id);
-  }
-
-  static Future<void> _showAwesomeNotification(RemoteMessage message) async {
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
         channelKey: 'basic_channel',
-        title: message.notification?.title ?? 'Notification',
-        body: message.notification?.body ?? '',
+        // On priorise le titre dans 'notification', sinon on regarde dans 'data'
+        title:
+            translate(message.notification?.title ?? message.data['title']) ??
+            'LinkUp Pro',
+        body: formatBody(message.notification?.body ?? message.data['body']) ?? '',
+        // Si une image est envoyée dans les data
         bigPicture: message.data['image'],
         notificationLayout: message.data['image'] != null
             ? NotificationLayout.BigPicture
             : NotificationLayout.Default,
-        payload: {
-          'route': message.data['route'] ?? '/',
-          'id': message.data['id'] ?? '',
-        },
+        // Payload utile pour la redirection
+        payload: {'route': message.data['route'] ?? '/'},
+        displayOnBackground: true,
+        displayOnForeground: true,
+        roundedBigPicture: true,
+        fullScreenIntent: true,
       ),
-      actionButtons: [
-        NotificationActionButton(
-          key: 'OPEN',
-          label: 'Ouvrir',
-        ),
-        NotificationActionButton(
-          key: 'CLOSE',
-          label: 'Fermer',
-          actionType: ActionType.DismissAction,
-        ),
-      ],
     );
   }
-
-  static void _navigateToRoute(String route, String? id) {
-    if (_routerContext == null) return;
-    _routerContext!.push('$route/${id ?? ''}');
+  static String translate(String key) => key.tr();
+  static String formatBody(String  data) {
+    final parsedDatas = jsonDecode(data) as Map<String, dynamic>;
+    final title = parsedDatas["title"] as String;
+    return title.tr(namedArgs: {"name": parsedDatas["params"]["senderName"] as String});
+  
   }
 
-  static Future<String?> getDeviceToken() async {
-    return await _messaging.getToken();
-  }
+  static void _sendTokenToBackend(String token) async {
+    final _db = GetIt.I<LocalDBService>();
+    if(await _db.isConnected()){
+      final authRepositoryImplements = GetIt.I<AuthRepositoryImplement>();
 
-  static Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-    await Firebase.initializeApp();
-    await _showAwesomeNotification(message);
+      await authRepositoryImplements.sendDeviceToken(token);
+    }
+
   }
 }

@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/utils/my_logger.dart';
-import 'package:linkup_pro/features/comments/data/comment.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
+import 'package:linkup_pro/features/comments/presentation/widgets/add_comment.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/comment_reply.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/comment_tile.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/no_comments_found.dart';
@@ -212,7 +213,7 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => CommentReply(comment: widget.parentComment),
+      builder: (context) =>AddComment(postId: widget.parentComment.postId, c: widget.parentComment) /*CommentReply(comment: widget.parentComment)*/,
     );
 
     // Refresh after adding a reply

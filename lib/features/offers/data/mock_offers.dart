@@ -1,3 +1,5 @@
+import 'package:easy_localization/easy_localization.dart';
+
 import '../domain/entities/job_offer.dart';
 
 final List<JobOffer> mockJobOffers = [
@@ -7,7 +9,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Atos',
     companyLogo: 'https://logo.clearbit.com/atos.net',
     location: 'Paris, France',
-    type: 'Full-time',
+    type: 'fulltime'.tr(),
     salary: '55k - 75k €/an',
     description:
         'Nous recherchons un développeur Flutter expérimenté pour rejoindre notre équipe mobile. Vous travaillerez sur des applications innovantes utilisées par des millions d\'utilisateurs.',
@@ -27,7 +29,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Orange',
     companyLogo: 'https://logo.clearbit.com/orange.sn',
     location: 'Lyon, France',
-    type: 'Hybrid',
+    type: 'hybride'.tr(),
     salary: '45k - 60k €/an',
     description:
         'Rejoignez notre équipe créative pour concevoir des expériences utilisateur exceptionnelles. Vous serez responsable du design de nos produits digitaux.',
@@ -47,7 +49,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Amazon',
     companyLogo: 'https://logo.clearbit.com/amazon.com',
     location: 'Remote',
-    type: 'Remote',
+    type: 'remote'.tr(),
     salary: '50k - 70k €/an',
     description:
         'Développez des APIs scalables et performantes pour notre plateforme cloud. Environnement technique moderne avec les dernières technologies.',
@@ -67,7 +69,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Meta',
     companyLogo: 'https://logo.clearbit.com/meta.com',
     location: 'Bordeaux, France',
-    type: 'Full-time',
+    type: 'fulltime'.tr(),
     salary: '60k - 85k €/an',
     description:
         'Analysez des données massives et développez des modèles de machine learning pour améliorer nos produits et services.',
@@ -87,7 +89,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Microsoft',
     companyLogo: 'https://logo.clearbit.com/microsoft.com',
     location: 'Nantes, France',
-    type: 'Hybrid',
+    type: 'hybride'.tr(),
     salary: '55k - 75k €/an',
     description:
         'Gérez notre infrastructure cloud et automatisez nos processus de déploiement. Vous serez au cœur de notre transformation DevOps.',
@@ -102,7 +104,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Spotify',
     companyLogo: 'https://logo.clearbit.com/spotify.com',
     location: 'Paris, France',
-    type: 'Full-time',
+    type: 'fulltime'.tr(),
     salary: '50k - 65k €/an',
     description:
         'Pilotez notre stratégie marketing digitale et développez notre présence en ligne. Vous gérerez une équipe de 5 personnes.',
@@ -122,7 +124,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Apple',
     companyLogo: 'https://logo.clearbit.com/apple.com',
     location: 'Toulouse, France',
-    type: 'Remote',
+    type: 'remote'.tr(),
     salary: '50k - 68k €/an',
     description:
         'Développez des applications iOS natives de haute qualité. Vous travaillerez sur des projets variés pour des clients prestigieux.',
@@ -142,7 +144,7 @@ final List<JobOffer> mockJobOffers = [
     companyName: 'Cloudflare',
     companyLogo: 'https://logo.clearbit.com/cloudflare.com',
     location: 'Lille, France',
-    type: 'Full-time',
+    type: 'fulltime'.tr(),
     salary: '55k - 80k €/an',
     description:
         'Protégez nos systèmes contre les menaces cyber. Vous effectuerez des audits de sécurité et mettrez en place des solutions de protection.',
@@ -159,11 +161,11 @@ final List<JobOffer> mockJobOffers = [
 ];
 
 final List<String> jobTypes = [
-  'Tous',
-  'Full-time',
-  'Part-time',
-  'Remote',
-  'Hybrid',
+  'all_fem'.tr(),
+  'fulltime'.tr(),
+  'parttime'.tr(),
+  'remote'.tr(),
+  'hybride'.tr(),
 ];
 final List<String> sectors = [
   'Tous',

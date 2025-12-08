@@ -1,10 +1,11 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/features/auth/presentation/providers/auth_provider.dart';
 import 'package:linkup_pro/features/login/presentation/pages/login.dart';
 import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
 import 'package:linkup_pro/features/home_page/presentation/pages/home_page.dart';
+import 'package:linkup_pro/features/messages/presentation/pages/conversations_page.dart';
+import 'package:linkup_pro/features/messages/presentation/pages/full_conversation_page.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/pages/post_action_page.dart';
 import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart';
 import 'package:linkup_pro/features/register/data/entities/sector.dart';
@@ -15,8 +16,12 @@ import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 import '../../features/posts/presentation/pages/post_details_page.dart';
 import '../../features/register/presentation/pages/sector_choice.dart';
 
-GoRouter router(AuthProvider authProvider) {
+GoRouter router(
+  AuthProvider authProvider,
+  GlobalKey<NavigatorState> navigatorKey,
+) {
   return GoRouter(
+    navigatorKey: navigatorKey,
     initialLocation: "/",
     refreshListenable: authProvider,
     routes: [
@@ -57,23 +62,38 @@ GoRouter router(AuthProvider authProvider) {
         name: "sector-choice",
         builder: (context, state) => const SectorGridView(),
       ),
-      GoRoute(path: "/post/:id", name: "post-detail", builder: (context, state) {
-        final postId = state.pathParameters['id']!;
-
-         return PostDetailsPage(postId: postId);
-
-      }),
       GoRoute(
-          path: "/user/:id",
-          name: "user-profile",
-          builder: (context, state) {
-            
-            final userId = state.pathParameters['id']!;
-          
-            return ProfileHome(userId: userId,isOwnProfile: false);
-          }
-      )
-      ,
+        path: "/post/:id",
+        name: "post-detail",
+        builder: (context, state) {
+          final postId = state.pathParameters['id']!;
+
+          return PostDetailsPage(postId: postId);
+        },
+      ),
+      GoRoute(
+        path: "/user/:id",
+        name: "user-profile",
+        builder: (context, state) {
+          final userId = state.pathParameters['id']!;
+
+          return ProfileHome(userId: userId, isOwnProfile: false);
+        },
+      ),
+      GoRoute(
+        path: "/conversations/:id",
+        name: "conversation-view",
+        builder: (context, state) {
+          final conversationId = state.pathParameters['id']!;
+
+          return FullConversationPage(conversationId: conversationId);
+        },
+      ),
+      GoRoute(
+        path: "/conversations",
+        name: "conversations",
+        builder: (context, state) => ConversationsPage(),
+      ),
       GoRoute(
         path: "/post/new",
         name: "create-post",
@@ -83,7 +103,8 @@ GoRouter router(AuthProvider authProvider) {
     redirect: (BuildContext context, GoRouterState state) {
       final bool loggedIn = authProvider.isLoggedIn;
       final bool isLoggingIn = state.matchedLocation == '/login';
-      final bool isRegistering = state.matchedLocation == '/register' ||
+      final bool isRegistering =
+          state.matchedLocation == '/register' ||
           state.matchedLocation == '/register-company' ||
           state.matchedLocation == '/sector-choice';
       final bool isSplashing = state.matchedLocation == '/splash';

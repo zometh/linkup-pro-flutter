@@ -10,6 +10,7 @@ import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_toast.dart';
+import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_top.dart';
 import 'package:linkup_pro/features/users/presentation/providers/users.dart';
 import 'package:toastification/toastification.dart';
@@ -23,7 +24,8 @@ class ProfileHome extends ConsumerStatefulWidget {
   ConsumerState<ProfileHome> createState() => _ProfileHomeState();
 }
 
-class _ProfileHomeState extends ConsumerState<ProfileHome> {
+class _ProfileHomeState extends ConsumerState<ProfileHome>
+    with TickerProviderStateMixin {
   bool get isOwnProfile => widget.isOwnProfile;
   String? get userId => widget.userId;
 
@@ -34,6 +36,10 @@ class _ProfileHomeState extends ConsumerState<ProfileHome> {
 
   Member? memberInfos;
   Company? companyInfos;
+
+  // Ajout : onglet sélectionné (0 = posts, 1 = skills, 2 = experiences)
+  int _selectedTab = 0;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -67,102 +73,92 @@ class _ProfileHomeState extends ConsumerState<ProfileHome> {
 
     return LayoutBuilder(
       builder: (_, cx) {
-        return Scaffold(
-          backgroundColor: isDarkMode
-              ? AppColors.darkBackground
-              : AppColors.lightBackground,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                ProfileTop(
-                  isMember: isMember,
-                  cx: cx,
-                  isOwnProfile: widget.isOwnProfile,
-                  memberInfos: memberInfos,
-                  companyInfos: companyInfos,
-                ),
-
-                // Tabs ou contenu supplémentaire
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      // Tabs pour Posts, About, Media, etc.
+        return DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            backgroundColor: isDarkMode
+                ? AppColors.darkBackground
+                : AppColors.lightBackground,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverToBoxAdapter(
+                    child: ProfileTop(
+                      isMember: isMember,
+                      cx: cx,
+                      isOwnProfile: widget.isOwnProfile,
+                      memberInfos: memberInfos,
+                      companyInfos: companyInfos,
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    delegate: _SliverTabBarDelegate(
                       Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.darkCard : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
                         ),
-                        child: Row(
-                          children: [
-                            _TabItem(
-                              label: 'Posts',
-                              isSelected: true,
-                              isDarkMode: isDarkMode,
-                            ),
-                            _TabItem(
-                              label: 'About',
-                              isSelected: false,
-                              isDarkMode: isDarkMode,
-                            ),
-                            _TabItem(
-                              label: 'Media',
-                              isSelected: false,
-                              isDarkMode: isDarkMode,
-                            ),
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? const Color(0xFF2D2D2D)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: TabBar(
+                          dividerColor: Colors.transparent,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicator: BoxDecoration(
+                            color: isDarkMode
+                                ? AppColors.primary
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              if (!isDarkMode)
+                                BoxShadow(
+                                  color: Colors.black.withAlpha(10),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                            ],
+                          ),
+                          labelColor: isDarkMode
+                              ? Colors.white
+                              : AppColors.primary,
+                          unselectedLabelColor: isDarkMode
+                              ? Colors.white54
+                              : Colors.grey,
+                          labelStyle: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 13,
+                          ),
+                          tabs: const [
+                            Tab(text: "Posts", height: 40),
+                            Tab(text: "Compétences", height: 40),
+                            Tab(text: "Expériences", height: 40),
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // Placeholder pour le contenu
-                      Container(
-                        padding: const EdgeInsets.all(40),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.darkCard : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.article_outlined,
-                                size: 60,
-                                color: isDarkMode
-                                    ? Colors.white.withValues(alpha: 0.3)
-                                    : AppColors.textTertiary,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No posts yet',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDarkMode
-                                      ? Colors.white60
-                                      : AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Start sharing your thoughts',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: isDarkMode
-                                      ? Colors.white38
-                                      : AppColors.textTertiary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                      isDarkMode: isDarkMode,
+                      height:
+                          60, // 40 (tab height) + 16 (vertical margin) + 4 (padding/safety)
+                    ),
+                    pinned: true,
                   ),
-                ),
-              ],
+                ];
+              },
+              body: TabBarView(
+                children: [
+                  // Posts Tab
+                  PostsView(
+                    isMyPosts: isOwnProfile,
+                
+                  ),
+                  // Skills Tab
+                  Center(child: CustomText(text: "Compétences")),
+                  // Experiences Tab
+                  Center(child: CustomText(text: "Expériences")),
+                ],
+              ),
             ),
           ),
         );
@@ -182,17 +178,23 @@ class _ProfileHomeState extends ConsumerState<ProfileHome> {
     }
     final role = await localdb.getUserRole();
     if (role == UserRole.member) {
-      setState(() {
-        isMember = true;
-        memberInfos = localData as Member;
-        isLoading = false;
-      });
+      if (mounted) {
+        Future.microtask(
+          () => setState(() {
+            isMember = true;
+            memberInfos = localData as Member;
+            isLoading = false;
+          }),
+        );
+      }
     } else {
-      setState(() {
-        isMember = false;
-        companyInfos = localData as Company;
-        isLoading = false;
-      });
+      Future.microtask(
+        () => setState(() {
+          isMember = false;
+          companyInfos = localData as Company;
+          isLoading = false;
+        }),
+      );
     }
   }
 
@@ -241,40 +243,37 @@ class _ProfileHomeState extends ConsumerState<ProfileHome> {
   }
 }
 
-class _TabItem extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget _tabBar;
   final bool isDarkMode;
+  final double height;
 
-  const _TabItem({
-    required this.label,
-    required this.isSelected,
+  _SliverTabBarDelegate(
+    this._tabBar, {
     required this.isDarkMode,
+    this.height = 65,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          gradient: isSelected ? AppGradients.primaryGradient : null,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isSelected
-                ? Colors.white
-                : isDarkMode
-                ? Colors.white60
-                : AppColors.textSecondary,
-          ),
-        ),
-      ),
+  double get minExtent => height;
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      height: height,
+      color: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      child: _tabBar,
     );
+  }
+
+  @override
+  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.isDarkMode != isDarkMode;
   }
 }

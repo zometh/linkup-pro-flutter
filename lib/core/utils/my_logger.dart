@@ -1,4 +1,3 @@
-
 import 'package:logger/logger.dart';
 
 enum LogType { trace, debug, info, warning, error, fatal }

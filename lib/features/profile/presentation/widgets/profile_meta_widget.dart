@@ -2,7 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/entities/company.dart';
-import 'package:linkup_pro/features/profile/domain/mapping/get_icon_by_sector.dart';
+import 'package:linkup_pro/features/profile/data/mapping/get_icon_by_sector.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_meta_info.dart';
 
 

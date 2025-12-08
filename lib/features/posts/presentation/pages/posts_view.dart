@@ -13,7 +13,9 @@ import 'package:linkup_pro/main.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PostsView extends ConsumerStatefulWidget {
-  const PostsView({super.key});
+  final bool isMyPosts;
+  
+  const PostsView({super.key, this.isMyPosts = false});
 
   @override
   ConsumerState<PostsView> createState() => _PostsViewState();
@@ -69,7 +71,7 @@ class _PostsViewState extends ConsumerState<PostsView>
       child: isInitialLoading
           ? PostShimmerLoading()
           : posts.isEmpty
-          ? const NoDataWidget()
+          ? NoDataWidget(onPressed: () => fetchPosts())
           : CustomScrollView(
               controller: _scrollController,
               slivers: [
@@ -131,9 +133,13 @@ class _PostsViewState extends ConsumerState<PostsView>
   Future<void> getUserId() async {
     final storage = GetIt.I<LocalDBService>();
     final userId = await storage.getUserId();
-    setState(() {
-      connectedUserId = userId;
-    });
+    if (mounted) {
+      Future.microtask(() {
+        setState(() {
+          connectedUserId = userId;
+        });
+      });
+    }
   }
 
   fetchPosts() async {
@@ -151,7 +157,7 @@ class _PostsViewState extends ConsumerState<PostsView>
     try {
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
-          .fetchPosts(_currentPage, _postsPerPage);
+          .fetchPosts(_currentPage, _postsPerPage, widget.isMyPosts);
       Future.microtask(() {
         if (mounted) {
           setState(() {
@@ -179,51 +185,32 @@ class _PostsViewState extends ConsumerState<PostsView>
     io.off("deletePost");
     io.off("postUpdated");
 
-    // Puis attacher les nouveaux
     io.on("newPost", (d) {
       if (d is Map<String, dynamic>) {
         insertNewPost(d);
         io.joinRoom("postSubscribe", {"roomId": d["id"]});
-      } else {
-        print("⚠️ Invalid data format for newPost: $d");
-      }
+      } else {}
     });
     io.on("postUpdated", (v) {
       if (v is Map<String, dynamic>) {
         updatePost(v);
-      } else {
-        print("⚠️ Invalid data format for postUpdated: $v");
-      }
+      } else {}
     });
     io.on("deletePost", (v) {
       if (v is String) {
         removePost(v);
-      } else {
-        print("⚠️ Invalid data format for deletePost: $v");
-      }
+      } else {}
     });
   }
 
   removePost(String postId) {
-    print('🗑️ Tentative de suppression du post: $postId');
-    print('📋 Nombre de posts avant suppression: ${posts.length}');
-
     final existingIndex = posts.indexWhere((post) => post.id == postId);
 
     if (existingIndex != -1) {
-      print('✅ Post trouvé à l\'index $existingIndex, suppression en cours');
       setState(() {
         posts.removeAt(existingIndex);
       });
-      print(
-        '✅ Post supprimé avec succès. Nombre de posts restants: ${posts.length}',
-      );
-    } else {
-      print('⚠️ Post $postId non trouvé dans la liste');
-      print(
-        '📋 IDs des posts actuels: ${posts.map((p) => p.id).take(5).toList()}...',
-      );
-    }
+    } else {}
   }
 
   void _onScroll() {

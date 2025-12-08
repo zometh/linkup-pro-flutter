@@ -12,10 +12,10 @@ class FetchPost extends _$FetchPost {
     return false;
   }
 
-  Future<List<Post>> fetchPosts(int? page, int? limit) async {
+  Future<List<Post>> fetchPosts(int? page, int? limit, bool isMyPosts) async {
     Future.microtask(() => state = true);
     try {
-      final result = await _postImplement.getPosts(page, limit);
+      final result = await _postImplement.getPosts(page, limit, isMyPosts);
       final posts = result.fold(
         (failure) {
           // Handle failure

@@ -1,10 +1,14 @@
+import 'dart:io';
+
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/utils/types/error_api_type.dart';
-import 'package:linkup_pro/features/comments/data/comment.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment.dart';
 
 import '../../../core/network/api/api_client.dart';
 import 'comment_repository.dart';
+import 'entity/comment_creation_entity.dart';
 
 class CommentRepositoryImplement implements CommentRepository {
   final apiClient = GetIt.I<ApiClient>();
@@ -23,9 +27,11 @@ class CommentRepositoryImplement implements CommentRepository {
   }
 
   @override
-  Future<Either<Failure, Comment>> addComment(String postId, String content, String? parentId) async{
+  Future<Either<Failure, Comment>> addComment(CommentCreationEntity c) async{
     try{
-      final response = await apiClient.post("/comments/post/$postId", data: {'content': content, 'parentId': parentId});
+      final formData = FormData.fromMap(c.toMap());
+
+      final response = await apiClient.post("/comments/post/${c.postId}", data: formData);
       //print(response);
       final comment = Comment.fromJson(response);
       return Right(comment);

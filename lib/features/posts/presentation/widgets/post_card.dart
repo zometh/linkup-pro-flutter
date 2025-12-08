@@ -15,8 +15,6 @@ import 'package:linkup_pro/features/profile/presentation/widgets/expansion_text.
 import 'package:linkup_pro/main.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
-
 class PostCard extends StatefulWidget {
   final String userId;
   final bool isPostDetails;
@@ -43,16 +41,14 @@ class PostCard extends StatefulWidget {
 
 class _PostCardState extends State<PostCard> {
   String get userId => widget.userId;
-  bool _isExpanded = false;
-
 
   final io = GetIt.I<SocketService>();
-@override
+  @override
   void initState() {
     super.initState();
     io.joinRoom("postSubscribe", {"roomId": widget.post.id});
-
   }
+
   @override
   void dispose() {
     io.joinRoom("postUnsubscribe", {"roomId": widget.post.id});
@@ -69,13 +65,14 @@ class _PostCardState extends State<PostCard> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-
         return GestureDetector(
-          onTap: widget.isPostDetails ? null : () {
-           if(mounted)context.push("/post/${post.id}");
-          },
+          onTap: widget.isPostDetails
+              ? null
+              : () {
+                  if (mounted) context.push("/post/${post.id}");
+                },
           child: Container(
-            padding: const .symmetric(vertical: 16),
+            padding: const .symmetric(vertical: 1),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(0),
               gradient: isDark
@@ -94,18 +91,15 @@ class _PostCardState extends State<PostCard> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                 PostHeader(post: post, userId: userId,),
+                PostHeader(post: post, userId: userId),
 
-                //_buildContent(isDark),
                 ExpansionText(text: post.content),
 
                 if (post.files.isNotEmpty) BuildPostFile(files: post.files),
 
-
-                PostsStats(post: post,),
+                PostsStats(post: post),
 
                 if (post.tags.isNotEmpty) PostsTags(tags: post.tags),
-
               ],
             ),
             //),
@@ -114,9 +108,4 @@ class _PostCardState extends State<PostCard> {
       },
     );
   }
-
-
-
-
- 
 }

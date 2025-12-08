@@ -19,6 +19,7 @@ class CustomTextField extends StatefulWidget {
   final double? maxHeight;
   final double? maxWidth;
   final double? maxLength;
+  final Widget? suffix;
 
   const CustomTextField({
     super.key,
@@ -30,11 +31,11 @@ class CustomTextField extends StatefulWidget {
     this.filled = true,
     this.prefixIcon,
     this.maxLength,
-    this.borderRadius = 10
-    ,
+    this.borderRadius = 10,
     this.maxLines = 1,
     this.maxHeight,
     this.maxWidth,
+    this.suffix
   });
 
   @override
@@ -42,6 +43,7 @@ class CustomTextField extends StatefulWidget {
 }
 
 class _CustomTextFieldState extends State<CustomTextField> {
+  Widget? get suffix => widget.suffix;
   bool isHidden = true;
   int textLength = 0;
 
@@ -67,6 +69,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         style: GoogleFonts.getFont('Poppins',
             textStyle: TextStyle(color: context.isDarkMode ? Colors.white : AppColors.textPrimary, fontSize: 14)),
         decoration: InputDecoration(
+          suffix: suffix,
           filled: true,
           fillColor: context.isDarkMode
               ? Color(0xFF1E293B).withValues(alpha: .5) // Gris foncé semi-transparent en mode sombre

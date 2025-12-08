@@ -1,5 +1,3 @@
-
-
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
@@ -16,22 +14,25 @@ class ApiClient {
   final localDb = GetIt.instance.get<LocalDBService>();
 
   ApiClient()
-      : _dio = Dio(
-    BaseOptions(
-      baseUrl: ApiConstants.baseUrl,
-      sendTimeout: const Duration(seconds: 10),
-      connectTimeout: const Duration(seconds: 10),
-      receiveTimeout: const Duration(seconds: 10),
-      responseType: ResponseType.json,
-    ),
-  ) {
+    : _dio = Dio(
+        BaseOptions(
+          baseUrl: ApiConstants.baseUrl,
+          sendTimeout: const Duration(seconds: 10),
+          connectTimeout: const Duration(seconds: 10),
+          receiveTimeout: const Duration(seconds: 10),
+          responseType: ResponseType.json,
+          headers: {
+            'ngrok-skip-browser-warning': 'true', // Requis pour ngrok
+          },
+        ),
+      ) {
     _dio.interceptors.add(ApiInterceptors());
   }
 
   Future<Map<String, dynamic>> delete(
-      String path, {
-        Map<String, dynamic>? queryParams,
-      }) async {
+    String path, {
+    Map<String, dynamic>? queryParams,
+  }) async {
     try {
       final token = await localDb.getToken();
       if (token == null) {
@@ -40,93 +41,43 @@ class ApiClient {
       final response = await _dio.delete(
         path,
         queryParameters: queryParams,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: getOption(token),
       );
       return response.data;
     } on DioException catch (e) {
-      NetworkException exception = NetworkException(exception: e);
-
-      if (exception.errors == null) {
-        showToast(
-          description: exception.message,
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-      } else {
-        for (final error in exception.errors!) {
-          showToast(
-            description: error,
-            type: ToastificationType.error,
-            style: ToastificationStyle.fillColored,
-          );
-        }
-      }
-
-      throw NetworkException(exception: e);
+      manageException(e);
+      return {};
     }
   }
 
   Future<Map<String, dynamic>> post(
-      String path, {
-        required dynamic data,
-      }) async {
+    String path, {
+    required dynamic data,
+  }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.post(
         path,
         data: data,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: token != null ? getOption(token) : null,
       );
       return response.data;
     } on DioException catch (e) {
-      NetworkException exception = NetworkException(exception: e);
-
-      if (exception.errors == null) {
-        showToast(
-          description: exception.message,
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-      } else {
-        for (final error in exception.errors!) {
-          showToast(
-            description: error,
-            type: ToastificationType.error,
-            style: ToastificationStyle.fillColored,
-          );
-        }
-      }
-
-      throw NetworkException(exception: e);
+      manageException(e);
+      return {};
     }
   }
 
-
   Future<List<Map<String, dynamic>>> get(
-      String path, {
-        Map<String, dynamic>? queryParams,
-      }) async {
+    String path, {
+    Map<String, dynamic>? queryParams,
+  }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.get(
         path,
         queryParameters: queryParams,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: token != null ? getOption(token) : null,
       );
       final data = response.data;
 
@@ -145,107 +96,82 @@ class ApiClient {
           return (data['result'] as List).cast<Map<String, dynamic>>();
         }
       }
-
       return <Map<String, dynamic>>[];
     } on DioException catch (e) {
-      NetworkException exception = NetworkException(exception: e);
-
-      if (exception.errors == null) {
-        showToast(
-          description: exception.message,
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-      } else {
-        for (final error in exception.errors!) {
-          showToast(
-            description: error,
-            type: ToastificationType.error,
-            style: ToastificationStyle.fillColored,
-          );
-        }
-      }
-
-      throw NetworkException(exception: e);
+      manageException(e);
+      return [];
     }
   }
 
   Future<Map<String, dynamic>> getOne(
-      String path, {
-        Map<String, dynamic>? queryParams,
-      }) async {
+    String path, {
+    Map<String, dynamic>? queryParams,
+  }) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.get(
         path,
         queryParameters: queryParams,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: token != null ? getOption(token) : null,
       );
-
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      NetworkException exception = NetworkException(exception: e);
-
-      if (exception.errors == null) {
-        showToast(
-          description: exception.message,
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-      } else {
-        for (final error in exception.errors!) {
-          showToast(
-            description: error,
-            type: ToastificationType.error,
-            style: ToastificationStyle.fillColored,
-          );
-        }
-      }
-
-      throw NetworkException(exception: e);
+      manageException(e);
+      return {};
     }
   }
 
-  Future<Map<String, dynamic>> put( String path,
-    dynamic data,
-  ) async {
+  Future<Map<String, dynamic>> put(String path, dynamic data) async {
     final token = await localDb.getToken();
     try {
       final response = await _dio.patch(
         path,
         data: data,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        ),
+        options: token != null ? getOption(token) : null,
       );
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
-      NetworkException exception = NetworkException(exception: e);
-      if (exception.errors == null) {
-        showToast(
-          description: exception.message,
-          type: ToastificationType.error,
-          style: ToastificationStyle.fillColored,
-        );
-      } else {
-        for (final error in exception.errors!) {
-          showToast(
-            description: error,
-            type: ToastificationType.error,
-            style: ToastificationStyle.fillColored,
-          );
-        }
-      }
-
-      throw NetworkException(exception: e);
+      manageException(e);
+      return {};
     }
+  }
+
+  manageException(dynamic error) {
+    NetworkException exception = NetworkException(exception: error);
+    if (exception.errors == null) {
+      showSuccess(exception.message);
+    } else {
+      for (final error in exception.errors!) {
+        showError(error);
+      }
+    }
+  }
+
+  void showSuccess(String message) {
+    showToast(
+      description: message,
+      type: ToastificationType.error,
+      style: ToastificationStyle.fillColored,
+    );
+  }
+
+  void showError(dynamic error) {
+    if (error.toString().isNotEmpty) {
+      showToast(
+        description: error,
+        type: ToastificationType.error,
+        style: ToastificationStyle.fillColored,
+      );
+    }
+  }
+
+  Options getOption(String token) {
+    return Options(
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+        'ngrok-skip-browser-warning': 'true', // Requis pour ngrok
+      },
+    );
   }
 }

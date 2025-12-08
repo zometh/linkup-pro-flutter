@@ -4,19 +4,17 @@ import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart'
 import 'package:linkup_pro/features/bottom_nav_bar/widgets/bottom_navbar.dart'
     as navbar_widget;
 import 'package:linkup_pro/features/home_page/presentation/widgets/home_appbar.dart';
-import 'package:linkup_pro/features/messages/presentation/pages/messages_home.dart';
-import 'package:linkup_pro/features/offers/presentation/pages/offers_home.dart';
-import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
-import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart';
+import 'package:linkup_pro/features/messages/presentation/pages/conversations_page.dart';
+
 import 'package:linkup_pro/features/search/presentation/pages/search_home.dart';
 import 'package:linkup_pro/main.dart';
 
 final List<Widget> pages = [
-  const PostsView(),
+  const FlutterLogo()/*PostsView()*/,
   const SearchHome(),
-  const MessagesHome(),
-  const OffersHome(),
-  ProfileHome(isOwnProfile: true),
+  const ConversationsPage(),
+  const FlutterLogo()/*OffersHome()*/,
+  const FlutterLogo()/*ProfileHome(isOwnProfile: true)*/,
 ];
 
 class HomePage extends ConsumerStatefulWidget {
@@ -72,7 +70,7 @@ class _HomePageState extends ConsumerState<HomePage>
 
     final double navBarHeight = MediaQuery.of(context).size.height /* * 0.095*/;
     final int currentIndex = ref.watch(bottomNavbarProvider);
-    final availableHeight = MediaQuery.of(context).size.height * 0.08;
+    final availableHeight = MediaQuery.of(context).size.height * 0.05;
 
     final bool offstage = !isNavbarVisible && _controller.isDismissed;
 
@@ -89,38 +87,27 @@ class _HomePageState extends ConsumerState<HomePage>
                   )
                 : null)
           : null,
-      body: Stack(
-        children: [
-          IndexedStack(index: currentIndex, children: pages),
-
-         
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Offstage(
-              offstage: offstage,
-              child: IgnorePointer(
-                ignoring: offstage,
-                child: SlideTransition(
-                  position: _offsetAnimation,
-                  child: FadeTransition(
-                    opacity: _controller,
-                    child: Padding(
-                      padding: EdgeInsets.only(bottom: 0, left: 1, right: 1),
-                      child: SizedBox(
-                        width: context.screenWidth,
-                        height: navBarHeight * 0.10,
-                        // width: 300,
-                        child: const navbar_widget.BottomNavbar(),
-                      ),
-                    ),
-                  ),
+      body: IndexedStack(index: currentIndex, children: pages),
+      bottomNavigationBar: Offstage(
+        offstage: offstage,
+        child: IgnorePointer(
+          ignoring: offstage,
+          child: SlideTransition(
+            position: _offsetAnimation,
+            child: FadeTransition(
+              opacity: _controller,
+              child: Padding(
+                padding: EdgeInsets.only(bottom: 0, left: 1, right: 1),
+                child: SizedBox(
+                  width: context.screenWidth,
+                  height: navBarHeight * 0.09,
+                  // width: 300,
+                  child: const navbar_widget.BottomNavbar(),
                 ),
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

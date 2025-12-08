@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment_creation_entity.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../data/comment_repository_implement.dart';
@@ -12,10 +15,10 @@ class CreateComment extends _$CreateComment {
   @override
   bool build() => false;
 
-  Future<dynamic> createComment(String postId, String content, String? parentId) async {
+  Future<dynamic> createComment(CommentCreationEntity comment) async {
     state = true;
     try {
-      final result = await commentImplement.addComment(postId, content, parentId);
+      final result = await commentImplement.addComment(comment);
       return result.fold(
               (falilure) => null,
               (comment) => comment

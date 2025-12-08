@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 import '../../data/comment_repository_implement.dart';
 
 final fetchSubCommentsProvider = Provider.autoDispose<FetchSubCommentsNotifier>(

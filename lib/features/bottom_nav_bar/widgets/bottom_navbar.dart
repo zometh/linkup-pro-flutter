@@ -43,7 +43,7 @@ class BottomNavbar extends ConsumerWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: List.generate(5, (index) {
@@ -62,7 +62,7 @@ class BottomNavbar extends ConsumerWidget {
                 icon: FontAwesomeIcons.message,
                 activeIcon: FontAwesomeIcons.solidMessage,
                 label: 'messages'.tr(),
-                badgeCount: 3,
+                badgeCount: 2,
               ),
               _NavItemData(
                 icon: FontAwesomeIcons.briefcase,
@@ -126,9 +126,11 @@ class BottomNavbar extends ConsumerWidget {
                               top: 0,
                               right: 0,
                               child: Container(
-                                padding: const .symmetric(
-                                  horizontal: 2,
-                                  vertical: 2,
+                                padding: const .fromLTRB(
+                                  3,
+                                  2,
+                                  3,
+                                    3
                                 ),
                                 constraints: const BoxConstraints(
                                   /* minWidth: 16,
@@ -152,7 +154,7 @@ class BottomNavbar extends ConsumerWidget {
                                         : Colors.white,
                                     width: 1.5,
                                   ),
-                                  boxShadow: [
+                                 /* boxShadow: [
                                     BoxShadow(
                                       color: AppColors.error.withValues(
                                         alpha: 0.4,
@@ -160,7 +162,7 @@ class BottomNavbar extends ConsumerWidget {
                                       blurRadius: 4,
                                       spreadRadius: 0,
                                     ),
-                                  ],
+                                  ],*/
                                 ),
                                 child: Align(
                                   alignment: Alignment.center,
@@ -207,27 +209,7 @@ class BottomNavbar extends ConsumerWidget {
                               : null,
                         ),
                       ),
-                      /*isActive? AnimatedDefaultTextStyle(
-                        duration: const Duration(milliseconds: 200),
-                        curve: Curves.easeOutCubic,
-                        style: TextStyle(
-                          fontSize: isActive ? 9 : 8,
-                          fontWeight: isActive
-                              ? FontWeight.w700
-                              : FontWeight.w500,
-                          color: isActive
-                              ? AppColors.primary
-                              : (isDark
-                                    ? Colors.grey.shade500
-                                    : Colors.grey.shade600),
-                          letterSpacing: isActive ? 0.3 : 0,
-                        ),
-                        child: Text(
-                          item.label,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ) : SizedBox.shrink(),*/
+
                     ],
                   ),
                 ),

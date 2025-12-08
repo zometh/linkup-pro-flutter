@@ -234,7 +234,20 @@
   "contract": "Contract",
   "internship": "Internship",
   "remote": "Remote",
-  "on-site": "On-site"
+  "on-site": "On-site",
+  "hybride": "Hybride",
+  "all_mas": "All",
+  "all_fem": "All",
+  "no_comments_found": "No comments found",
+   "new_like_post_title": "New like on your post",
+  "new_like_post_body": "{name} liked your post.",
+  "new_comment_post_title": "New comment on your post",
+  "new_comment_post_body": "{name} commented on your post.",
+  "new_follower_title": "New follower",
+  "new_follower_body": "{name} started following you.",
+  "add_comment": "Add a comment..."
+
+
 
 
 

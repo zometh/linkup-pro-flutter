@@ -19,7 +19,7 @@ class ExpansionText extends StatefulWidget {
 
 class _ExpansionTextState extends State<ExpansionText> {
   String get content => widget.text;
-  bool get shouldShowMore => content.length > 200;
+  bool get shouldShowMore => content.length > 175;
   bool _isExpanded = false;
 
   @override
@@ -52,9 +52,7 @@ class _ExpansionTextState extends State<ExpansionText> {
                   ? Colors.white.withValues(alpha: .9)
                   : AppColors.textPrimary,
             ),
-            crossFadeState: _isExpanded
-                ? .showSecond
-                : .showFirst,
+            crossFadeState: _isExpanded ? .showSecond : .showFirst,
             duration: const Duration(milliseconds: 300),
           ),
           if (shouldShowMore) ...[

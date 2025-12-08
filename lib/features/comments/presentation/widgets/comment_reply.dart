@@ -2,7 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
-import 'package:linkup_pro/features/comments/data/comment.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment_creation_entity.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../../../core/widgets/custom_text.dart';
@@ -69,8 +70,8 @@ class _CommentReplyState extends State<CommentReply> {
 
   sendReply() async{
     final commentImplement = GetIt.I<CommentRepositoryImplement>();
-    final result = await commentImplement.addComment(
-        widget.comment.postId, _replyController.text.trim(), widget.comment.id);
+    final CommentCreationEntity comment = CommentCreationEntity(content: _replyController.text.trim(), postId: widget.comment.postId,parentId: widget.comment.id);
+    final result = await commentImplement.addComment(comment);
     result.fold((failure) {
       // Show error message
 

@@ -11,7 +11,7 @@ import 'package:linkup_pro/features/posts/presentation/widgets/one_post_shimmer.
 import 'package:linkup_pro/features/posts/presentation/widgets/post_card.dart';
 import 'package:linkup_pro/main.dart';
 
-import '../../../comments/data/comment.dart';
+import '../../../comments/data/entity/comment.dart';
 import '../widgets/no_data_widget.dart';
 
 class PostDetailsPage extends ConsumerStatefulWidget {
