@@ -78,7 +78,7 @@ class _BuildPostFileState extends State<BuildPostFile>
       );
     }
 
-    void _resolveImage(int index, String url) {
+    void resolveImage(int index, String url) {
       if (_aspectRatios.containsKey(index)) return;
       final provider = CachedNetworkImageProvider(url);
       final resolver = provider.resolve(const ImageConfiguration());
@@ -112,7 +112,7 @@ class _BuildPostFileState extends State<BuildPostFile>
     }
 
     if (widget.files.length == 1) {
-      _resolveImage(0, widget.files[0].url);
+      resolveImage(0, widget.files[0].url);
       return InkWell(
         onTap: () {
           Navigator.of(context).push(
@@ -155,7 +155,7 @@ class _BuildPostFileState extends State<BuildPostFile>
             },
             itemCount: widget.files.length,
             itemBuilder: (context, index) {
-              _resolveImage(index, widget.files[index].url);
+              resolveImage(index, widget.files[index].url);
               return InkWell(
                 onTap: () {
                   Navigator.of(context).push(
@@ -189,7 +189,7 @@ class _BuildPostFileState extends State<BuildPostFile>
                       borderRadius: BorderRadius.circular(4),
                       color: isCurrent
                           ? AppColors.primary
-                          : AppColors.primary.withValues(alpha: 0.3),
+                          : AppColors.primary.withAlpha((0.3 * 255).round()),
                     ),
                   )
                   .animate(target: 1.0)

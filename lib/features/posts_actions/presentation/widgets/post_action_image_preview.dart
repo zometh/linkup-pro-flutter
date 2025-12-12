@@ -52,7 +52,7 @@ class PostActionImagePreview extends StatelessWidget {
               top: 12,
               right: 12,
               child: Material(
-                color: Colors.black.withValues(alpha: 0.6),
+                color: Colors.black.withAlpha((0.6 * 255).round()),
                 shape: const CircleBorder(),
                 child: InkWell(
                   onTap: ()=> removeImage.call(),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
+import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_post.dart';
@@ -14,7 +15,7 @@ import 'package:shimmer/shimmer.dart';
 
 class PostsView extends ConsumerStatefulWidget {
   final bool isMyPosts;
-  
+
   const PostsView({super.key, this.isMyPosts = false});
 
   @override
@@ -168,6 +169,7 @@ class _PostsViewState extends ConsumerState<PostsView>
         }
       });
     } catch (error) {
+      MyLogger().log('Erreur fetchPosts: $error', type: LogType.error);
     } finally {
       Future.microtask(() {
         if (mounted) {

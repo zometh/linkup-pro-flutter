@@ -239,8 +239,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
                                   Card(
                                         elevation: 2,
-                                        shadowColor: AppColors.primary
-                                            .withValues(alpha: 0.2),
+                                        shadowColor: AppColors.primary.withAlpha((0.2 * 255).round()),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             12,
@@ -262,64 +261,62 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                               gradient: LinearGradient(
                                                 colors: [
                                                   AppColors.primary,
-                                                  AppColors.primary.withValues(
-                                                    alpha: 0.8,
-                                                  ),
+                                                  AppColors.primary.withAlpha((0.8 * 255).round()),
                                                 ],
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white
-                                                        .withValues(alpha: 0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.public,
-                                                    color: Colors.white,
-                                                    size:
-                                                        constraints.maxWidth *
-                                                        0.06,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width:
-                                                      constraints.maxWidth *
-                                                      0.03,
-                                                ),
-                                                Expanded(
-                                                  child: CustomText(
-                                                    color: Colors.white,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    text: selectedCountry.name,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize:
-                                                        constraints.maxWidth *
-                                                        0.042,
-                                                  ),
-                                                ),
-                                                Icon(
-                                                  Icons
-                                                      .arrow_drop_down_circle_outlined,
-                                                  color: Colors.white,
-                                                  size:
-                                                      constraints.maxWidth *
-                                                      0.06,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      )
+                                               borderRadius:
+                                                   BorderRadius.circular(12),
+                                             ),
+                                             child: Row(
+                                               children: [
+                                                 Container(
+                                                   padding: EdgeInsets.all(8),
+                                                   /*decoration: BoxDecoration(
+-
++                                                    color: Colors.white.withAlpha((0.2 * 255).round()),
+                                                     borderRadius:
+                                                         BorderRadius.circular(
+                                                           8,
+                                                         ),
+                                                   )*/
+                                                   child: Icon(
+                                                     Icons.public,
+                                                     color: Colors.white,
+                                                     size:
+                                                         constraints.maxWidth *
+                                                         0.06,
+                                                   ),
+                                                 ),
+                                                 SizedBox(
+                                                   width:
+                                                       constraints.maxWidth *
+                                                       0.03,
+                                                 ),
+                                                 Expanded(
+                                                   child: CustomText(
+                                                     color: Colors.white,
+                                                     overflow:
+                                                         TextOverflow.ellipsis,
+                                                     text: selectedCountry.name,
+                                                     fontWeight: FontWeight.w600,
+                                                     fontSize:
+                                                         constraints.maxWidth *
+                                                         0.042,
+                                                   ),
+                                                 ),
+                                                 Icon(
+                                                   Icons
+                                                       .arrow_drop_down_circle_outlined,
+                                                   color: Colors.white,
+                                                   size:
+                                                       constraints.maxWidth *
+                                                       0.06,
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                         ),
+                                       )
                                       .animate()
                                       .fadeIn(duration: 500.ms, delay: 900.ms)
                                       .scale(

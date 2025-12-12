@@ -13,7 +13,6 @@ import 'dart:io';
 
 import '../../../../core/widgets/custom_toast.dart';
 
-
 class AddComment extends ConsumerStatefulWidget {
   final String? title;
   final Comment? c;
@@ -68,10 +67,7 @@ class _AddCommentState extends ConsumerState<AddComment> {
                   onPressed: _pickImage,
                   tooltip: 'add_image'.tr(),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: addComment,
-                ),
+                IconButton(icon: const Icon(Icons.send), onPressed: addComment),
               ],
             ),
           ],
@@ -79,13 +75,14 @@ class _AddCommentState extends ConsumerState<AddComment> {
       ),
     );
   }
-  String formatTitle(){
-    if(widget.c != null){
+
+  String formatTitle() {
+    if (widget.c != null) {
       return "$title ${displayNameFor(widget.c!)}";
     }
     return title;
-
   }
+
   Widget _buildImagePreview() {
     final file = File(_pickedImage!.path);
     return Padding(
@@ -116,11 +113,7 @@ class _AddCommentState extends ConsumerState<AddComment> {
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(6),
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 18,
-                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 18),
               ),
             ),
           ),
@@ -143,35 +136,43 @@ class _AddCommentState extends ConsumerState<AddComment> {
         });
       }
     } catch (e) {
-      showToast(description: 'error_occurred'.tr(), type: ToastificationType.error);
+      showToast(
+        description: 'error_occurred'.tr(),
+        type: ToastificationType.error,
+      );
     }
   }
 
-  addComment() async{
-    if(_controller.text.isEmpty && _pickedImage == null) return;
+  addComment() async {
+    if (_controller.text.isEmpty && _pickedImage == null) return;
 
     final content = _controller.text.trim();
-    if(content.isEmpty && _pickedImage == null) return;
+    if (content.isEmpty && _pickedImage == null) return;
     final parentId = widget.c?.id;
-    final CommentCreationEntity comment = CommentCreationEntity(content: content, postId: widget.postId,file: _pickedImage != null ? File(_pickedImage!.path) : null, parentId: parentId ?? null);
+    final CommentCreationEntity comment = CommentCreationEntity(
+      content: content,
+      postId: widget.postId,
+      file: _pickedImage != null ? File(_pickedImage!.path) : null,
+      parentId: parentId,
+    );
 
-    await ref.read(createCommentProvider.notifier).createComment(comment)
-    .then((v) {
-      _controller.clear();
-      setState(() {
-        _pickedImage = null;
-      });
-     // Navigator.of(context).pop(true);
-    })
-    .catchError((e){  
-      MyLogger().log(e.toString(), type : LogType.error);
-      if(mounted){
-        /*showToast(description: 'error_occurred'.tr(),
+    await ref
+        .read(createCommentProvider.notifier)
+        .createComment(comment)
+        .then((v) {
+          _controller.clear();
+          setState(() {
+            _pickedImage = null;
+          });
+          // Navigator.of(context).pop(true);
+        })
+        .catchError((e) {
+          MyLogger().log(e.toString(), type: LogType.error);
+          if (mounted) {
+            /*showToast(description: 'error_occurred'.tr(),
             type: ToastificationType.error
         );*/
-
-      }
-    });
+          }
+        });
   }
-
 }

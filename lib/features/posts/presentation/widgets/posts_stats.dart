@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/like_post.dart';
 
-import '../../../../core/network/api/api_client.dart';
 import '../../../../core/network/websocket/config.dart';
 import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../../../core/utils/my_logger.dart';
 import '../../domain/entities/post.dart';
 
 class PostsStats extends ConsumerStatefulWidget {
@@ -133,7 +130,7 @@ class _PostsStatsState extends ConsumerState<PostsStats>
     bool isAnimating = false,
   }) {
     final defaultColor = isDark
-        ? Colors.white.withValues(alpha: .6)
+        ? Colors.white.withAlpha((0.6 * 255).round())
         : AppColors.textTertiary;
     final color = isActive ? activeColor! : defaultColor;
 

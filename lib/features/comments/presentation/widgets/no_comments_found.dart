@@ -16,7 +16,7 @@ class NoCommentsFound extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
             decoration: BoxDecoration(
               color: isDark
-                  ? Colors.white.withOpacity(0.05)
+                  ? Colors.white.withAlpha((0.05 * 255).round())
                   : Colors.grey.shade100,
               shape: BoxShape.circle,
             ),

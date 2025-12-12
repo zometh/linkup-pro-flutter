@@ -26,8 +26,8 @@ class ProfileUtils {
                   height: 4,
                   decoration: BoxDecoration(
                     color: isDarkMode
-                        ? Colors.white.withValues(alpha: 0.3)
-                        : Colors.black.withValues(alpha: 0.2),
+                        ? Colors.white.withAlpha((0.3 * 255).round())
+                        : Colors.black.withAlpha((0.2 * 255).round()),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),

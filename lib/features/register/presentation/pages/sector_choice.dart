@@ -187,7 +187,7 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.error.withValues(alpha: 0.1),
+                color: AppColors.error.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(
@@ -247,7 +247,7 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
+                color: AppColors.primary.withAlpha((0.1 * 255).round()),
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Icon(

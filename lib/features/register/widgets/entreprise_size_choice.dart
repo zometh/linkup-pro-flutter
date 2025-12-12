@@ -26,10 +26,8 @@ class EntrepriseSizeChoice extends StatelessWidget {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: context.isDarkMode
-            ? Color(0xFF1E293B).withValues(
-                alpha: .5,
-              ) // Gris foncé semi-transparent en mode sombre
-            : AppColors.primary.withValues(alpha: .03),
+            ? Color(0xFF1E293B).withAlpha((0.5 * 255).round()) // Gris foncé semi-transparent en mode sombre
+            : AppColors.primary.withAlpha((0.03 * 255).round()),
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
@@ -56,10 +54,8 @@ class EntrepriseSizeChoice extends StatelessWidget {
         elevation: WidgetStatePropertyAll(4),
         surfaceTintColor: WidgetStatePropertyAll(
           context.isDarkMode
-              ? Color(0xFF1E293B).withValues(
-                  alpha: .5,
-                ) // Gris foncé semi-transparent en mode sombre
-              : AppColors.primary.withValues(alpha: .03),
+              ? Color(0xFF1E293B).withAlpha((0.5 * 255).round()) // Gris foncé semi-transparent en mode sombre
+              : AppColors.primary.withAlpha((0.03 * 255).round()),
         ),
         shape: WidgetStatePropertyAll(
           RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),

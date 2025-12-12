@@ -25,7 +25,7 @@ class ProfileActionButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Material(
-          color: Colors.white.withValues(alpha: 0.15),
+          color: Colors.white.withAlpha((0.15 * 255).round()),
           child: InkWell(
             onTap: onPressed,
             borderRadius: BorderRadius.circular(12),
@@ -35,7 +35,7 @@ class ProfileActionButton extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withAlpha((0.2 * 255).round()),
                   width: 1,
                 ),
               ),
@@ -47,4 +47,3 @@ class ProfileActionButton extends StatelessWidget {
     );
   }
   }
-

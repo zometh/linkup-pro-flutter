@@ -7,6 +7,7 @@ import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
 import 'package:linkup_pro/features/login/data/auth_repository_implement.dart';
 import 'package:linkup_pro/features/messages/domain/repos_implementation/conversation_repository_implement.dart';
+import 'package:linkup_pro/features/messages/domain/repos_implementation/message_repository_implement.dart';
 import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implementations/post_repository_implementaion.dart';
 import 'package:linkup_pro/features/register/data/repos/register_repository_implement.dart';
 import 'package:linkup_pro/features/report/domain/implementations/report_repository_implement.dart';
@@ -31,4 +32,7 @@ void setupGetIt() {
   getIt.registerLazySingleton<ReportRepositoryImplement>(() => ReportRepositoryImplement());
   getIt.registerLazySingleton<AuthService>(() => AuthService());
   getIt.registerLazySingleton<ConversationRepositoryImplement>(() => ConversationRepositoryImplement());
+  getIt.registerLazySingleton<MessageRepositoryImplement>(() => MessageRepositoryImplement());
+
+
 }

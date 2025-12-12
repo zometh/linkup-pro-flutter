@@ -40,7 +40,7 @@ class ApiClient {
       }
       final response = await _dio.delete(
         path,
-        queryParameters: queryParams,
+        data: queryParams,
         options: getOption(token),
       );
       return response.data;

@@ -44,10 +44,10 @@ class SectorCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: color.withValues(alpha: 0.6), width: 1.3),
+            border: Border.all(color: color.withAlpha((0.6 * 255).round()), width: 1.3),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
+                color: Colors.black.withAlpha((isDark ? 0.4 : 0.08 * 255).round()),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               ),
@@ -59,7 +59,7 @@ class SectorCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: color.withValues(alpha: 0.15),
+                  color: color.withAlpha((0.15 * 255).round()),
                   shape: BoxShape.circle,
                 ),
                 child: Text(sector.icon, style: const TextStyle(fontSize: 28)),

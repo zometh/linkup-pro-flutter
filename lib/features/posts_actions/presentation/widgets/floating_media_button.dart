@@ -37,8 +37,8 @@ class FloatingMediaButton extends StatelessWidget {
           decoration: BoxDecoration(
             gradient: LinearGradient(
               colors: [
-                theme.colorScheme.primary.withValues(alpha: 0.11),
-                theme.colorScheme.primary.withValues(alpha: 0.055),
+                theme.colorScheme.primary.withAlpha((0.11 * 255).round()),
+                theme.colorScheme.primary.withAlpha((0.055 * 255).round()),
               ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
@@ -50,7 +50,7 @@ class FloatingMediaButton extends StatelessWidget {
               bottomRight: Radius.circular(13),
             ),
             border: Border.all(
-              color: theme.colorScheme.primary.withValues(alpha: 0.18),
+              color: theme.colorScheme.primary.withAlpha((0.18 * 255).round()),
               width: 0.75,
             ),
           ),
@@ -64,7 +64,7 @@ class FloatingMediaButton extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(3),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.13),
+                    color: theme.colorScheme.primary.withAlpha((0.13 * 255).round()),
                     borderRadius: BorderRadius.circular(6),
                   ),
                   child: Icon(icon, size: 14, color: theme.colorScheme.primary),
@@ -75,7 +75,7 @@ class FloatingMediaButton extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w500,
-                  color: theme.colorScheme.primary.withValues(alpha: 0.9),
+                  color: theme.colorScheme.primary.withAlpha((0.9 * 255).round()),
                   letterSpacing: 0.15,
                 ),
               ),

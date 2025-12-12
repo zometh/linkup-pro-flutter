@@ -37,12 +37,8 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
   Member? memberInfos;
   Company? companyInfos;
 
-  // Ajout : onglet sélectionné (0 = posts, 1 = skills, 2 = experiences)
-  int _selectedTab = 0;
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     fetchCurrentUserInfos();
   }
@@ -149,10 +145,7 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
               body: TabBarView(
                 children: [
                   // Posts Tab
-                  PostsView(
-                    isMyPosts: isOwnProfile,
-                
-                  ),
+                  PostsView(isMyPosts: isOwnProfile),
                   // Skills Tab
                   Center(child: CustomText(text: "Compétences")),
                   // Experiences Tab

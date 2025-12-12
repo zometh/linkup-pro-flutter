@@ -13,39 +13,51 @@ class PostActionRepositoryImplementation implements PostActionRepository {
   final _apiClient = GetIt.I<ApiClient>();
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> createPost(PostCreationEntity post) async{
-    try{
+  Future<Either<Failure, Map<String, dynamic>>> createPost(
+    PostCreationEntity post,
+  ) async {
+    try {
       final formData = FormData.fromMap(post.toMap());
       final response = await _apiClient.post("/posts", data: formData);
 
       return Right(response);
-    }catch(e){
+    } catch (e) {
       return Left(Failure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> deletePost(String postId) async{
-    try{
+  Future<Either<Failure, Map<String, dynamic>>> deletePost(
+    String postId,
+  ) async {
+    try {
       final response = await _apiClient.delete("/posts/$postId");
       return Right(response);
-    }catch(e){
+    } catch (e) {
       return Left(Failure(e.toString()));
     }
   }
 
   @override
-  Future<Either<Failure, Map<String, dynamic>>> updatePost(PostCreationEntity post, List<String> filesToRemove, String id) async{
-   try{
-      final formData = FormData.fromMap({
-        ...post.toMap(),
-        'filesToRemove[]': filesToRemove,
-      });
+  Future<Either<Failure, Map<String, dynamic>>> updatePost(
+    PostCreationEntity post,
+    List<String> filesToRemove,
+    String id,
+  ) async {
+    try {
+      final Map<String, dynamic> data = {...post.toMap()};
+
+      if (filesToRemove.isNotEmpty) {
+        data['filesToRemove'] = filesToRemove;
+      }
+
+      final formData = FormData.fromMap(data);
       final response = await _apiClient.put("/posts/$id", formData);
       return Right(response);
-    }catch(e){
+    } catch (e) {
       return Left(Failure(e.toString()));
-   }
+    }
   }
+
   // Implementation details would go here
 }

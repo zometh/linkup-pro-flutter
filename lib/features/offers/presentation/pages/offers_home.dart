@@ -18,7 +18,7 @@ class OffersHome extends StatefulWidget {
 class _OffersHomeState extends State<OffersHome> {
   String _selectedFilter = 'Tous';
   String _searchQuery = '';
-  List<JobOffer> _offers = List.from(mockJobOffers);
+  final List<JobOffer> _offers = List.from(mockJobOffers);
   final _searchController = TextEditingController();
   final _scrollController = ScrollController();
   bool _showSavedOnly = false;
@@ -199,13 +199,13 @@ class _OffersHomeState extends State<OffersHome> {
                   Row(
                     children: [
                       _buildSavedButton(isDark),
-                     /* const SizedBox(width: 8),
+                      /* const SizedBox(width: 8),
                       _buildNotificationButton(isDark),*/
                     ],
                   ),
                 ],
               ),
-             //const SizedBox(height: 16),
+              //const SizedBox(height: 16),
               _buildSearchField(isDark),
             ],
           ),
@@ -261,25 +261,6 @@ class _OffersHomeState extends State<OffersHome> {
     );
   }
 
-  Widget _buildNotificationButton(bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: isDark ? AppColors.darkCard : AppColors.lightBackground,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Badge(
-        smallSize: 6,
-        backgroundColor: AppColors.primary,
-        child: Icon(
-          Icons.notifications_none,
-          color: isDark ? Colors.white70 : AppColors.textSecondary,
-          size: 20,
-        ),
-      ),
-    );
-  }
-
   Widget _buildSearchField(bool isDark) {
     return Row(
       spacing: 3,
@@ -304,7 +285,7 @@ class _OffersHomeState extends State<OffersHome> {
                   color: isDark ? Colors.white38 : AppColors.textTertiary,
                   fontSize: 14,
                 ),
-                
+
                 prefixIcon: Icon(
                   Icons.search,
                   color: isDark ? Colors.white38 : AppColors.textTertiary,
@@ -325,9 +306,7 @@ class _OffersHomeState extends State<OffersHome> {
                         ),
                       )
                     : null,
-                border: OutlineInputBorder(
-                  borderRadius: .circular(30)
-                ),
+                border: OutlineInputBorder(borderRadius: .circular(30)),
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),

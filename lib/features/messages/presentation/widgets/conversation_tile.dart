@@ -23,12 +23,20 @@ class ConversationTile extends StatelessWidget {
 
   String _lastMessagePreview() {
     final lm = conversation.lastMessage?.content;
-    if (lm == null || lm.isEmpty) return 'Aucun message';
+
+    if (lm == null || lm.isEmpty) {
+      if (conversation.lastMessage != null) {
+        return '📷 Photo';
+      }
+      return '';
+    }
+
     return lm;
   }
 
   String _timeLabel() {
-    final ts = conversation.lastMessage?.sentDate ?? conversation.lastMessageDate;
+    final ts =
+        conversation.lastMessage?.sentDate ?? conversation.lastMessageDate;
     if (ts == null) return '';
     final now = DateTime.now();
     final diff = now.difference(ts);
@@ -41,7 +49,8 @@ class ConversationTile extends StatelessWidget {
   }
 
   ImageProvider? _avatarProvider() {
-    final image = conversation.image ?? conversation.lastMessage?.sender.profile?.photo;
+    final image =
+        conversation.image ?? conversation.lastMessage?.sender.profile?.photo;
     if (image == null || image.isEmpty) return null;
     if (image.startsWith('http')) return NetworkImage(image);
     return AssetImage(image) as ImageProvider;
@@ -80,11 +89,15 @@ class ConversationTile extends StatelessWidget {
                 tag: 'avatar_${conversation.id}',
                 child: CircleAvatar(
                   radius: 28,
-                  backgroundColor: AppColors.primary.withAlpha((0.12 * 255).round()),
+                  backgroundColor: AppColors.primary.withAlpha(
+                    (0.12 * 255).round(),
+                  ),
                   backgroundImage: avatar,
                   child: avatar == null
                       ? Text(
-                          conversation.title.isNotEmpty ? conversation.title[0].toUpperCase() : '?',
+                          conversation.title.isNotEmpty
+                              ? conversation.title[0].toUpperCase()
+                              : '?',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 18,
@@ -142,13 +155,18 @@ class ConversationTile extends StatelessWidget {
                         const SizedBox(width: 8),
                         if (conversation.unreadCount > 0)
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 5,
+                            ),
                             decoration: BoxDecoration(
                               color: AppColors.primary,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
-                              conversation.unreadCount > 99 ? '99+' : conversation.unreadCount.toString(),
+                              conversation.unreadCount > 99
+                                  ? '99+'
+                                  : conversation.unreadCount.toString(),
                               style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,

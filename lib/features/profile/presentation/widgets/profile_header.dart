@@ -1,6 +1,5 @@
 import 'dart:ui';
 
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/edit_profile_button.dart';
@@ -47,7 +46,7 @@ class ProfileHeader extends StatelessWidget {
               colors: [
                 AppColors.primary,
                 AppColors.primaryDark,
-                AppColors.primaryDark.withValues(alpha: 0.9),
+                AppColors.primaryDark.withAlpha((0.9 * 255).round()),
               ],
               stops: const [0.0, 0.6, 1.0],
             ),
@@ -62,7 +61,7 @@ class ProfileHeader extends StatelessWidget {
                   height: 120,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.08),
+                    color: Colors.white.withAlpha((0.08 * 255).round()),
                   ),
                 ),
               ),
@@ -74,7 +73,7 @@ class ProfileHeader extends StatelessWidget {
                   height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: Colors.white.withAlpha((0.05 * 255).round()),
                   ),
                 ),
               ),
@@ -133,7 +132,7 @@ class ProfileHeader extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Material(
-          color: Colors.white.withValues(alpha: 0.15),
+          color: Colors.white.withAlpha((0.15 * 255).round()),
           child: InkWell(
             onTap: onTap,
             borderRadius: BorderRadius.circular(12),
@@ -143,7 +142,7 @@ class ProfileHeader extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.2),
+                  color: Colors.white.withAlpha((0.2 * 255).round()),
                   width: 1,
                 ),
               ),
@@ -167,7 +166,7 @@ class ProfileHeader extends StatelessWidget {
         color: isDarkMode ? AppColors.darkBackground : Colors.white,
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
+            color: Colors.black.withAlpha((0.2 * 255).round()),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -183,8 +182,8 @@ class ProfileHeader extends StatelessWidget {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                       colors: [
-                        AppColors.primaryLight.withValues(alpha: 0.3),
-                        AppColors.primary.withValues(alpha: 0.1),
+                        AppColors.primaryLight.withAlpha((0.3 * 255).round()),
+                        AppColors.primary.withAlpha((0.1 * 255).round()),
                       ],
                     )
                   : null,
@@ -259,20 +258,17 @@ class ProfileHeader extends StatelessWidget {
           isDarkMode: isDarkMode,
         ),
         const SizedBox(width: 8),
-       const FollowButton(),
+        const FollowButton(),
       ],
     );
   }
-
-  
-
 }
 
 class _DotPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.white.withValues(alpha: 0.03)
+      ..color = Colors.white.withAlpha((0.03 * 255).round())
       ..style = PaintingStyle.fill;
 
     const spacing = 30.0;

@@ -126,7 +126,6 @@ class _PostHeaderState extends State<PostHeader> {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-          
                       ],
                     ),
                     Row(
@@ -137,7 +136,9 @@ class _PostHeaderState extends State<PostHeader> {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: .1),
+                            color: AppColors.primary.withAlpha(
+                              (0.1 * 255).round(),
+                            ),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: CustomText(
@@ -180,46 +181,131 @@ class _PostHeaderState extends State<PostHeader> {
                   curve: Curves.easeInOut,
                   duration: 300.ms,
                 ),
-                style: ButtonStyle(),
+                icon: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: isDark
+                        ? Colors.white.withAlpha((0.05 * 255).round())
+                        : Colors.black.withAlpha((0.03 * 255).round()),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.more_vert_rounded,
+                    size: 20,
+                    color: isDark ? Colors.white70 : AppColors.textSecondary,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                elevation: 8,
+                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
+                offset: const Offset(0, 8),
                 onSelected: action,
                 itemBuilder: (context) => [
-                  if(isUserPostOwner)PopupMenuItem(
-                    value: 1,
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        const Icon(Icons.delete),
-
-                        CustomText(
-
-                              text: "delete".tr()
-                           
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  if(isUserPostOwner) PopupMenuItem(
-                    value: 2,
-                    child: Row(
-                      spacing: 10,
-                      children: [
-                        const Icon(Icons.edit),
-                        CustomText(text:"edit".tr()),
-                      ],
-                    ),
-                  ),
-                  if(!isUserPostOwner) PopupMenuItem(
-                    value: 3,
+                  if (isUserPostOwner)
+                    PopupMenuItem(
+                      value: 2,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                       child: Row(
-                        spacing: 10,
                         children: [
-                          const Icon(FontAwesomeIcons.triangleExclamation),
-                          CustomText(text: "report".tr()),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: AppColors.primary.withAlpha(
+                                (0.1 * 255).round(),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.edit_rounded,
+                              size: 18,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          CustomText(
+                            text: "edit".tr(),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.textPrimary,
+                          ),
                         ],
-                      )
-                  )
-                  
+                      ),
+                    ),
+                  if (isUserPostOwner)
+                    PopupMenuItem(
+                      value: 1,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withAlpha((0.1 * 255).round()),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              Icons.delete_rounded,
+                              size: 18,
+                              color: Colors.red,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          CustomText(
+                            text: "delete".tr(),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.textPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (!isUserPostOwner)
+                    PopupMenuItem(
+                      value: 3,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.orange.withAlpha(
+                                (0.1 * 255).round(),
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: const Icon(
+                              FontAwesomeIcons.triangleExclamation,
+                              size: 16,
+                              color: Colors.orange,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          CustomText(
+                            text: "report".tr(),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.textPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ],
@@ -230,19 +316,17 @@ class _PostHeaderState extends State<PostHeader> {
   }
 
   previewUser() async {
-
     final postImplement = GetIt.I<PostRepositoryImpl>();
     final response = await postImplement.getUserPreview(widget.post.userId);
     userPreviewAdds = response.fold(
       (failure) {
-      
         return null;
       },
       (data) {
         return data;
       },
     );
-    if(userPreviewAdds != null){
+    if (userPreviewAdds != null) {
       if (mounted) {
         showModalBottomSheet(
           context: context,
@@ -266,26 +350,29 @@ class _PostHeaderState extends State<PostHeader> {
         showToast(
           description: 'post_deleted_successfully'.tr(),
           type: ToastificationType.success,
-
         );
       }
     });
   }
 
   action(int value) async {
-    if(value == 3){
-      MyNavigator(context).navigateTo(ReportPage(reportType: ReportContentType.publication));
+    if (value == 3) {
+      MyNavigator(
+        context,
+      ).navigateTo(ReportPage(reportType: ReportContentType.publication));
       return;
     }
     if (isUserPostOwner && value == 1) {
       await deletePost();
       return;
     }
-    if(isUserPostOwner && value == 2){
-      MyNavigator(context).navigateTo( PostActionPage(isEdit: true, postId: widget.post.id,));
-      return ;
+    if (isUserPostOwner && value == 2) {
+      MyNavigator(
+        context,
+      ).navigateTo(PostActionPage(isEdit: true, postId: widget.post.id));
+      return;
     }
-    
+
     final usersImplements = GetIt.I<UsersRepositoryImpl>();
     final response = await usersImplements.followOrUnfollow(widget.post.userId);
     response.fold((failure) {}, (isFollowed) {
@@ -295,12 +382,11 @@ class _PostHeaderState extends State<PostHeader> {
       });
 
       showToast(
-        description: (isFollowed ? "followed_successfully" : "unfollowed_successfully")
-            .tr(namedArgs: {"name": displayName}),
+        description:
+            (isFollowed ? "followed_successfully" : "unfollowed_successfully")
+                .tr(namedArgs: {"name": displayName}),
         type: ToastificationType.info,
-
       );
-
     });
   }
 }

@@ -13,7 +13,7 @@ class EditProfileButton extends StatelessWidget {
       child: BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
         child: Material(
-          color: Colors.white.withValues(alpha: 0.2),
+          color: Colors.white.withAlpha((0.2 * 255).round()),
           child: InkWell(
             onTap: () {},
             borderRadius: BorderRadius.circular(12),
@@ -22,7 +22,7 @@ class EditProfileButton extends StatelessWidget {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: Colors.white.withValues(alpha: 0.3),
+                  color: Colors.white.withAlpha((0.3 * 255).round()),
                   width: 1,
                 ),
               ),

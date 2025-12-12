@@ -4,17 +4,17 @@ import 'package:linkup_pro/features/posts_actions/domain/enums/post_type.dart';
 
 class Post {
   final String id;
-   String content;
+  String content;
   final DateTime publicationDate;
-   bool isFollowed;
+  bool isFollowed;
   int likesCount;
-   int commentsCount;
-   int sharesCount;
-   bool isLiked = false;
-   List<PostFile> files;
+  int commentsCount;
+  int sharesCount;
+  bool isLiked = false;
+  List<PostFile> files;
   final String userId;
-   PostType type;
-   List<String> tags;
+  PostType type;
+  List<String> tags;
   final PostOwner owner;
 
   Post({
@@ -50,9 +50,9 @@ class Post {
       userId: json['owner']['id'], // Changed: get userId from owner.id
       tags: List<String>.from(json['tags']),
       owner: PostOwner.fromJson(json['owner']),
-        isLiked: json['isLiked'] ?? false,
+      isLiked: json['isLiked'] ?? false,
     );
-   
+
     return post;
   }
   toMap() {
@@ -68,9 +68,9 @@ class Post {
       'tags': tags,
     };
   }
+
   @override
   String toString() {
-    // TODO: implement toString
     return ""
         "id: $id\n"
         "content: $content\n"
@@ -83,7 +83,6 @@ class Post {
         "tags: $tags\n"
         "isLiked: $isLiked\n"
         "isFollowed: $isFollowed\n"
-        "type: $type\n"
-        ;
+        "type: $type\n";
   }
 }

@@ -94,16 +94,13 @@ class NotificationService {
 
   // Crée l'affichage visuel de la notif
   static Future<void> showAwesomeNotification(RemoteMessage message) async {
-
     await AwesomeNotifications().createNotification(
       content: NotificationContent(
         id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
         channelKey: 'basic_channel',
         // On priorise le titre dans 'notification', sinon on regarde dans 'data'
-        title:
-            translate(message.notification?.title ?? message.data['title']) ??
-            'LinkUp Pro',
-        body: formatBody(message.notification?.body ?? message.data['body']) ?? '',
+        title: translate(message.notification?.title ?? message.data['title']),
+        body: formatBody(message.notification?.body ?? message.data['body']),
         // Si une image est envoyée dans les data
         bigPicture: message.data['image'],
         notificationLayout: message.data['image'] != null
@@ -114,25 +111,26 @@ class NotificationService {
         displayOnBackground: true,
         displayOnForeground: true,
         roundedBigPicture: true,
-        fullScreenIntent: true,
+        // fullScreenIntent: true,
       ),
     );
   }
+
   static String translate(String key) => key.tr();
-  static String formatBody(String  data) {
+  static String formatBody(String data) {
     final parsedDatas = jsonDecode(data) as Map<String, dynamic>;
     final title = parsedDatas["title"] as String;
-    return title.tr(namedArgs: {"name": parsedDatas["params"]["senderName"] as String});
-  
+    return title.tr(
+      namedArgs: {"name": parsedDatas["params"]["senderName"] as String},
+    );
   }
 
   static void _sendTokenToBackend(String token) async {
-    final _db = GetIt.I<LocalDBService>();
-    if(await _db.isConnected()){
+    final db = GetIt.I<LocalDBService>();
+    if (await db.isConnected()) {
       final authRepositoryImplements = GetIt.I<AuthRepositoryImplement>();
 
       await authRepositoryImplements.sendDeviceToken(token);
     }
-
   }
 }

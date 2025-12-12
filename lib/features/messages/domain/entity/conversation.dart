@@ -8,7 +8,7 @@ class Conversation {
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? lastMessageDate;
-  final ConversationLastMessage? lastMessage;
+  ConversationLastMessage? lastMessage;
   final int unreadCount;
 
   Conversation({
@@ -35,7 +35,9 @@ class Conversation {
           ? DateTime.parse(json['lastMessageDate'] as String)
           : null,
       lastMessage: json['lastMessage'] != null
-          ? ConversationLastMessage.fromJson(json['lastMessage'] as Map<String, dynamic>)
+          ? ConversationLastMessage.fromJson(
+              json['lastMessage'] as Map<String, dynamic>,
+            )
           : null,
       unreadCount: json['unreadCount'] as int? ?? 0,
     );
@@ -58,13 +60,13 @@ class Conversation {
 
 class ConversationLastMessage {
   final String id;
-  final String content;
+  final String? content;
   final DateTime sentDate;
   final ConversationSender sender;
 
   ConversationLastMessage({
     required this.id,
-    required this.content,
+    this.content,
     required this.sentDate,
     required this.sender,
   });
@@ -72,9 +74,11 @@ class ConversationLastMessage {
   factory ConversationLastMessage.fromJson(Map<String, dynamic> json) {
     return ConversationLastMessage(
       id: json['id'] as String,
-      content: json['content'] as String,
+      content: json['content'] as String?,
       sentDate: DateTime.parse(json['sentDate'] as String),
-      sender: ConversationSender.fromJson(json['sender'] as Map<String, dynamic>),
+      sender: ConversationSender.fromJson(
+        json['sender'] as Map<String, dynamic>,
+      ),
     );
   }
 
@@ -87,5 +91,3 @@ class ConversationLastMessage {
     };
   }
 }
-
-

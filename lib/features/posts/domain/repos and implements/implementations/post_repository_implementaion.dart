@@ -28,12 +28,11 @@ class PostRepositoryImpl implements PostRepository {
     int? page,
     int? limit,
     bool isMyPosts,
-
   ) async {
     String endPoint = "/posts";
-    if(isMyPosts){
+    if (isMyPosts) {
       final userId = await storage.getUserId();
-     
+
       endPoint = "/posts/user/$userId";
     }
     try {
@@ -46,7 +45,6 @@ class PostRepositoryImpl implements PostRepository {
         //print(postJson);
         return Post.fromJson(postJson);
       }).toList();
-      print("posts length: ${posts.length}");
       return Right(posts);
     } catch (e) {
       return Left(Failure(e.toString()));

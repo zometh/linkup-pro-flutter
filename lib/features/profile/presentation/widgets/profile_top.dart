@@ -42,7 +42,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
 
   @override
   Widget build(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == .dark;
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
     final screenHeight = MediaQuery.of(context).size.height;
     final headerHeight = screenHeight * 0.2;
@@ -80,7 +80,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                   ),
                   if (!isMember && companyInfos!.isValidated)
                     Padding(
-                      padding: const .only(left: 4),
+                      padding: const EdgeInsets.only(left: 4),
                       child: Icon(
                         Icons.verified,
                         color: AppColors.primary,
@@ -130,8 +130,8 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                 height: 1,
                 thickness: 0.5,
                 color: isDarkMode
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.1),
+                    ? Colors.white.withAlpha((0.1 * 255).round())
+                    : Colors.black.withAlpha((0.1 * 255).round()),
               ),
             ],
           ),

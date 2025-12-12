@@ -1,11 +1,9 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
-import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_file_view.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_header.dart';
@@ -72,7 +70,7 @@ class _PostCardState extends State<PostCard> {
                   if (mounted) context.push("/post/${post.id}");
                 },
           child: Container(
-            padding: const .symmetric(vertical: 1),
+            padding: const EdgeInsets.symmetric(vertical: 1),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(0),
               gradient: isDark
@@ -81,7 +79,7 @@ class _PostCardState extends State<PostCard> {
                       end: Alignment.bottomRight,
                       colors: [
                         AppColors.darkCard,
-                        AppColors.darkCard.withValues(alpha: .95),
+                        AppColors.darkCard.withAlpha((0.95 * 255).round()),
                       ],
                     )
                   : null,

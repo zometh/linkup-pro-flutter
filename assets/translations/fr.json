@@ -48,6 +48,8 @@
     "delete": "Supprimer",
     "view": "Voir",
     "add": "Ajouter",
+  "gallery": "Galerie",
+  "camera": "Appareil photo",
     "save": "Enregistrer",
     "update": "Mettre à jour",
     "reset": "Réinitialiser",
@@ -249,7 +251,13 @@
   "new_follower_body": "{name} a commencé à vous suivre.",
   "add_comment": "Ajouter un commentaire",
   "no_conversation": "Aucune conversation",
-  "no_conversations_found": "Aucune conversation trouvée"
+  "no_conversations_found": "Aucune conversation trouvée",
+  "new_message": "Nouveau message",
+  "new_message_body" : "{name} vous a envoyé un message.",
+  "message_copied_to_clipboard": "Message copié dans le presse-papiers",
+  "copy_message": "Copier le message",
+  "delete_message": "Supprimer le message",
+  "delete_for_everyone": "Supprimer pour tout le monde"
 
 
 }

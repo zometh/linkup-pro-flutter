@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
+import 'package:linkup_pro/features/bottom_nav_bar/providers/unread_conversations_provider.dart';
 
 class BottomNavbar extends ConsumerWidget {
   const BottomNavbar({super.key});
@@ -12,6 +13,9 @@ class BottomNavbar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final int currentIndex = ref.watch(bottomNavbarProvider);
+    final int unreadConversationsCount = ref.watch(
+      unreadConversationsCountProvider,
+    );
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -26,8 +30,8 @@ class BottomNavbar extends ConsumerWidget {
         border: Border(
           top: BorderSide(
             color: isDark
-                ? Colors.white.withValues(alpha: 0.08)
-                : Colors.black.withValues(alpha: 0.06),
+                ? Colors.white.withAlpha(8)
+                : Colors.black.withAlpha(6),
             width: 0.5,
           ),
         ),
@@ -62,7 +66,7 @@ class BottomNavbar extends ConsumerWidget {
                 icon: FontAwesomeIcons.message,
                 activeIcon: FontAwesomeIcons.solidMessage,
                 label: 'messages'.tr(),
-                badgeCount: 2,
+                badgeCount: unreadConversationsCount,
               ),
               _NavItemData(
                 icon: FontAwesomeIcons.briefcase,
@@ -126,12 +130,7 @@ class BottomNavbar extends ConsumerWidget {
                               top: 0,
                               right: 0,
                               child: Container(
-                                padding: const .fromLTRB(
-                                  3,
-                                  2,
-                                  3,
-                                    3
-                                ),
+                                padding: const EdgeInsets.fromLTRB(3, 2, 3, 3),
                                 constraints: const BoxConstraints(
                                   /* minWidth: 16,
                                   minHeight: 16,*/
@@ -154,7 +153,7 @@ class BottomNavbar extends ConsumerWidget {
                                         : Colors.white,
                                     width: 1.5,
                                   ),
-                                 /* boxShadow: [
+                                  /* boxShadow: [
                                     BoxShadow(
                                       color: AppColors.error.withValues(
                                         alpha: 0.4,
@@ -209,7 +208,6 @@ class BottomNavbar extends ConsumerWidget {
                               : null,
                         ),
                       ),
-
                     ],
                   ),
                 ),

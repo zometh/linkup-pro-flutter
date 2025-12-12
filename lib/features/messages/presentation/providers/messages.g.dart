@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'conversations.dart';
+part of 'messages.dart';
 
 // **************************************************************************
 // RiverpodGenerator
@@ -9,28 +9,27 @@ part of 'conversations.dart';
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
 
-@ProviderFor(Conversations)
-const conversationsProvider = ConversationsProvider._();
+@ProviderFor(Messages)
+const messagesProvider = MessagesProvider._();
 
-final class ConversationsProvider
-    extends $NotifierProvider<Conversations, bool> {
-  const ConversationsProvider._()
+final class MessagesProvider extends $NotifierProvider<Messages, bool> {
+  const MessagesProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'conversationsProvider',
+        name: r'messagesProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$conversationsHash();
+  String debugGetCreateSourceHash() => _$messagesHash();
 
   @$internal
   @override
-  Conversations create() => Conversations();
+  Messages create() => Messages();
 
   /// {@macro riverpod.override_with_value}
   Override overrideWithValue(bool value) {
@@ -41,9 +40,9 @@ final class ConversationsProvider
   }
 }
 
-String _$conversationsHash() => r'e4f82f1c17d52195b589aadf291f0a76ec032ff9';
+String _$messagesHash() => r'2039d7d2eee69ca09f8896cc6d6c3bdd32907979';
 
-abstract class _$Conversations extends $Notifier<bool> {
+abstract class _$Messages extends $Notifier<bool> {
   bool build();
   @$mustCallSuper
   @override

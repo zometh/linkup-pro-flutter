@@ -11,7 +11,6 @@ import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts_actions/domain/entities/post_action_entity.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/create_post.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/update_post.dart';
-import 'package:linkup_pro/features/posts_actions/presentation/widgets/post_action_image_preview.dart';
 import 'package:toastification/toastification.dart';
 import '../../../../core/widgets/custom_toast.dart';
 import '../../../posts/presentation/providers/fetch_one_post.dart';
@@ -35,19 +34,21 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
   final faker = f.Faker();
   late TextEditingController _controller;
   final int _maxChars = 200;
-  File? _imageFile;
+  final List<File> _imageFiles = [];
+  List<String> _existingImageUrls = [];
+  final int _maxImages = 3;
   PostType _selectedPostType = PostType.publication;
-  String? imageUrl;
   List<String> _selectedTags = [];
   Post? post;
   final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _controller = getInstance(initial: faker.lorem.sentence());
-    fetch();
+    if (widget.postId != null) {
+      fetch();
+    }
   }
 
   @override
@@ -66,7 +67,9 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
     final int remaining = _maxChars - _controller.text.length;
     final theme = Theme.of(context);
     final bool canPost =
-        _controller.text.trim().isNotEmpty || _imageFile != null;
+        _controller.text.trim().isNotEmpty ||
+        _imageFiles.isNotEmpty ||
+        _existingImageUrls.isNotEmpty;
     final loading = widget.isEdit ? isLoading : isPosting;
     final isDark = theme.brightness == Brightness.dark;
 
@@ -88,12 +91,18 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                     end: Alignment.bottomRight,
                     colors: isDark
                         ? [
-                            const Color(0xFF1E2139).withValues(alpha: 0.95),
-                            const Color(0xFF0F1129).withValues(alpha: 0.95),
+                            const Color(
+                              0xFF1E2139,
+                            ).withAlpha((0.95 * 255).round()),
+                            const Color(
+                              0xFF0F1129,
+                            ).withAlpha((0.95 * 255).round()),
                           ]
                         : [
-                            Colors.white.withValues(alpha: 0.95),
-                            const Color(0xFFF8F9FB).withValues(alpha: 0.95),
+                            Colors.white.withAlpha((0.95 * 255).round()),
+                            const Color(
+                              0xFFF8F9FB,
+                            ).withAlpha((0.95 * 255).round()),
                           ],
                   ),
                 ),
@@ -108,8 +117,8 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   color: isDark
-                      ? Colors.white.withValues(alpha: 0.1)
-                      : Colors.black.withValues(alpha: 0.05),
+                      ? Colors.white.withAlpha((0.1 * 255).round())
+                      : Colors.black.withAlpha((0.05 * 255).round()),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(11),
                     topRight: Radius.circular(13),
@@ -131,7 +140,9 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                       gradient: LinearGradient(
                         colors: [
                           theme.colorScheme.primary,
-                          theme.colorScheme.primary.withValues(alpha: 0.7),
+                          theme.colorScheme.primary.withAlpha(
+                            (0.7 * 255).round(),
+                          ),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -139,8 +150,8 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: theme.colorScheme.primary.withValues(
-                            alpha: 0.4,
+                          color: theme.colorScheme.primary.withAlpha(
+                            (0.4 * 255).round(),
                           ),
                           blurRadius: 12,
                           offset: const Offset(0, 4),
@@ -175,21 +186,25 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                         : LinearGradient(
                             colors: [
                               theme.colorScheme.primary,
-                              theme.colorScheme.primary.withValues(alpha: 0.8),
+                              theme.colorScheme.primary.withAlpha(
+                                (0.8 * 255).round(),
+                              ),
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                     color: (isPosting || !canPost)
-                        ? theme.colorScheme.primary.withValues(alpha: 0.3)
+                        ? theme.colorScheme.primary.withAlpha(
+                            (0.3 * 255).round(),
+                          )
                         : null,
                     borderRadius: BorderRadius.circular(14),
                     boxShadow: (isPosting || !canPost)
                         ? null
                         : [
                             BoxShadow(
-                              color: theme.colorScheme.primary.withValues(
-                                alpha: 0.4,
+                              color: theme.colorScheme.primary.withAlpha(
+                                (0.4 * 255).round(),
                               ),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
@@ -221,12 +236,12 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Opacity(
-                                    opacity: (isPosting || !canPost) ? 0.5 : 1.0,
+                                    opacity: (isPosting || !canPost)
+                                        ? 0.5
+                                        : 1.0,
                                     child: const Text(
                                       '🚀',
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                      ),
+                                      style: TextStyle(fontSize: 15),
                                     ),
                                   ),
                                   const SizedBox(width: 5),
@@ -237,7 +252,9 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                                       fontWeight: FontWeight.w600,
                                       letterSpacing: 0.1,
                                       color: (isPosting || !canPost)
-                                          ? Colors.white.withValues(alpha: 0.5)
+                                          ? Colors.white.withAlpha(
+                                              (0.5 * 255).round(),
+                                            )
                                           : Colors.white,
                                     ),
                                   ),
@@ -337,64 +354,115 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
 
                           const SizedBox(height: 16),
 
-                          // Aperçu de l'image
-                          if (_imageFile != null || imageUrl != null)
+                          if (_imageFiles.isNotEmpty ||
+                              _existingImageUrls.isNotEmpty)
                             GlassCard(
                               isDark: isDark,
-                              padding: const EdgeInsets.all(5),
-                              child: Stack(
+                              padding: const EdgeInsets.all(10),
+                              child: Column(
                                 children: [
-                                  ClipRRect(
-                                    borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(16),
-                                      topRight: Radius.circular(18),
-                                      bottomLeft: Radius.circular(18),
-                                      bottomRight: Radius.circular(17),
-                                    ),
-                                    child: PostActionImagePreview(
-                                      imageFile: _imageFile,
-                                      removeImage: _removeImage,
-                                      imageUrl: imageUrl,
-                                    ),
-                                  ),
-                                  Positioned(
-                                    top: 10,
-                                    right: 9,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black.withValues(
-                                          alpha: 0.75,
+                                  GridView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    gridDelegate:
+                                        const SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount: 3,
+                                          crossAxisSpacing: 8,
+                                          mainAxisSpacing: 8,
                                         ),
-                                        shape: BoxShape.circle,
-                                        border: Border.all(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.25,
-                                          ),
-                                          width: 1.2,
-                                        ),
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.black.withValues(
-                                              alpha: 0.35,
+                                    itemCount:
+                                        _existingImageUrls.length +
+                                        _imageFiles.length,
+                                    itemBuilder: (context, index) {
+                                      final isExisting =
+                                          index < _existingImageUrls.length;
+                                      return Stack(
+                                        children: [
+                                          ClipRRect(
+                                            borderRadius: BorderRadius.circular(
+                                              12,
                                             ),
-                                            blurRadius: 10,
-                                            spreadRadius: -1,
-                                            offset: const Offset(0.5, 1),
+                                            child: isExisting
+                                                ? Image.network(
+                                                    _existingImageUrls[index],
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                    errorBuilder:
+                                                        (
+                                                          context,
+                                                          error,
+                                                          stackTrace,
+                                                        ) {
+                                                          return Container(
+                                                            color: Colors
+                                                                .grey[300],
+                                                            child: const Icon(
+                                                              Icons.error,
+                                                            ),
+                                                          );
+                                                        },
+                                                  )
+                                                : Image.file(
+                                                    _imageFiles[index -
+                                                        _existingImageUrls
+                                                            .length],
+                                                    fit: BoxFit.cover,
+                                                    width: double.infinity,
+                                                    height: double.infinity,
+                                                  ),
+                                          ),
+                                          Positioned(
+                                            top: 4,
+                                            right: 4,
+                                            child: Container(
+                                              decoration: BoxDecoration(
+                                                color: Colors.black.withValues(
+                                                  alpha: 0.75,
+                                                ),
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white
+                                                      .withValues(alpha: 0.25),
+                                                  width: 1,
+                                                ),
+                                              ),
+                                              child: IconButton(
+                                                icon: const Icon(
+                                                  Icons.close_rounded,
+                                                  color: Colors.white,
+                                                  size: 14,
+                                                ),
+                                                onPressed: () =>
+                                                    _removeImage(index),
+                                                padding: const EdgeInsets.all(
+                                                  4,
+                                                ),
+                                                constraints:
+                                                    const BoxConstraints(),
+                                              ),
+                                            ),
                                           ),
                                         ],
-                                      ),
-                                      child: IconButton(
-                                        icon: const Icon(
-                                          Icons.close_rounded,
-                                          color: Colors.white,
-                                          size: 17,
+                                      );
+                                    },
+                                  ),
+                                  if ((_existingImageUrls.length +
+                                          _imageFiles.length) <
+                                      _maxImages)
+                                    Padding(
+                                      padding: const EdgeInsets.only(top: 8),
+                                      child: Text(
+                                        '${_existingImageUrls.length + _imageFiles.length}/$_maxImages photos',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: isDark
+                                              ? Colors.grey[400]
+                                              : Colors.grey[600],
                                         ),
-                                        onPressed: _removeImage,
-                                        padding: const EdgeInsets.all(7),
-                                        constraints: const BoxConstraints(),
                                       ),
                                     ),
-                                  ),
                                 ],
                               ),
                             ),
@@ -516,27 +584,39 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
         _controller.text = post!.content;
         _selectedTags = post!.tags;
         _selectedPostType = post!.type;
-        imageUrl = post!.files.isNotEmpty ? post!.files.first.url : null;
+        _existingImageUrls = post!.files.map((file) => file.url).toList();
       });
     });
   }
 
   Future<void> _pickImage(ImageSource source) async {
+    final totalImages = _existingImageUrls.length + _imageFiles.length;
+    if (totalImages >= _maxImages) {
+      showToast(
+        description: 'Vous pouvez ajouter maximum $_maxImages photos',
+        type: ToastificationType.warning,
+      );
+      return;
+    }
+
     final XFile? picked = await _picker.pickImage(
       source: source,
       imageQuality: 80,
     );
     if (picked != null) {
       setState(() {
-        _imageFile = File(picked.path);
+        _imageFiles.add(File(picked.path));
       });
     }
   }
 
-  void _removeImage() {
+  void _removeImage(int index) {
     setState(() {
-      _imageFile = null;
-      imageUrl = null;
+      if (index < _existingImageUrls.length) {
+        _existingImageUrls.removeAt(index);
+      } else {
+        _imageFiles.removeAt(index - _existingImageUrls.length);
+      }
     });
   }
 
@@ -545,7 +625,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
       final post = PostCreationEntity(
         content: content,
         tags: _selectedTags,
-        files: _imageFile != null ? [_imageFile!] : [],
+        files: _imageFiles,
         type: _selectedPostType == PostType.publication
             ? 'POST'
             : 'ANNOUNCEMENT',
@@ -578,31 +658,20 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
       final updatedPost = PostCreationEntity(
         content: content,
         tags: _selectedTags,
-        files: _imageFile != null ? [_imageFile!] : [],
+        files: _imageFiles,
         type: _selectedPostType == PostType.publication
             ? 'POST'
             : 'ANNOUNCEMENT',
       );
-      // Determine which files should be removed when editing a post.
-      // Cases:
-      // 1) If user selected a new image (_imageFile != null) and the post had an existing file -> remove the old file id.
-      // 2) Else if no new image and imageUrl != null -> user kept the existing image -> remove nothing.
-      // 3) Else (no new image and imageUrl == null) and post had an existing file -> user removed the image -> remove the old file id.
+
       List<String> filesToRemove = [];
       if (post != null && post!.files.isNotEmpty) {
-        if (_imageFile != null) {
-          // New image chosen: delete previous file
-          filesToRemove = [post!.files.first.fileId];
-        } else {
-          // No new image chosen
-          if (imageUrl != null) {
-            // Existing image kept: nothing to remove
-            filesToRemove = [];
-          } else {
-            // imageUrl is null (user removed image) -> remove previous file
-            if (post!.files.isNotEmpty) {
-              filesToRemove = [post!.files.first.fileId];
-            }
+        final existingFileIds = post!.files.map((f) => f.fileId).toList();
+        final remainingUrls = _existingImageUrls.toSet();
+
+        for (int i = 0; i < post!.files.length; i++) {
+          if (!remainingUrls.contains(post!.files[i].url)) {
+            filesToRemove.add(existingFileIds[i]);
           }
         }
       }
@@ -633,7 +702,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
 
   Future<void> _submit() async {
     final String content = _controller.text.trim();
-    if (content.isEmpty && _imageFile == null) {
+    if (content.isEmpty && _imageFiles.isEmpty) {
       showToast(
         description: 'add_a_text_or_image'.tr(),
         type: ToastificationType.error,

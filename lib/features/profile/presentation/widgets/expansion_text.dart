@@ -26,9 +26,9 @@ class _ExpansionTextState extends State<ExpansionText> {
   Widget build(BuildContext context) {
     final isDark = context.isDarkMode;
     return Padding(
-      padding: .symmetric(horizontal: widget.isProfileBio ? 0 : 16),
+      padding: EdgeInsets.symmetric(horizontal: widget.isProfileBio ? 0 : 16),
       child: Column(
-        crossAxisAlignment: .start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           AnimatedCrossFade(
             firstChild: CustomText(
@@ -37,11 +37,11 @@ class _ExpansionTextState extends State<ExpansionText> {
               fontSize: widget.isProfileBio ? 14 : 15,
 
               color: isDark
-                  ? Colors.white.withValues(alpha: .9)
+                  ? Colors.white.withAlpha((0.9 * 255).round())
                   : AppColors.textPrimary,
 
               maxLines: 4,
-              overflow: .ellipsis,
+              overflow: TextOverflow.ellipsis,
             ),
             secondChild: CustomText(
               text: content,
@@ -49,10 +49,10 @@ class _ExpansionTextState extends State<ExpansionText> {
               fontSize: widget.isProfileBio ? 14 : 15,
 
               color: isDark
-                  ? Colors.white.withValues(alpha: .9)
+                  ? Colors.white.withAlpha((0.9 * 255).round())
                   : AppColors.textPrimary,
             ),
-            crossFadeState: _isExpanded ? .showSecond : .showFirst,
+            crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 300),
           ),
           if (shouldShowMore) ...[
@@ -63,7 +63,7 @@ class _ExpansionTextState extends State<ExpansionText> {
                 text: _isExpanded ? 'show_less'.tr() : 'show_more'.tr(),
 
                 color: AppColors.primary,
-                fontWeight: widget.isProfileBio ? .w300 : .w600,
+                fontWeight: widget.isProfileBio ? FontWeight.w300 : FontWeight.w600,
                 fontSize: 13,
               ),
             ),
