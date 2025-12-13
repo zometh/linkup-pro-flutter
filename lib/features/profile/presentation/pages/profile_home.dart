@@ -12,6 +12,7 @@ import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_toast.dart';
 import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_top.dart';
+import 'package:linkup_pro/features/profile_skills/presentation/pages/profile_skills_page.dart';
 import 'package:linkup_pro/features/users/presentation/providers/users.dart';
 import 'package:toastification/toastification.dart';
 
@@ -147,7 +148,7 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                   // Posts Tab
                   PostsView(isMyPosts: isOwnProfile),
                   // Skills Tab
-                  Center(child: CustomText(text: "Compétences")),
+                  const ProfileSkillsPage(),
                   // Experiences Tab
                   Center(child: CustomText(text: "Expériences")),
                 ],

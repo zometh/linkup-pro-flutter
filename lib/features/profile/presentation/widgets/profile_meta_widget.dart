@@ -4,7 +4,7 @@ import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/entities/company.dart';
 import 'package:linkup_pro/features/profile/data/mapping/get_icon_by_sector.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_meta_info.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfileMetaWidget extends StatelessWidget {
   final Member? member;
@@ -31,18 +31,24 @@ class ProfileMetaWidget extends StatelessWidget {
             isDarkMode: isDarkMode,
           ),
         if (member?.portfolio != null)
-          ProfileMetaInfo(
-            icon: Icons.link,
-            text: formatWebsite(member!.portfolio!),
-            isDarkMode: isDarkMode,
-            isLink: true,
+          InkWell(
+            onTap: () => openLink(member!.portfolio!),
+            child: ProfileMetaInfo(
+              icon: Icons.link,
+              text: formatWebsite(member!.portfolio!),
+              isDarkMode: isDarkMode,
+              isLink: true,
+            ),
           ),
         if (company?.website != null)
-          ProfileMetaInfo(
-            icon: Icons.link,
-            text: formatWebsite(company!.website),
-            isDarkMode: isDarkMode,
-            isLink: true,
+          InkWell(
+            onTap: () => openLink(company!.website),
+            child: ProfileMetaInfo(
+              icon: Icons.link,
+              text: formatWebsite(company!.website),
+              isDarkMode: isDarkMode,
+              isLink: true,
+            ),
           ),
         ProfileMetaInfo(
           icon: Icons.calendar_today_outlined,
@@ -62,9 +68,16 @@ class ProfileMetaWidget extends StatelessWidget {
     );
   }
 
+  void openLink(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+
   String formatWebsite(String website) {
     String web = "";
-    if (website.length < 25) {
+    if (website.length < 30) {
       web = website;
     } else {
       web = "${website.substring(0, 25)}...";

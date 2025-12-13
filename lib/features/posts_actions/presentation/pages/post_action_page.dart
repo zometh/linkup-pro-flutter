@@ -134,7 +134,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
               title: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Container(
+                  /*Container(
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -148,7 +148,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                         end: Alignment.bottomRight,
                       ),
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
+                      /*boxShadow: [
                         BoxShadow(
                           color: theme.colorScheme.primary.withAlpha(
                             (0.4 * 255).round(),
@@ -156,14 +156,14 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                           blurRadius: 12,
                           offset: const Offset(0, 4),
                         ),
-                      ],
+                      ],*/
                     ),
                     child: Icon(
                       widget.isEdit ? Icons.edit_rounded : Icons.add_rounded,
                       color: Colors.white,
                       size: 20,
                     ),
-                  ),
+                  ),*/
                   const SizedBox(width: 11),
                   Text(
                     widget.isEdit ? 'edit_post'.tr() : 'create_post'.tr(),
@@ -235,7 +235,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                             : Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Opacity(
+                                  /*Opacity(
                                     opacity: (isPosting || !canPost)
                                         ? 0.5
                                         : 1.0,
@@ -244,7 +244,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                                       style: TextStyle(fontSize: 15),
                                     ),
                                   ),
-                                  const SizedBox(width: 5),
+                                  const SizedBox(width: 5),*/
                                   Text(
                                     (widget.isEdit ? 'edit' : 'publish').tr(),
                                     style: TextStyle(
@@ -283,8 +283,10 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                           // Zone d'écriture naturelle
                           GlassCard(
                             isDark: isDark,
-                            padding: const EdgeInsets.fromLTRB(18, 16, 16, 18),
+                            padding: const EdgeInsets.all(8),
                             child: TextField(
+                              onTapOutside: (_) =>
+                                  FocusScope.of(context).unfocus(),
                               controller: _controller,
                               maxLines: null,
                               maxLength: _maxChars,
@@ -296,6 +298,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                                 fontWeight: FontWeight.w400,
                                 letterSpacing: 0.1,
                               ),
+
                               decoration: InputDecoration(
                                 hintText: 'what_do_you_want_to_talk_about'.tr(),
                                 hintStyle: TextStyle(
@@ -305,20 +308,25 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                                   letterSpacing: 0.15,
                                   height: 1.55,
                                 ),
-                                border: InputBorder.none,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 counterText: '',
-                                contentPadding: EdgeInsets.zero,
+                                contentPadding: EdgeInsets.symmetric(
+                                  vertical: 03,
+                                  horizontal: 3,
+                                ),
                               ),
                               onChanged: (_) => setState(() {}),
                             ),
                           ),
 
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 10),
 
                           // Catégoriser votre post
                           GlassCard(
                             isDark: isDark,
-                            padding: const EdgeInsets.fromLTRB(17, 15, 16, 16),
+                            padding: const EdgeInsets.all(8),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -529,7 +537,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                         child: Row(
                           children: [
                             FloatingMediaButton(
-                              emoji: '🖼️',
+                              //  emoji: '🖼️',
                               icon: Icons.image_outlined,
                               label: 'gallery'.tr(),
                               onTap: () => _pickImage(ImageSource.gallery),
@@ -538,7 +546,7 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
                             ),
                             const SizedBox(width: 9),
                             FloatingMediaButton(
-                              emoji: '📸',
+                              //   emoji: '📸',
                               icon: Icons.camera_alt_outlined,
                               label: 'camera'.tr(),
                               onTap: () => _pickImage(ImageSource.camera),
@@ -716,6 +724,4 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
       await _createPost(content);
     }
   }
-
-  // ==================== UI HELPERS ====================
 }

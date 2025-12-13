@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Compteur de caractères premium avec indicateur circulaire
-/// Affiche les caractères restants avec un style visuel attrayant
 class CharacterCounter extends StatelessWidget {
   final int remaining;
   final ThemeData theme;
@@ -27,12 +25,12 @@ class CharacterCounter extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.fromLTRB(10, 7, 11, 7),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
+        /*gradient: LinearGradient(
           colors: [
             baseColor.withValues(alpha: 0.11),
             baseColor.withValues(alpha: 0.055),
           ],
-        ),
+        ),*/
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(14),
           topRight: Radius.circular(16),
@@ -43,13 +41,13 @@ class CharacterCounter extends StatelessWidget {
           color: baseColor.withValues(alpha: 0.25),
           width: 0.85,
         ),
-        boxShadow: [
+        /*boxShadow: [
           BoxShadow(
             color: baseColor.withValues(alpha: 0.15),
             blurRadius: 7,
             offset: const Offset(0.5, 2.5),
           ),
-        ],
+        ],*/
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -95,13 +93,13 @@ class CharacterCounter extends StatelessWidget {
                       colors: [baseColor, baseColor.withValues(alpha: 0.6)],
                     ),
                     shape: BoxShape.circle,
-                    boxShadow: [
+                    /*boxShadow: [
                       BoxShadow(
                         color: baseColor.withValues(alpha: 0.6),
                         blurRadius: 6,
                         spreadRadius: 0.5,
                       ),
-                    ],
+                    ],*/
                   ),
                 ),
               ],

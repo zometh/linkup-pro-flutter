@@ -5,11 +5,13 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/messages/domain/entity/delete_message.dart';
 import 'package:linkup_pro/features/messages/domain/entity/message_entity.dart';
 import 'package:linkup_pro/features/messages/presentation/providers/messages.dart';
 import 'package:linkup_pro/features/messages/presentation/widgets/bubble_action_tile.dart';
+import 'package:linkup_pro/features/posts/presentation/widgets/image_preview.dart';
 
 import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/utils/formatters/format_date.dart';
@@ -186,39 +188,52 @@ class BubbleChat extends ConsumerWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                messageEntity.attachments!.firstWhere(
-                  (att) => att['fileType'] == 'image',
-                )['fileUrl'],
-                fit: BoxFit.cover,
-                loadingBuilder: (context, child, loadingProgress) {
-                  if (loadingProgress == null) return child;
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[300],
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        value: loadingProgress.expectedTotalBytes != null
-                            ? loadingProgress.cumulativeBytesLoaded /
-                                  loadingProgress.expectedTotalBytes!
-                            : null,
-                      ),
+              child: InkWell(
+                onTap: () {
+                  MyNavigator(context).navigateTo(
+                    ImagePreview(
+                      imageUrls: [
+                        messageEntity.attachments!.firstWhere(
+                          (att) => att['fileType'] == 'image',
+                        )['fileUrl'],
+                      ],
                     ),
                   );
                 },
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    height: 200,
-                    color: Colors.grey[300],
-                    child: Center(
-                      child: Icon(
-                        Icons.broken_image,
-                        size: 50,
-                        color: Colors.grey,
+                child: Image.network(
+                  messageEntity.attachments!.firstWhere(
+                    (att) => att['fileType'] == 'image',
+                  )['fileUrl'],
+                  fit: BoxFit.cover,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          value: loadingProgress.expectedTotalBytes != null
+                              ? loadingProgress.cumulativeBytesLoaded /
+                                    loadingProgress.expectedTotalBytes!
+                              : null,
+                        ),
                       ),
-                    ),
-                  );
-                },
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: Center(
+                        child: Icon(
+                          Icons.broken_image,
+                          size: 50,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),
