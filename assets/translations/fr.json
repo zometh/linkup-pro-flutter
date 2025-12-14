@@ -257,7 +257,27 @@
   "message_copied_to_clipboard": "Message copié dans le presse-papiers",
   "copy_message": "Copier le message",
   "delete_message": "Supprimer le message",
-  "delete_for_everyone": "Supprimer pour tout le monde"
-
-
+  "delete_for_everyone": "Supprimer pour tout le monde",
+  "my_skills": "Mes Compétences",
+  "no_skills_added": "Aucune compétence ajoutée",
+  "start_adding_skills": "Commencez par ajouter vos compétences",
+  "loading_error": "Erreur de chargement",
+  "retry": "Réessayer",
+  "beginner": "Débutant",
+  "intermediate": "Intermédiaire",
+  "expert": "Expert",
+  "modify": "Modifier",
+  "add_skill": "Ajouter une compétence",
+  "skill_name": "Nom de la compétence *",
+  "category_optional": "Catégorie (optionnel)",
+  "level_optional": "Niveau (optionnel)",
+  "skill_name_required": "Le nom de la compétence est requis",
+  "skill_added_successfully": "Compétence ajoutée avec succès",
+  "edit_skill": "Modifier la compétence",
+  "modify_skill_details": "Modifiez les détails de la compétence",
+  "skill_updated_successfully": "Compétence modifiée avec succès",
+  "confirmation": "Confirmation",
+  "delete_skill_confirmation": "Êtes-vous sûr de vouloir supprimer cette compétence ?",
+  "skill_deleted_successfully": "Compétence supprimée avec succès",
+  "level": "Niveau"
 }

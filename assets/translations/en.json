@@ -247,13 +247,24 @@
   "new_comment_post_body": "{name} commented on your post.",
   "new_follower_title": "New follower",
   "new_follower_body": "{name} started following you.",
-  "add_comment": "Add a comment..."
-
-
-
-
-
-
-
-
+  "add_comment": "Add a comment...",
+  "my_skills": "My Skills",
+  "no_skills_added": "No skills added",
+  "start_adding_skills": "Start by adding your skills",
+  "loading_error": "Loading error",
+  "retry": "Retry",
+  "beginner": "Beginner",
+  "intermediate": "Intermediate",
+  "expert": "Expert",
+  "modify": "Modify",
+  "add_skill": "Add a skill",
+  "skill_name": "Skill name *",
+  "category_optional": "Category (optional)",
+  "level_optional": "Level (optional)",
+  "skill_name_required": "Skill name is required",
+  "skill_added_successfully": "Skill added successfully",
+  "edit_skill": "Edit skill",  "modify_skill_details": "Modify skill details",  "skill_updated_successfully": "Skill updated successfully",
+  "confirmation": "Confirmation",
+  "delete_skill_confirmation": "Are you sure you want to delete this skill?",
+  "skill_deleted_successfully": "Skill deleted successfully"
 }
