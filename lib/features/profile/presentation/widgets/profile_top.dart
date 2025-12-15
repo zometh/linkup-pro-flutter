@@ -15,6 +15,7 @@ class ProfileTop extends ConsumerStatefulWidget {
   final BoxConstraints cx;
   final bool isOwnProfile;
   final bool isMember;
+  final VoidCallback? onProfileUpdated;
   Member? memberInfos;
   Company? companyInfos;
   ProfileTop({
@@ -24,6 +25,7 @@ class ProfileTop extends ConsumerStatefulWidget {
     required this.cx,
     this.companyInfos,
     this.memberInfos,
+    this.onProfileUpdated,
   });
 
   @override
@@ -57,6 +59,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
             isMember: isMember,
             companyInfos: companyInfos,
             memberInfos: memberInfos,
+            onProfileUpdated: widget.onProfileUpdated,
           ),
         ),
 
@@ -103,12 +106,14 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
 
               if (memberInfos?.biography != null ||
                   companyInfos?.description != null)
-                  ExpansionText(isProfileBio: true,text: memberInfos?.biography ?? companyInfos!.description),
-            
+                ExpansionText(
+                  isProfileBio: true,
+                  text: memberInfos?.biography ?? companyInfos!.description,
+                ),
 
               const SizedBox(height: 12),
 
-               ProfileMetaWidget(
+              ProfileMetaWidget(
                 isMember: isMember,
                 company: companyInfos,
                 member: memberInfos,

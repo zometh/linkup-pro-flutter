@@ -73,31 +73,28 @@ class _PostHeaderState extends State<PostHeader> {
             children: [
               GestureDetector(
                 onTap: previewUser,
-                child: Hero(
-                  tag: widget.post.id,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: avatarUrl == null
-                          ? AppGradients.primaryGradient
-                          : null,
-                    ),
-                    child: CircleAvatar(
-                      radius: 20,
-                      backgroundColor: Colors.transparent,
-                      backgroundImage: avatarUrl != null
-                          ? CachedNetworkImageProvider(avatarUrl)
-                          : null,
-                      child: avatarUrl == null
-                          ? CustomText(
-                              text: displayName[0].toUpperCase(),
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              fontFamily: "Poppins",
-                            )
-                          : null,
-                    ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: avatarUrl == null
+                        ? AppGradients.primaryGradient
+                        : null,
+                  ),
+                  child: CircleAvatar(
+                    radius: 20,
+                    backgroundColor: Colors.transparent,
+                    backgroundImage: avatarUrl != null
+                        ? CachedNetworkImageProvider(avatarUrl)
+                        : null,
+                    child: avatarUrl == null
+                        ? CustomText(
+                            text: displayName[0].toUpperCase(),
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                            fontFamily: "Poppins",
+                          )
+                        : null,
                   ),
                 ),
               ),

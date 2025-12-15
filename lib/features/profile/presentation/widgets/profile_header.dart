@@ -17,6 +17,7 @@ class ProfileHeader extends StatelessWidget {
   final bool isMember;
   final Member? memberInfos;
   final Company? companyInfos;
+  final VoidCallback? onProfileUpdated;
 
   const ProfileHeader({
     super.key,
@@ -25,6 +26,7 @@ class ProfileHeader extends StatelessWidget {
     required this.isMember,
     this.memberInfos,
     this.companyInfos,
+    this.onProfileUpdated,
   });
 
   @override
@@ -241,7 +243,7 @@ class ProfileHeader extends StatelessWidget {
 
   Widget _buildActionButtons(BuildContext context, bool isDarkMode) {
     if (isOwnProfile) {
-      return EditProfileButton();
+      return EditProfileButton(onProfileUpdated: onProfileUpdated);
     }
     return Row(
       mainAxisSize: MainAxisSize.min,

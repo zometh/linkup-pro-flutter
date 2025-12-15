@@ -93,7 +93,8 @@ class _PostCardState extends State<PostCard> {
 
                 ExpansionText(text: post.content),
 
-                if (post.files.isNotEmpty) BuildPostFile(files: post.files),
+                if (post.files.isNotEmpty)
+                  BuildPostFile(files: post.files, postId: post.id),
 
                 PostsStats(post: post),
 

@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/entities/company.dart';
 import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/enums/user_role.dart';
@@ -12,6 +13,7 @@ import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_toast.dart';
 import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_top.dart';
+import 'package:linkup_pro/features/profile_jobs/presentation/pages/profile_jobs_page.dart';
 import 'package:linkup_pro/features/profile_skills/presentation/pages/profile_skills_page.dart';
 import 'package:linkup_pro/features/users/presentation/providers/users.dart';
 import 'package:toastification/toastification.dart';
@@ -86,6 +88,13 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                       isOwnProfile: widget.isOwnProfile,
                       memberInfos: memberInfos,
                       companyInfos: companyInfos,
+                      onProfileUpdated: () {
+                        // Recharger les données du profil après modification
+                        setState(() {
+                          isLoading = true;
+                        });
+                        fetchCurrentUserInfos();
+                      },
                     ),
                   ),
                   SliverPersistentHeader(
@@ -124,9 +133,9 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                           unselectedLabelColor: isDarkMode
                               ? Colors.white54
                               : Colors.grey,
-                          labelStyle: const TextStyle(
+                          labelStyle: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
-                            fontSize: 13,
+                            fontSize: 11,
                           ),
                           tabs: const [
                             Tab(text: "Posts", height: 40),
@@ -136,8 +145,7 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                         ),
                       ),
                       isDarkMode: isDarkMode,
-                      height:
-                          60, // 40 (tab height) + 16 (vertical margin) + 4 (padding/safety)
+                      height: 60,
                     ),
                     pinned: true,
                   ),
@@ -145,12 +153,9 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
               },
               body: TabBarView(
                 children: [
-                  // Posts Tab
                   PostsView(isMyPosts: isOwnProfile),
-                  // Skills Tab
                   const ProfileSkillsPage(),
-                  // Experiences Tab
-                  Center(child: CustomText(text: "Expériences")),
+                  const ProfileJobsPage(),
                 ],
               ),
             ),

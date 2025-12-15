@@ -9,7 +9,8 @@ import 'image_preview.dart';
 
 class BuildPostFile extends StatefulWidget {
   final List<PostFile> files;
-  const BuildPostFile({super.key, required this.files});
+  final String postId;
+  const BuildPostFile({super.key, required this.files, required this.postId});
 
   @override
   State<BuildPostFile> createState() => _BuildPostFileState();
@@ -117,13 +118,16 @@ class _BuildPostFileState extends State<BuildPostFile>
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) =>
-                  ImagePreview(imageUrls: transformFiles(widget.files)),
+              builder: (context) => ImagePreview(
+                imageUrls: transformFiles(widget.files),
+                heroTagPrefix: '${widget.postId}_',
+                initialIndex: 0,
+              ),
             ),
           );
         },
         child: Hero(
-          tag: widget.files[0].url,
+          tag: '${widget.postId}_${widget.files[0].url}',
           child: buildSingleMedia(
             widget.files[0].url,
             widget.files[0].fileType,
@@ -160,15 +164,21 @@ class _BuildPostFileState extends State<BuildPostFile>
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (context) =>
-                          ImagePreview(imageUrls: transformFiles(widget.files)),
+                      builder: (context) => ImagePreview(
+                        imageUrls: transformFiles(widget.files),
+                        heroTagPrefix: '${widget.postId}_',
+                        initialIndex: index,
+                      ),
                     ),
                   );
                 },
-                child: buildSingleMedia(
-                  widget.files[index].url,
-                  widget.files[index].fileType,
-                  index: index,
+                child: Hero(
+                  tag: '${widget.postId}_${widget.files[index].url}',
+                  child: buildSingleMedia(
+                    widget.files[index].url,
+                    widget.files[index].fileType,
+                    index: index,
+                  ),
                 ),
               );
             },
