@@ -40,7 +40,7 @@ final class MessagesProvider extends $NotifierProvider<Messages, bool> {
   }
 }
 
-String _$messagesHash() => r'2039d7d2eee69ca09f8896cc6d6c3bdd32907979';
+String _$messagesHash() => r'7b7b623caa44f3f872af29e2dc781711f005196c';
 
 abstract class _$Messages extends $Notifier<bool> {
   bool build();

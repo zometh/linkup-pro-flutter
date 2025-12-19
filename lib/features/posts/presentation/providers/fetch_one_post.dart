@@ -10,18 +10,15 @@ class FetchOnePost extends _$FetchOnePost {
   @override
   bool build() => false;
 
-
   Future<Post?> fetchPosts(String id) async {
     Future.microtask(() => state = true);
     try {
       final result = await _postImplement.getPostById(id);
       final post = result.fold(
-            (failure) { 
-          // Handle failure
+        (failure) {
           return null;
         },
-            (data) {
-
+        (data) {
           return data;
         },
       );

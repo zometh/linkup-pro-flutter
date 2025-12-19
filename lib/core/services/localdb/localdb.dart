@@ -97,4 +97,23 @@ class LocalDBService {
     }
     return imageUrl;
   }
+
+  // Theme Mode
+  Future<void> saveThemeMode(String mode) async {
+    await storage.write(key: 'theme_mode', value: mode);
+  }
+
+  Future<String?> getThemeMode() async {
+    return await storage.read(key: 'theme_mode');
+  }
+
+  // Notification settings
+  Future<void> saveNotificationEnabled(bool enabled) async {
+    await storage.write(key: 'notifications_enabled', value: enabled.toString());
+  }
+
+  Future<bool> getNotificationEnabled() async {
+    final value = await storage.read(key: 'notifications_enabled');
+    return value != 'false';
+  }
 }

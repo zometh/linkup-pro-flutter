@@ -7,9 +7,9 @@ class JobRepositoryImpl implements JobRepository {
   final ApiClient apiClient = GetIt.instance.get<ApiClient>();
 
   @override
-  Future<List<JobModel>> getMyJobs() async {
+  Future<List<JobModel>> getMyJobs(String userId) async {
     try {
-      final response = await apiClient.get('/jobs/my-jobs');
+      final response = await apiClient.get('/jobs/my-jobs/$userId');
       return (response as List)
           .map((job) => JobModel.fromJson(job as Map<String, dynamic>))
           .toList();

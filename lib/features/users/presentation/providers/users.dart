@@ -13,13 +13,10 @@ class Users extends _$Users {
   }
 
   Future<Map<String, dynamic>?> getUserById(String userId) async {
-    if(!ref.isFirstBuild){
-      return null;
-    }
     Future.microtask(() => state = true);
     try{
       final response = await usersImplement.getOneUser(userId);
-      final result =  response.fold((e) => null, (r) => r);
+      final result = response.fold((e) => null, (r) => r);
       Future.microtask(() => state = false);
 
       return result;

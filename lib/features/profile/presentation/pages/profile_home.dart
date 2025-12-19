@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:linkup_pro/core/entities/company.dart';
 import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/enums/user_role.dart';
+import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
@@ -33,9 +34,12 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
   String? get userId => widget.userId;
 
   final localDb = GetIt.I<LocalDBService>();
+  final _socketService = GetIt.I<SocketService>();
+
   bool isMember = false;
   bool hasError = false;
   bool isLoading = false;
+  String? currentUserId;
 
   Member? memberInfos;
   Company? companyInfos;
@@ -44,6 +48,37 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
   void initState() {
     super.initState();
     fetchCurrentUserInfos();
+    fetchCurrentUserId();
+    _listenToFollowUpdates();
+  }
+
+  @override
+  void dispose() {
+    _socketService.off('followUpdate');
+    super.dispose();
+  }
+
+  /// Écouter les mises à jour de follow en temps réel
+  void _listenToFollowUpdates() {
+    _socketService.on('followUpdate', (data) {
+      if (!mounted) return;
+
+      final type = data['type'] as String?;
+      final followersCount = data['followersCount'] as int?;
+      final followingCount = data['followingCount'] as int?;
+
+      if (followersCount != null && followingCount != null) {
+        setState(() {
+          if (isMember && memberInfos != null) {
+            memberInfos!.user.followers = followersCount;
+            memberInfos!.user.following = followingCount;
+          } else if (!isMember && companyInfos != null) {
+            companyInfos!.user.followers = followersCount;
+            companyInfos!.user.following = followingCount;
+          }
+        });
+      }
+    });
   }
 
   @override
@@ -137,10 +172,10 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                           ),
-                          tabs: const [
+                          tabs:  [
                             Tab(text: "Posts", height: 40),
-                            Tab(text: "Compétences", height: 40),
-                            Tab(text: "Expériences", height: 40),
+                            if(isOwnProfile)Tab(text: "skills".tr(), height: 40),
+                            if(isOwnProfile)Tab(text: "experiences".tr(), height: 40),
                           ],
                         ),
                       ),
@@ -153,9 +188,9 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
               },
               body: TabBarView(
                 children: [
-                  PostsView(isMyPosts: isOwnProfile),
-                  const ProfileSkillsPage(),
-                  const ProfileJobsPage(),
+                  PostsView(userId: isOwnProfile ? currentUserId : userId,),
+                  if(isOwnProfile)ProfileSkillsPage(userId:  isOwnProfile ? currentUserId! : userId!,isOwnProfile: isOwnProfile,),
+                   if(isOwnProfile)ProfileJobsPage(userId:  isOwnProfile ? currentUserId! : userId!,isOwnProfile: isOwnProfile),
                 ],
               ),
             ),
@@ -201,6 +236,50 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
     if (!isOwnProfile) {
       await initRemoteData();
     } else {
+      // Charger aussi depuis l'API pour avoir les compteurs à jour
+      await initOwnProfileData();
+    }
+  }
+
+  initOwnProfileData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // D'abord récupérer l'ID de l'utilisateur connecté
+      final ownUserId = await localDb.getUserId();
+      if (ownUserId == null) {
+        await initLocalData();
+        return;
+      }
+
+      // Charger les données depuis l'API pour avoir les compteurs à jour
+      final response = await ref
+          .read(usersProvider.notifier)
+          .getUserById(ownUserId);
+
+      if (response == null) {
+        await initLocalData();
+        return;
+      }
+
+      final role = userRoleFromString(response["user"]['role']);
+      if (role == UserRole.member) {
+        setState(() {
+          isMember = true;
+          memberInfos = Member.fromJson(response);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isMember = false;
+          companyInfos = Company.fromJson(response);
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      // En cas d'erreur, utiliser les données locales
       await initLocalData();
     }
   }
@@ -238,6 +317,14 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
         isLoading = false;
       });
       rethrow;
+    }
+  }
+  fetchCurrentUserId() async {
+    if(isOwnProfile){
+      final userId = await localDb.getUserId();
+      setState(() {
+        currentUserId = userId;
+      });
     }
   }
 }

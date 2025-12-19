@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/core/providers/theme_provider.dart';
 import 'package:linkup_pro/core/routes/go_routes.dart';
 import 'package:linkup_pro/core/services/notification_service.dart';
 import 'package:linkup_pro/core/theme/dark_theme.dart';
@@ -80,13 +81,15 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final routerConfig = router(auth, navigatorKey);
+    final themeNotifier = ref.watch(themeProvider.notifier);
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       routerConfig: routerConfig,
       darkTheme: darkTheme,
-      theme: context.isDarkMode ? darkTheme : lightTheme,
+      theme: lightTheme,
+      themeMode: themeNotifier.themeMode,
       locale: context.locale,
       supportedLocales: context.supportedLocales,
     );

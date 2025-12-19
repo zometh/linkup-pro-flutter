@@ -368,7 +368,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ? null
             : FormatText.formatFormFiel(lastNameController),
         email: FormatText.formatFormFiel(emailController),
-        address: selectedCountry.countryCode,
+        address: selectedCountry.name,
 
         password: FormatText.formatFormFiel(passwordController),
         username: FormatText.formatFormFiel(usernameController),

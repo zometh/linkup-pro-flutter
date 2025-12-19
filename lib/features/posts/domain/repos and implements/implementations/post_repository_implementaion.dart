@@ -27,11 +27,11 @@ class PostRepositoryImpl implements PostRepository {
   Future<Either<Failure, List<Post>>> getPosts(
     int? page,
     int? limit,
-    bool isMyPosts,
+     String? userId,
   ) async {
     String endPoint = "/posts";
-    if (isMyPosts) {
-      final userId = await storage.getUserId();
+    if (userId != null) {
+
 
       endPoint = "/posts/user/$userId";
     }

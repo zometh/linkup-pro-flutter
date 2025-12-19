@@ -292,5 +292,21 @@
   "confirmation": "Confirmation",
   "delete_skill_confirmation": "Êtes-vous sûr de vouloir supprimer cette compétence ?",
   "skill_deleted_successfully": "Compétence supprimée avec succès",
-  "level": "Niveau"
+  "level": "Niveau",
+  "experiences": "Expériences",
+  "appearance": "Apparence",
+  "system_mode": "Mode système",
+  "push_notifications": "Notifications push",
+  "receive_notifications": "Recevoir les notifications de l'application",
+  "account": "Compte",
+  "change_password": "Changer le mot de passe",
+  "privacy": "Confidentialité",
+  "about": "À propos",
+  "app_version": "Version de l'application",
+  "help_support": "Aide et support",
+  "logout_confirmation": "Êtes-vous sûr de vouloir vous déconnecter ?",
+  "delete_account": "Supprimer mon compte",
+  "delete_account_confirmation": "Êtes-vous sûr de vouloir supprimer votre compte ? Cette action est irréversible.",
+  "coming_soon": "Bientôt disponible",
+  "new_follower": "Nouveau follower"
 }

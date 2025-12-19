@@ -21,6 +21,16 @@ class _BuildPostFileState extends State<BuildPostFile>
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
   final Map<int, double> _aspectRatios = {};
+
+  // Unique key for this instance to avoid Hero tag conflicts
+  late final String _uniqueId;
+
+  @override
+  void initState() {
+    super.initState();
+    _uniqueId = '${widget.postId}_${DateTime.now().microsecondsSinceEpoch}_${hashCode}';
+  }
+
   @override
   Widget build(BuildContext context) {
     Widget buildSingleMedia(String url, String fileType, {int? index}) {
@@ -120,14 +130,14 @@ class _BuildPostFileState extends State<BuildPostFile>
             MaterialPageRoute(
               builder: (context) => ImagePreview(
                 imageUrls: transformFiles(widget.files),
-                heroTagPrefix: '${widget.postId}_',
+                heroTagPrefix: '${_uniqueId}_',
                 initialIndex: 0,
               ),
             ),
           );
         },
         child: Hero(
-          tag: '${widget.postId}_${widget.files[0].url}',
+          tag: '${_uniqueId}_${widget.files[0].url}',
           child: buildSingleMedia(
             widget.files[0].url,
             widget.files[0].fileType,
@@ -166,14 +176,14 @@ class _BuildPostFileState extends State<BuildPostFile>
                     MaterialPageRoute(
                       builder: (context) => ImagePreview(
                         imageUrls: transformFiles(widget.files),
-                        heroTagPrefix: '${widget.postId}_',
+                        heroTagPrefix: '${_uniqueId}_',
                         initialIndex: index,
                       ),
                     ),
                   );
                 },
                 child: Hero(
-                  tag: '${widget.postId}_${widget.files[index].url}',
+                  tag: '${_uniqueId}_${widget.files[index].url}',
                   child: buildSingleMedia(
                     widget.files[index].url,
                     widget.files[index].fileType,

@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_file_view.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_header.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_stats.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_tags.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/expansion_text.dart';
+import 'package:linkup_pro/features/search/domain/entities/search_entities.dart';
+import 'package:linkup_pro/features/search/presentation/providers/search_provider.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-class PostCard extends StatefulWidget {
+class PostCard extends ConsumerStatefulWidget {
   final String userId;
   final bool isPostDetails;
   final Post post;
@@ -34,10 +38,10 @@ class PostCard extends StatefulWidget {
   });
 
   @override
-  State<PostCard> createState() => _PostCardState();
+  ConsumerState<PostCard> createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _PostCardState extends ConsumerState<PostCard> {
   String get userId => widget.userId;
 
   final io = GetIt.I<SocketService>();
@@ -51,6 +55,11 @@ class _PostCardState extends State<PostCard> {
   void dispose() {
     io.joinRoom("postUnsubscribe", {"roomId": widget.post.id});
     super.dispose();
+  }
+
+  void _onTagTap(String tag) {
+    ref.read(searchProvider.notifier).search(tag, type: SearchType.posts);
+    ref.read(bottomNavbarProvider.notifier).setIndex(1);
   }
 
   @override
@@ -98,7 +107,11 @@ class _PostCardState extends State<PostCard> {
 
                 PostsStats(post: post),
 
-                if (post.tags.isNotEmpty) PostsTags(tags: post.tags),
+                if (post.tags.isNotEmpty)
+                  PostsTags(
+                    tags: post.tags,
+                    onTagTap: _onTagTap,
+                  ),
               ],
             ),
             //),

@@ -9,7 +9,7 @@ import 'package:linkup_pro/features/profile/presentation/widgets/profile_action_
 import '../../../../core/entities/company.dart';
 import '../../../../core/entities/member.dart';
 import '../../../../core/theme/app_colors.dart';
-import '../../data/services/profile_utils.dart';
+import '../../../messages/presentation/widgets/new_conversation_user_list.dart';
 
 class ProfileHeader extends StatelessWidget {
   final BoxConstraints cx;
@@ -18,6 +18,8 @@ class ProfileHeader extends StatelessWidget {
   final Member? memberInfos;
   final Company? companyInfos;
   final VoidCallback? onProfileUpdated;
+  final String? userId;
+  final Function(bool isFollowing, int followersCount)? onFollowChanged;
 
   const ProfileHeader({
     super.key,
@@ -27,6 +29,8 @@ class ProfileHeader extends StatelessWidget {
     this.memberInfos,
     this.companyInfos,
     this.onProfileUpdated,
+    this.onFollowChanged,
+    this.userId,
   });
 
   @override
@@ -37,7 +41,7 @@ class ProfileHeader extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        // Background with gradient and pattern overlay
+
         Container(
           height: double.infinity,
           width: double.infinity,
@@ -245,23 +249,40 @@ class ProfileHeader extends StatelessWidget {
     if (isOwnProfile) {
       return EditProfileButton(onProfileUpdated: onProfileUpdated);
     }
+
+    final isFollowing = isMember
+        ? (memberInfos!.user.isFollowedByMe ?? false)
+        : (companyInfos!.user.isFollowedByMe ?? false);
+    final followersCount = isMember
+        ? (memberInfos!.user.followers ?? 0)
+        : (companyInfos!.user.followers ?? 0);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
         ProfileActionButton(
-          icon: FontAwesomeIcons.ellipsis,
-          onPressed: () => ProfileUtils.showMoreOptions(context),
-          isDarkMode: isDarkMode,
-        ),
-        const SizedBox(width: 8),
-        ProfileActionButton(
           icon: FontAwesomeIcons.paperPlane,
-          onPressed: () {},
+          onPressed: () => _openFreindsList(context),
           isDarkMode: isDarkMode,
         ),
         const SizedBox(width: 8),
-        const FollowButton(),
+        FollowButton(
+          userId: userId,
+          initialIsFollowing: isFollowing,
+          initialFollowersCount: followersCount,
+          onFollowChanged: onFollowChanged,
+        ),
       ],
+    );
+  }
+  _openFreindsList(BuildContext context) async {
+    await showModalBottomSheet(
+      showDragHandle: true,
+
+      context: context,
+      builder: (_) {
+        return const NewConversationUserList();
+      },
     );
   }
 }

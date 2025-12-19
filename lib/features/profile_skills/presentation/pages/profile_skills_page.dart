@@ -10,7 +10,9 @@ import 'package:linkup_pro/features/profile_skills/presentation/widgets/edit_ski
 import 'package:linkup_pro/features/profile_skills/presentation/widgets/delete_skill_dialog.dart';
 
 class ProfileSkillsPage extends ConsumerStatefulWidget {
-  const ProfileSkillsPage({super.key});
+  final String userId;
+  final bool isOwnProfile;
+  const ProfileSkillsPage({super.key, required this.userId, required this.isOwnProfile});
 
   @override
   ConsumerState<ProfileSkillsPage> createState() => _ProfileSkillsPageState();
@@ -21,7 +23,7 @@ class _ProfileSkillsPageState extends ConsumerState<ProfileSkillsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileSkillsProvider.notifier).loadMySkills();
+      ref.read(profileSkillsProvider.notifier).loadMySkills(widget.userId);
       ref.read(profileSkillsProvider.notifier).loadLevels();
     });
   }
@@ -42,17 +44,17 @@ class _ProfileSkillsPageState extends ConsumerState<ProfileSkillsPage> {
 
     if (skillsState.error != null && skillsState.skills.isEmpty) {
       return ErrorSkillsView(
-        onRetry: () => ref.read(profileSkillsProvider.notifier).loadMySkills(),
+        onRetry: () => ref.read(profileSkillsProvider.notifier).loadMySkills(widget.userId),
       );
     }
 
     if (skillsState.skills.isEmpty) {
-      return EmptySkillsView(onAddSkill: _showAddDialog);
+      return EmptySkillsView(onAddSkill: _showAddDialog, isOwnProfile: widget.isOwnProfile,);
     }
 
     return Column(
       children: [
-        Align(
+        if(widget.isOwnProfile) Align(
           alignment: Alignment.topRight,
           child: Container(
             margin: const EdgeInsets.only(bottom: 8, right: 13),
@@ -76,6 +78,7 @@ class _ProfileSkillsPageState extends ConsumerState<ProfileSkillsPage> {
             itemBuilder: (context, index) {
               final skill = skillsState.skills[index];
               return SkillCard(
+                isOwnProfile: widget.isOwnProfile,
                 skill: skill,
                 onEdit: () => _showEditDialog(skill),
                 onDelete: () => _showDeleteDialog(skill.id),

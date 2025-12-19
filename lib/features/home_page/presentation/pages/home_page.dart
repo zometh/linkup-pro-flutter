@@ -13,10 +13,10 @@ import 'package:linkup_pro/main.dart';
 
 final List<Widget> pages = [
   const PostsView(),
-  const SearchHome(),
-  const ConversationsPage(),
-  const OffersHome(),
-  ProfileHome(isOwnProfile: true),
+  const FlutterLogo() /*SearchHome()*/,
+  const FlutterLogo() /*ConversationsPage()*/,
+  const FlutterLogo() /*OffersHome()*/,
+   ProfileHome(isOwnProfile: true),
 ];
 
 class HomePage extends ConsumerStatefulWidget {

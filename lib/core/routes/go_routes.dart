@@ -10,6 +10,7 @@ import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart
 import 'package:linkup_pro/features/register/data/entities/sector.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
 import 'package:linkup_pro/features/register/presentation/pages/register_page.dart';
+ import 'package:linkup_pro/features/settings/presentation/pages/settings_page.dart';
 import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
 
 import '../../features/posts/presentation/pages/post_details_page.dart';
@@ -95,26 +96,32 @@ GoRouter router(
         name: "create-post",
         builder: (context, state) => const PostActionPage(),
       ),
+      GoRoute(
+        path: "/settings",
+        name: "settings",
+        builder: (context, state) => const SettingsPage(),
+      ),
     ],
     redirect: (BuildContext context, GoRouterState state) {
       final bool loggedIn = authProvider.isLoggedIn;
-      final bool isLoggingIn = state.matchedLocation == '/login';
-      final bool isRegistering =
-          state.matchedLocation == '/register' ||
-          state.matchedLocation == '/register-company' ||
-          state.matchedLocation == '/sector-choice';
-      final bool isSplashing = state.matchedLocation == '/splash';
-      final bool isAuthChecker = state.matchedLocation == '/';
+      final String location = state.matchedLocation;
 
-      if (!loggedIn &&
-          !isLoggingIn &&
-          !isRegistering &&
-          !isSplashing &&
-          !isAuthChecker) {
+      // Routes publiques (accessibles sans connexion)
+      final bool isPublicRoute = location == '/' ||
+          location == '/login' ||
+          location == '/splash' ||
+          location == '/register' ||
+          location == '/register-company' ||
+          location == '/sector-choice';
+
+      // Si non connecté et essaie d'accéder à une route protégée
+      if (!loggedIn && !isPublicRoute) {
         return '/';
       }
 
-      if (loggedIn && (isLoggingIn || isRegistering || isAuthChecker)) {
+      // Si connecté et essaie d'accéder à une route d'authentification
+      if (loggedIn && (location == '/login' || location == '/register' ||
+          location == '/register-company' || location == '/')) {
         return '/home';
       }
 

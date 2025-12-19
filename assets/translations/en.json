@@ -279,5 +279,21 @@
   "edit_skill": "Edit skill",  "modify_skill_details": "Modify skill details",  "skill_updated_successfully": "Skill updated successfully",
   "confirmation": "Confirmation",
   "delete_skill_confirmation": "Are you sure you want to delete this skill?",
-  "skill_deleted_successfully": "Skill deleted successfully"
+  "skill_deleted_successfully": "Skill deleted successfully",
+  "experiences": "Experiences",
+  "appearance": "Appearance",
+  "system_mode": "System mode",
+  "push_notifications": "Push notifications",
+  "receive_notifications": "Receive app notifications",
+  "account": "Account",
+  "change_password": "Change password",
+  "privacy": "Privacy",
+  "about": "About",
+  "app_version": "App version",
+  "help_support": "Help & support",
+  "logout_confirmation": "Are you sure you want to log out?",
+  "delete_account": "Delete my account",
+  "delete_account_confirmation": "Are you sure you want to delete your account? This action is irreversible.",
+  "coming_soon": "Coming soon",
+  "new_follower": "New follower"
 }

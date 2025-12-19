@@ -4,8 +4,9 @@ import 'package:linkup_pro/core/theme/app_colors.dart';
 
 class EmptySkillsView extends StatelessWidget {
   final VoidCallback? onAddSkill;
+  final bool isOwnProfile;
 
-  const EmptySkillsView({super.key, this.onAddSkill});
+  const EmptySkillsView({super.key, this.onAddSkill, this.isOwnProfile = false});
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +24,13 @@ class EmptySkillsView extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          Text(
+          if(isOwnProfile) Text(
             'start_adding_skills'.tr(),
             style: Theme.of(
               context,
             ).textTheme.bodyMedium?.copyWith(color: Colors.grey.shade600),
           ),
-          if (onAddSkill != null) ...[
+          if (onAddSkill != null && isOwnProfile) ...[
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: onAddSkill,

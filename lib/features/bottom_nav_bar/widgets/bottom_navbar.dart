@@ -5,6 +5,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
+import 'package:linkup_pro/features/bottom_nav_bar/providers/job_offers_count_provider.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/unread_conversations_provider.dart';
 
 class BottomNavbar extends ConsumerWidget {
@@ -16,6 +17,7 @@ class BottomNavbar extends ConsumerWidget {
     final int unreadConversationsCount = ref.watch(
       unreadConversationsCountProvider,
     );
+    final int jobOffersCount = ref.watch(jobOffersCountProvider);
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Container(
@@ -72,7 +74,7 @@ class BottomNavbar extends ConsumerWidget {
                 icon: FontAwesomeIcons.briefcase,
                 activeIcon: FontAwesomeIcons.briefcase,
                 label: 'job'.tr(),
-                badgeCount: 2,
+                badgeCount: jobOffersCount,
               ),
               _NavItemData(
                 icon: FontAwesomeIcons.user,

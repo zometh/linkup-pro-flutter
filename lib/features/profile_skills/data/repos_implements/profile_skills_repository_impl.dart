@@ -7,9 +7,9 @@ class ProfileSkillsRepositoryImpl implements ProfileSkillsRepository {
   final ApiClient apiClient = GetIt.instance.get<ApiClient>();
 
   @override
-  Future<List<Map<String, dynamic>>> getMySkills() async {
+  Future<List<Map<String, dynamic>>> getProfileSkills(String userId) async {
     try {
-      final response = await apiClient.get('/competences/my-skills');
+      final response = await apiClient.get('/competences/my-skills/$userId');
       return response;
     } catch (e) {
       throw Exception('Failed to get skills: $e');

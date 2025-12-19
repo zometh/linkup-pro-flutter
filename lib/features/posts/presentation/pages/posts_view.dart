@@ -14,9 +14,9 @@ import 'package:linkup_pro/main.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PostsView extends ConsumerStatefulWidget {
-  final bool isMyPosts;
+  final String? userId;
 
-  const PostsView({super.key, this.isMyPosts = false});
+  const PostsView({super.key, this.userId});
 
   @override
   ConsumerState<PostsView> createState() => _PostsViewState();
@@ -158,7 +158,7 @@ class _PostsViewState extends ConsumerState<PostsView>
     try {
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
-          .fetchPosts(_currentPage, _postsPerPage, widget.isMyPosts);
+          .fetchPosts(_currentPage, _postsPerPage,widget.userId);
       Future.microtask(() {
         if (mounted) {
           setState(() {

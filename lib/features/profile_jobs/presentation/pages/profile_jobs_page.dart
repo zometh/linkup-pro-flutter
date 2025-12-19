@@ -9,7 +9,9 @@ import 'package:linkup_pro/features/profile_jobs/presentation/widgets/delete_job
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 
 class ProfileJobsPage extends ConsumerStatefulWidget {
-  const ProfileJobsPage({super.key});
+  final bool isOwnProfile;
+  final String userId;
+  const ProfileJobsPage({super.key, required this.isOwnProfile, required this.userId});
 
   @override
   ConsumerState<ProfileJobsPage> createState() => _ProfileJobsPageState();
@@ -20,7 +22,7 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(profileJobsProvider.notifier).loadMyJobs();
+      ref.read(profileJobsProvider.notifier).loadMyJobs(widget.userId);
     });
   }
 
@@ -29,10 +31,10 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
     final jobsState = ref.watch(profileJobsProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
-    return _buildContent(jobsState, isDarkMode);
+    return _buildContent(jobsState, isDarkMode, widget.isOwnProfile);
   }
 
-  Widget _buildContent(ProfileJobsState jobsState, bool isDarkMode) {
+  Widget _buildContent(ProfileJobsState jobsState, bool isDarkMode, bool isOwnProfile) {
     if (jobsState.isLoading && jobsState.jobs.isEmpty) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -44,12 +46,12 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
     }
 
     if (jobsState.jobs.isEmpty) {
-      return _buildEmptyView(isDarkMode);
+      return _buildEmptyView(isDarkMode, isOwnProfile);
     }
 
     return Column(
       children: [
-        Align(
+        if(isOwnProfile)Align(
           alignment: Alignment.topRight,
           child: Container(
             margin: const EdgeInsets.only(bottom: 8, right: 13),
@@ -83,7 +85,7 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
     );
   }
 
-  Widget _buildEmptyView(bool isDarkMode) {
+  Widget _buildEmptyView(bool isDarkMode, bool isOwnProfile) {
     return Center(
       child: SingleChildScrollView(
         child: Padding(
@@ -101,17 +103,18 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
                 text: 'Aucune expérience professionnelle',
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
+                textAlign: TextAlign.center,
                 color: isDarkMode ? Colors.white70 : Colors.black87,
               ),
               const SizedBox(height: 8),
-              CustomText(
+              if(isOwnProfile)CustomText(
                 text: 'Ajoutez votre première expérience professionnelle',
                 fontSize: 14,
                 color: isDarkMode ? Colors.grey.shade500 : Colors.grey.shade600,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
+             if(isOwnProfile) ElevatedButton.icon(
                 onPressed: _showAddDialog,
                 icon: const Icon(Icons.add),
                 label: const Text('Ajouter une expérience'),
@@ -160,7 +163,7 @@ class _ProfileJobsPageState extends ConsumerState<ProfileJobsPage> {
               const SizedBox(height: 24),
               ElevatedButton(
                 onPressed: () =>
-                    ref.read(profileJobsProvider.notifier).loadMyJobs(),
+                    ref.read(profileJobsProvider.notifier).loadMyJobs(widget.userId),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

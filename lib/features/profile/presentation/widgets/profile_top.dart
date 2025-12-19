@@ -4,6 +4,7 @@ import 'package:linkup_pro/core/entities/company.dart';
 import 'package:linkup_pro/core/entities/member.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/features/profile/presentation/providers/follow_provider.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/expansion_text.dart';
 
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_header.dart';
@@ -37,9 +38,38 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
   Member? get memberInfos => widget.memberInfos;
   Company? get companyInfos => widget.companyInfos;
   bool get isMember => widget.isMember;
+
+  // Local state for real-time followers count update
+  int _followersCount = 0;
+
   @override
   void initState() {
     super.initState();
+    _initFollowersCount();
+  }
+
+  @override
+  void didUpdateWidget(covariant ProfileTop oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // Réinitialiser le compteur si les données changent
+    if (oldWidget.memberInfos != widget.memberInfos ||
+        oldWidget.companyInfos != widget.companyInfos) {
+      _initFollowersCount();
+    }
+  }
+
+  void _initFollowersCount() {
+    if (isMember && memberInfos != null) {
+      _followersCount = memberInfos!.user.followers ?? 0;
+    } else if (!isMember && companyInfos != null) {
+      _followersCount = companyInfos!.user.followers ?? 0;
+    }
+  }
+
+  void _onFollowChanged(bool isFollowing, int newFollowersCount) {
+    setState(() {
+      _followersCount = newFollowersCount;
+    });
   }
 
   @override
@@ -48,6 +78,21 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
 
     final screenHeight = MediaQuery.of(context).size.height;
     final headerHeight = screenHeight * 0.2;
+
+    // Récupérer userId de manière sécurisée
+    final userId = isMember
+        ? memberInfos?.user.id
+        : companyInfos?.user.id;
+
+    // Watch the follow provider for real-time updates (seulement si userId est disponible)
+    int displayFollowersCount = _followersCount;
+    if (userId != null) {
+      final followState = ref.watch(followProvider(userId));
+      // Use provider's followers count if initialized, otherwise use local state
+      displayFollowersCount = followState.followersCount > 0
+          ? followState.followersCount
+          : _followersCount;
+    }
 
     return Column(
       children: [
@@ -60,6 +105,8 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
             companyInfos: companyInfos,
             memberInfos: memberInfos,
             onProfileUpdated: widget.onProfileUpdated,
+            onFollowChanged: _onFollowChanged,
+            userId: userId,
           ),
         ),
 
@@ -74,14 +121,14 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                   Expanded(
                     child: CustomText(
                       text: isMember
-                          ? '${memberInfos!.user.firstName} ${memberInfos!.user.lastName}'
-                          : companyInfos!.name,
+                          ? '${memberInfos?.user.firstName ?? ''} ${memberInfos?.user.lastName ?? ''}'
+                          : companyInfos?.name ?? '',
                       fontSize: 18,
-                      fontWeight: .w800,
+                      fontWeight: FontWeight.w800,
                       color: isDarkMode ? Colors.white : Colors.black,
                     ),
                   ),
-                  if (!isMember && companyInfos!.isValidated)
+                  if (!isMember && (companyInfos?.isValidated ?? false))
                     Padding(
                       padding: const EdgeInsets.only(left: 4),
                       child: Icon(
@@ -96,7 +143,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
 
               CustomText(
                 text:
-                    '@${memberInfos?.user.username ?? companyInfos!.user.username}',
+                    '@${memberInfos?.user.username ?? companyInfos?.user.username ?? ''}',
 
                 fontSize: 15,
                 color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
@@ -108,7 +155,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                   companyInfos?.description != null)
                 ExpansionText(
                   isProfileBio: true,
-                  text: memberInfos?.biography ?? companyInfos!.description,
+                  text: memberInfos?.biography ?? companyInfos?.description ?? '',
                 ),
 
               const SizedBox(height: 12),
@@ -120,13 +167,14 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
               ),
 
               GlobalProfileStats(
-                followers: isMember
-                    ? memberInfos!.user.followers!
-                    : companyInfos!.user.followers!,
-
+                followers: displayFollowersCount,
                 following: isMember
-                    ? memberInfos!.user.following!
-                    : companyInfos!.user.following!,
+                    ? memberInfos?.user.following ?? 0
+                    : companyInfos?.user.following ?? 0,
+                userId: userId,
+                userName: isMember
+                    ? '${memberInfos?.user.firstName ?? ''} ${memberInfos?.user.lastName ?? ''}'.trim()
+                    : companyInfos?.name ?? '',
               ),
 
               const SizedBox(height: 5),

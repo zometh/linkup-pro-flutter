@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/core/widgets/custom_confirmation_dialog.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
@@ -26,7 +27,7 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
   ScrollController? _attachedController;
   bool _attachedToPrimary = false;
   bool _listenerAttached = false;
-
+  final _db = GetIt.I<LocalDBService>();
   final int _commentsPerPage = 3;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
@@ -139,6 +140,8 @@ class _PostsCommentsPageState extends ConsumerState<PostsCommentsPage> {
     );
   }
   showMoreDialog(String text, String commentId) async{
+    final currentUserId = await _db.getUserId();
+    if(currentUserId == null || currentUserId.isEmpty) return;
 
     final result = await CustomConfirmationDialog.showDeleteConfirmation(
       context: context,

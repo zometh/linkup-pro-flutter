@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implementations/post_repository_implementaion.dart';
@@ -313,7 +314,8 @@ class _PostHeaderState extends State<PostHeader> {
   }
 
   previewUser() async {
-    final postImplement = GetIt.I<PostRepositoryImpl>();
+    context.push("/user/${widget.post.userId}");
+   /* final postImplement = GetIt.I<PostRepositoryImpl>();
     final response = await postImplement.getUserPreview(widget.post.userId);
     userPreviewAdds = response.fold(
       (failure) {
@@ -336,7 +338,7 @@ class _PostHeaderState extends State<PostHeader> {
           ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
         );
       }
-    }
+    }*/
   }
 
   deletePost() async {

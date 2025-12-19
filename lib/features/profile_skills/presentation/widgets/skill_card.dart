@@ -6,6 +6,7 @@ import 'package:linkup_pro/features/profile_skills/data/models/competence_model.
 import 'package:linkup_pro/features/profile_skills/presentation/widgets/level_chip.dart';
 
 class SkillCard extends StatelessWidget {
+  final bool isOwnProfile;
   final CompetenceModel skill;
   final VoidCallback onEdit;
   final VoidCallback onDelete;
@@ -14,7 +15,7 @@ class SkillCard extends StatelessWidget {
     super.key,
     required this.skill,
     required this.onEdit,
-    required this.onDelete,
+    required this.onDelete, required this.isOwnProfile,
   });
 
   @override
@@ -77,7 +78,7 @@ class SkillCard extends StatelessWidget {
             ],
           ],
         ),
-        trailing: PopupMenuButton(
+        trailing: isOwnProfile ? PopupMenuButton(
           icon: Icon(
             Icons.more_vert,
             color: isDarkMode ? Colors.grey.shade400 : Colors.grey.shade600,
@@ -121,7 +122,7 @@ class SkillCard extends StatelessWidget {
               onTap: () => Future.delayed(Duration.zero, onDelete),
             ),
           ],
-        ),
+        ) : null,
       ),
     );
   }

@@ -2,6 +2,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/follow_list_sheet.dart';
 
 class ProfileStats extends StatelessWidget {
   final int count;
@@ -42,26 +43,54 @@ class ProfileStats extends StatelessWidget {
     );
   }
 }
+
 class GlobalProfileStats extends StatelessWidget {
   final int following;
   final int followers;
-  const GlobalProfileStats({super.key, this.following = 0, this.followers = 0});
+  final String? userId;
+  final String? userName;
+
+  const GlobalProfileStats({
+    super.key,
+    this.following = 0,
+    this.followers = 0,
+    this.userId,
+    this.userName,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return  Row(
+    return Row(
       spacing: 20,
       mainAxisSize: MainAxisSize.max,
       children: [
         ProfileStats(
           count: following,
           label: 'following'.tr(),
-          onTap: () {},
+          onTap: () {
+            if (userId != null) {
+              showFollowList(
+                context,
+                userId: userId!,
+                type: FollowListType.following,
+                userName: userName ?? '',
+              );
+            }
+          },
         ),
         ProfileStats(
           count: followers,
           label: 'followers'.tr(),
-          onTap: () {},
+          onTap: () {
+            if (userId != null) {
+              showFollowList(
+                context,
+                userId: userId!,
+                type: FollowListType.followers,
+                userName: userName ?? '',
+              );
+            }
+          },
         ),
       ],
     );

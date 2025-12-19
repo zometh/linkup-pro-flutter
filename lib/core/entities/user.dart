@@ -12,6 +12,7 @@ class User {
   final String? id;
   int? followers;
   int? following;
+  bool? isFollowedByMe;
 
   User({
     required this.email,
@@ -25,6 +26,7 @@ class User {
     this.id,
     this.followers = 0,
     this.following = 0,
+    this.isFollowedByMe = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class User {
       id: json['id'],
       followers: json['followers'] ?? 0,
       following: json['following'] ?? 0,
+      isFollowedByMe: json['isFollowedByMe'] ?? false,
       email: json['email'],
       firstName: json['firstName'],
       lastName: json['lastName'],

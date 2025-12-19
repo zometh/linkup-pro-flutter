@@ -41,11 +41,11 @@ class ProfileSkillsNotifier extends Notifier<ProfileSkillsState> {
     return ProfileSkillsState();
   }
 
-  Future<void> loadMySkills() async {
+  Future<void> loadMySkills(String userId) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final response = await _repository.getMySkills();
+      final response = await _repository.getProfileSkills(userId);
       final skills = response
           .map((json) => CompetenceModel.fromJson(json))
           .toList();

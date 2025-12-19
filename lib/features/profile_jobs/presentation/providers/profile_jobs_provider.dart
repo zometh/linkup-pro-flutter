@@ -44,11 +44,11 @@ class ProfileJobsNotifier extends Notifier<ProfileJobsState> {
     return ProfileJobsState();
   }
 
-  Future<void> loadMyJobs() async {
+  Future<void> loadMyJobs(String userId) async {
     state = state.copyWith(isLoading: true, error: null);
 
     try {
-      final jobs = await _repository.getMyJobs();
+      final jobs = await _repository.getMyJobs(userId);
       state = state.copyWith(jobs: jobs, isLoading: false, error: null);
     } catch (e) {
       state = state.copyWith(jobs: [], isLoading: false, error: e.toString());
