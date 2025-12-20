@@ -497,7 +497,7 @@ class _MemberOfferPageNewState extends ConsumerState<MemberOfferPageNew>
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Text(
-              '${ref.watch(searchJobOffersProvider).total} résultat(s) pour "${_searchQuery}"',
+              '${ref.watch(searchJobOffersProvider).total} résultat(s) pour "$_searchQuery"',
               style: TextStyle(
                 fontSize: 14,
                 color: isDark ? Colors.white60 : Colors.black54,

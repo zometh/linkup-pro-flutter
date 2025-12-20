@@ -18,7 +18,6 @@ class CompetenceModel {
   });
 
   factory CompetenceModel.fromJson(Map<String, dynamic> json) {
-    print(json);
     CompetenceLevel? parsedLevel;
     if (json['level'] != null) {
       final levelValue = json['level'].toString().toLowerCase();

@@ -4,11 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/offers/domain/entities/entities.dart';
-import 'package:path/path.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:url_launcher/url_launcher.dart';
 
-/// Bottom sheet for application details preview
 class ApplicationDetailSheet extends StatelessWidget {
   final JobApplicationEntity application;
   final VoidCallback onAccept;
@@ -112,7 +110,7 @@ class ApplicationDetailSheet extends StatelessWidget {
             _buildStatusBadge(isDark),
             const SizedBox(width: 8),
             IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => GoRouter.of(context).pop(),
               icon: Icon(
                 Icons.close,
                 color: isDark ? Colors.white70 : AppColors.textSecondary,
@@ -162,7 +160,7 @@ class ApplicationDetailSheet extends StatelessWidget {
   Widget _buildApplicantInfo(bool isDark, BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push("/user/${application.applicant?.id}");
+        context.go("/user/${application.applicant?.id}");
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -470,7 +468,7 @@ class ApplicationDetailSheet extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                GoRouter.of(context).pop();
                 onReject();
               },
               icon: const Icon(Icons.close, size: 18),
@@ -490,7 +488,7 @@ class ApplicationDetailSheet extends StatelessWidget {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                GoRouter.of(context).pop();
                 onReview();
               },
               icon: const Icon(Icons.visibility_outlined, size: 18),
@@ -510,7 +508,7 @@ class ApplicationDetailSheet extends StatelessWidget {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {
-                Navigator.pop(context);
+                GoRouter.of(context).pop();
                 onAccept();
               },
               icon: const Icon(Icons.check, size: 18),

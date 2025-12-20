@@ -5,6 +5,7 @@ import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/profile_skills/data/entity/profile_skills_entity.dart';
 import 'package:linkup_pro/features/profile_skills/data/models/competence_model.dart';
 import 'package:linkup_pro/features/profile_skills/presentation/providers/profile_skills_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class EditSkillDialog extends ConsumerStatefulWidget {
   final CompetenceModel skill;
@@ -86,7 +87,7 @@ class _EditSkillDialogState extends ConsumerState<EditSkillDialog> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   TextButton(
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => GoRouter.of(context).pop(),
                     style: TextButton.styleFrom(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 20,
@@ -256,7 +257,7 @@ class _EditSkillDialogState extends ConsumerState<EditSkillDialog> {
         .updateSkill(widget.skill.id, updatedSkill);
 
     if (success && mounted) {
-      Navigator.pop(context);
+      GoRouter.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('skill_updated_successfully'.tr()),

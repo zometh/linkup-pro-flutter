@@ -80,9 +80,7 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
     final headerHeight = screenHeight * 0.2;
 
     // Récupérer userId de manière sécurisée
-    final userId = isMember
-        ? memberInfos?.user.id
-        : companyInfos?.user.id;
+    final userId = isMember ? memberInfos?.user.id : companyInfos?.user.id;
 
     // Watch the follow provider for real-time updates (seulement si userId est disponible)
     int displayFollowersCount = _followersCount;
@@ -155,11 +153,11 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                   companyInfos?.description != null)
                 ExpansionText(
                   isProfileBio: true,
-                  text: memberInfos?.biography ?? companyInfos?.description ?? '',
+                  text:
+                      memberInfos?.biography ?? companyInfos?.description ?? '',
                 ),
 
-              const SizedBox(height: 12),
-
+              //const SizedBox(height: 12),
               ProfileMetaWidget(
                 isMember: isMember,
                 company: companyInfos,
@@ -173,8 +171,20 @@ class _ProfileHeaderState extends ConsumerState<ProfileTop> {
                     : companyInfos?.user.following ?? 0,
                 userId: userId,
                 userName: isMember
-                    ? '${memberInfos?.user.firstName ?? ''} ${memberInfos?.user.lastName ?? ''}'.trim()
+                    ? '${memberInfos?.user.firstName ?? ''} ${memberInfos?.user.lastName ?? ''}'
+                          .trim()
                     : companyInfos?.name ?? '',
+                onCountsUpdated: (followersCount, followingCount) {
+                  setState(() {
+                    // Mettre à jour le compteur local pour assurer la cohérence
+                    _followersCount = followersCount;
+                    if (isMember && memberInfos != null) {
+                      memberInfos!.user.following = followingCount;
+                    } else if (!isMember && companyInfos != null) {
+                      companyInfos!.user.following = followingCount;
+                    }
+                  });
+                },
               ),
 
               const SizedBox(height: 5),

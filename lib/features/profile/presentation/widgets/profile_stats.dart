@@ -1,4 +1,3 @@
-
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
@@ -49,6 +48,7 @@ class GlobalProfileStats extends StatelessWidget {
   final int followers;
   final String? userId;
   final String? userName;
+  final void Function(int followersCount, int followingCount)? onCountsUpdated;
 
   const GlobalProfileStats({
     super.key,
@@ -56,6 +56,7 @@ class GlobalProfileStats extends StatelessWidget {
     this.followers = 0,
     this.userId,
     this.userName,
+    this.onCountsUpdated,
   });
 
   @override
@@ -74,6 +75,7 @@ class GlobalProfileStats extends StatelessWidget {
                 userId: userId!,
                 type: FollowListType.following,
                 userName: userName ?? '',
+                onCountsUpdated: onCountsUpdated,
               );
             }
           },
@@ -88,6 +90,7 @@ class GlobalProfileStats extends StatelessWidget {
                 userId: userId!,
                 type: FollowListType.followers,
                 userName: userName ?? '',
+                onCountsUpdated: onCountsUpdated,
               );
             }
           },

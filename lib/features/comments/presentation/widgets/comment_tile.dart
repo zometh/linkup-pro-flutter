@@ -3,11 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/routes/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
-import 'package:linkup_pro/features/comments/presentation/pages/sub_comments_page.dart';
-import 'package:linkup_pro/features/comments/presentation/widgets/comment_reply.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../core/network/websocket/config.dart';
@@ -16,6 +14,7 @@ import '../../data/entity/comment.dart';
 import '../../data/comment_repository_implement.dart';
 import '../utils/avatar_url.dart';
 import '../utils/display_name.dart';
+import 'comment_reply.dart';
 
 class CommentTile extends StatefulWidget {
   final bool isSubComment;
@@ -191,7 +190,7 @@ class _CommentTileState extends State<CommentTile> {
   }
 
   viewAllReplies() async {
-     MyNavigator(context).navigateTo(SubCommentsPage(parentComment: widget.comment));
+     GoRouter.of(context).push('/comments/${widget.comment.id}/replies', extra: widget.comment);
   }
 
   likeComment() async{

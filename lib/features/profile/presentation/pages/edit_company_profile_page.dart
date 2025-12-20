@@ -31,6 +31,7 @@ class _EditCompanyProfilePageState
   late TextEditingController _addressController;
   File? _selectedLogo;
   final ImagePicker _picker = ImagePicker();
+  String? _fullPhoneNumber; // Numéro complet avec code pays
 
   @override
   void initState() {
@@ -44,6 +45,8 @@ class _EditCompanyProfilePageState
     _addressController = TextEditingController(
       text: widget.company.user.address,
     );
+    _fullPhoneNumber =
+        widget.company.phone; // Initialiser avec le numéro existant
   }
 
   @override
@@ -87,12 +90,6 @@ class _EditCompanyProfilePageState
           website: _websiteController.text.trim().isEmpty
               ? null
               : _websiteController.text.trim(),
-          phone: _phoneController.text.trim().isEmpty
-              ? null
-              : _phoneController.text.trim(),
-          address: _addressController.text.trim().isEmpty
-              ? null
-              : _addressController.text.trim(),
           logo: _selectedLogo,
         );
 
@@ -289,7 +286,8 @@ class _EditCompanyProfilePageState
                   ? PhoneNumber(phoneNumber: widget.company.phone)
                   : null,
               onPhoneNumberChanged: (PhoneNumber number) {
-                // Le numéro sera automatiquement mis à jour dans le controller
+                // Stocker le numéro complet avec le code pays
+                _fullPhoneNumber = number.phoneNumber;
               },
             ),
             const SizedBox(height: 16),

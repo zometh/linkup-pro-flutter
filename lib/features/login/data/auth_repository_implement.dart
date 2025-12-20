@@ -36,7 +36,7 @@ class AuthRepositoryImplement implements AuthRepository {
 
       return Right({"data": response});
     } catch (e) {
-      print(e);
+
       return Left(Failure(e.toString()));
     }
   }

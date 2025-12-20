@@ -73,7 +73,7 @@ class JobApplicationEntity {
   });
 
   factory JobApplicationEntity.fromJson(Map<String, dynamic> json) {
-   print("Datas : $json");
+
     // Handle jobOfferId - can be direct field or nested in jobOffer
     final jobOfferId = json['jobOfferId'] as String? ??
         (json['jobOffer'] != null ? json['jobOffer']['id'] as String? : null) ?? '';

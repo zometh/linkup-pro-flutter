@@ -34,7 +34,7 @@ class JobRepositoryImpl implements JobRepository {
   Future<JobModel> createJob(Map<String, dynamic> jobData) async {
     try {
       final response = await apiClient.post('/jobs', data: jobData);
-      return JobModel.fromJson(response as Map<String, dynamic>);
+      return JobModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to create job: $e');
     }
@@ -44,7 +44,7 @@ class JobRepositoryImpl implements JobRepository {
   Future<JobModel> updateJob(String id, Map<String, dynamic> jobData) async {
     try {
       final response = await apiClient.put('/jobs/$id', jobData);
-      return JobModel.fromJson(response as Map<String, dynamic>);
+      return JobModel.fromJson(response);
     } catch (e) {
       throw Exception('Failed to update job: $e');
     }

@@ -2,12 +2,10 @@ import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/features/offers/data/repositories/job_offer_repository_impl.dart';
 import 'package:linkup_pro/features/offers/domain/entities/entities.dart';
 import 'package:linkup_pro/features/offers/domain/entities/job_offer_company.dart';
-import 'package:linkup_pro/features/offers/domain/entities/search_offers_result.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'job_offer_provider.g.dart';
 
-/// State class for targeted job offers (member view)
 class TargetedOffersState {
   final List<JobOfferEntity> offers;
   final bool isLoading;

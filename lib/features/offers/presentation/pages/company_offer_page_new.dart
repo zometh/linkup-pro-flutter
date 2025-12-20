@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/offers/domain/entities/entities.dart';
@@ -104,7 +105,7 @@ class _CompanyOfferPageNewState extends ConsumerState<CompanyOfferPageNew> {
       backgroundColor: Colors.transparent,
       builder: (context) => CreateOfferSheet(
         onCreated: () {
-          Navigator.pop(context);
+          GoRouter.of(context).pop();
           _showSuccessSnackbar('Offre créée avec succès');
         },
       ),
@@ -133,7 +134,7 @@ class _CompanyOfferPageNewState extends ConsumerState<CompanyOfferPageNew> {
       builder: (context) => EditOfferSheet(
         offer: offer,
         onUpdated: () {
-          Navigator.pop(context);
+          GoRouter.of(context).pop();
           _showSuccessSnackbar('Offre modifiée avec succès');
         },
       ),
@@ -173,11 +174,11 @@ class _CompanyOfferPageNewState extends ConsumerState<CompanyOfferPageNew> {
         content: const Text('Êtes-vous sûr de vouloir supprimer cette offre ?'),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context, false),
+            onPressed: () => GoRouter.of(context).pop(false),
             child: const Text('Annuler'),
           ),
           TextButton(
-            onPressed: () => Navigator.pop(context, true),
+            onPressed: () => GoRouter.of(context).pop(true),
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Supprimer'),
           ),

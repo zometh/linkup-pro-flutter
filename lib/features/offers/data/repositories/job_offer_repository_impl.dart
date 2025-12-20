@@ -75,7 +75,6 @@ class JobOfferRepositoryImpl implements JobOfferRepository {
         ),
       );
     } catch (e) {
-      print("SearchOffersResult error: $e");
       return Left(Failure(e.toString()));
     }
   }
@@ -109,7 +108,6 @@ class JobOfferRepositoryImpl implements JobOfferRepository {
         '/job-offers/company',
         queryParams: queryParams,
       );
-      print("Company offers response: $response");
       final offers = response
           .map((json) => JobOfferCompany.fromJson(json))
           .toList();

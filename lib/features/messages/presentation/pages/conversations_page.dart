@@ -214,10 +214,6 @@ class _ConversationsPageState extends ConsumerState<ConversationsPage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        child: const Icon(Icons.edit),
-      ),
     );
   }
 

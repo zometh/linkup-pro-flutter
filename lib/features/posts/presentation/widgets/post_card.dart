@@ -25,6 +25,7 @@ class PostCard extends ConsumerStatefulWidget {
   final VoidCallback? onComment;
   final VoidCallback? onShare;
   final VoidCallback? onProfileTap;
+  final VoidCallback? onDelete;
 
   const PostCard({
     super.key,
@@ -34,6 +35,7 @@ class PostCard extends ConsumerStatefulWidget {
     this.onComment,
     this.onShare,
     this.onProfileTap,
+    this.onDelete,
     this.isPostDetails = false,
   });
 
@@ -98,7 +100,11 @@ class _PostCardState extends ConsumerState<PostCard> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PostHeader(post: post, userId: userId),
+                PostHeader(
+                  post: post,
+                  userId: userId,
+                  onDelete: widget.onDelete,
+                ),
 
                 ExpansionText(text: post.content),
 
@@ -108,10 +114,7 @@ class _PostCardState extends ConsumerState<PostCard> {
                 PostsStats(post: post),
 
                 if (post.tags.isNotEmpty)
-                  PostsTags(
-                    tags: post.tags,
-                    onTagTap: _onTagTap,
-                  ),
+                  PostsTags(tags: post.tags, onTagTap: _onTagTap),
               ],
             ),
             //),

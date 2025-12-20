@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/edit_profile_button.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/follow_button.dart';
 import 'package:linkup_pro/features/profile/presentation/widgets/profile_action_button.dart';
@@ -41,7 +42,6 @@ class ProfileHeader extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-
         Container(
           height: double.infinity,
           width: double.infinity,
@@ -102,17 +102,17 @@ class ProfileHeader extends StatelessWidget {
             ),
           ),
 
+        /*
         if (isOwnProfile)
           Positioned(
             top: statusBarHeight + 8,
             right: 12,
             child: _buildGlassButton(
               icon: Icons.settings_outlined,
-              onTap: () {},
+              onTap: () => context.push('/settings'),
               size: 40,
             ),
-          ),
-
+          ),*/
         Positioned(
           bottom: -45,
           left: 20,
@@ -275,6 +275,7 @@ class ProfileHeader extends StatelessWidget {
       ],
     );
   }
+
   _openFreindsList(BuildContext context) async {
     await showModalBottomSheet(
       showDragHandle: true,

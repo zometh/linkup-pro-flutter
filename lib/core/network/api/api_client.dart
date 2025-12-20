@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
+import 'package:http_parser/http_parser.dart';
 
 import 'package:toastification/toastification.dart';
 
@@ -73,6 +74,9 @@ class ApiClient {
     Map<String, dynamic>? queryParams,
   }) async {
     final token = await localDb.getToken();
+    // Debug: log endpoint and whether token is present
+    // Ne pas logger le token complet pour la sécurité, seulement sa présence
+    print('[ApiClient] GET $path called. tokenPresent=${token != null} queryParams=${queryParams ?? {}}');
     try {
       final response = await _dio.get(
         path,
@@ -129,6 +133,30 @@ class ApiClient {
         data: data,
         options: token != null ? getOption(token) : null,
       );
+      return response.data as Map<String, dynamic>;
+    } on DioException catch (e) {
+      manageException(e);
+      return {};
+    }
+  }
+
+  Future<Map<String, dynamic>> uploadFile(String path, {required String fileField, required List<int> bytes, required String filename, String? contentType}) async {
+    final token = await localDb.getToken();
+    try {
+      final multipartFile = MultipartFile.fromBytes(bytes, filename: filename, contentType: contentType != null ? MediaType.parse(contentType) : null);
+      final formData = FormData.fromMap({
+        fileField: multipartFile,
+      });
+
+      final response = await _dio.post(
+        path,
+        data: formData,
+        options: token != null ? getOption(token).copyWith(headers: {
+          ...getOption(token).headers!,
+          'Content-Type': 'multipart/form-data',
+        }) : Options(contentType: 'multipart/form-data'),
+      );
+
       return response.data as Map<String, dynamic>;
     } on DioException catch (e) {
       manageException(e);

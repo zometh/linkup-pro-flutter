@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_popscope.dart';
 
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
-import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
-import 'package:linkup_pro/features/register/presentation/pages/register_profile.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
 import 'package:linkup_pro/main.dart';
 
@@ -143,12 +143,17 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
                             return SectorCard(
                                   sector: sector,
                                   onTap: () {
-                                    final route = MaterialPageRoute(
-                                      builder: (_) => widget.isEntreprise
-                                          ? RegisterCompany(sector: sector)
-                                          : RegisterProfile(sector: sector),
-                                    );
-                                    Navigator.push(context, route);
+                                    if (widget.isEntreprise) {
+                                      GoRouter.of(context).push(
+                                        '/register-company',
+                                        extra: sector,
+                                      );
+                                    } else {
+                                      GoRouter.of(context).push(
+                                        '/register/profile',
+                                        extra: sector,
+                                      );
+                                    }
                                   },
                                 )
                                 .animate()

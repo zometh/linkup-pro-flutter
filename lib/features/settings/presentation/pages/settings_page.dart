@@ -56,7 +56,7 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
             Icons.arrow_back,
             color: isDark ? Colors.white : AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => GoRouter.of(context).pop(),
         ),
         title: CustomText(
           text: 'settings'.tr(),
@@ -373,12 +373,12 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
         content: Text('logout_confirmation'.tr()),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => GoRouter.of(context).pop(),
             child: Text('cancel'.tr()),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              GoRouter.of(context).pop();
               _logout();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
@@ -413,22 +413,17 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
 
       // Fermer le dialog de chargement
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        GoRouter.of(context).pop();
       }
 
       // Naviguer vers la page de splash/login en nettoyant toute la pile
       if (mounted) {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(
-            builder: (_) => const _LogoutRedirectPage(),
-          ),
-          (route) => false,
-        );
+        GoRouter.of(context).go('/splash');
       }
     } catch (e) {
       // Fermer le dialog en cas d'erreur
       if (mounted) {
-        Navigator.of(context, rootNavigator: true).pop();
+        GoRouter.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur lors de la déconnexion: $e')),
         );
@@ -436,29 +431,6 @@ class _SettingsPageState extends ConsumerState<SettingsPage> {
     }
   }
 
-  void _showDeleteAccountConfirmation() {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('delete_account'.tr()),
-        content: Text('delete_account_confirmation'.tr()),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('cancel'.tr()),
-          ),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              // TODO: Implémenter la suppression de compte
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: Text('delete'.tr()),
-          ),
-        ],
-      ),
-    );
-  }
 
   void _showChangePasswordDialog() {
     // TODO: Implémenter le changement de mot de passe

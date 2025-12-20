@@ -4,18 +4,19 @@ import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart'
 import 'package:linkup_pro/features/bottom_nav_bar/widgets/bottom_navbar.dart'
     as navbar_widget;
 import 'package:linkup_pro/features/home_page/presentation/widgets/home_appbar.dart';
-import 'package:linkup_pro/features/messages/presentation/pages/conversations_page.dart';
-import 'package:linkup_pro/features/offers/presentation/pages/offers_home.dart';
 import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
 import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart';
-import 'package:linkup_pro/features/search/presentation/pages/search_home.dart';
 import 'package:linkup_pro/main.dart';
+
+import '../../../messages/presentation/pages/conversations_page.dart';
+import '../../../offers/presentation/pages/offers_home.dart';
+import '../../../search/presentation/pages/search_home.dart';
 
 final List<Widget> pages = [
   const PostsView(),
-  const FlutterLogo() /*SearchHome()*/,
-  const FlutterLogo() /*ConversationsPage()*/,
-  const FlutterLogo() /*OffersHome()*/,
+  const SearchHome(),
+  const ConversationsPage(),
+  const OffersHome(),
    ProfileHome(isOwnProfile: true),
 ];
 

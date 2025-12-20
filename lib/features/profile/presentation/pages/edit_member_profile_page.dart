@@ -32,6 +32,7 @@ class _EditMemberProfilePageState extends ConsumerState<EditMemberProfilePage> {
   DateTime? _birthDate;
   File? _selectedPhoto;
   final ImagePicker _picker = ImagePicker();
+  String? _fullPhoneNumber; // Numéro complet avec code pays
 
   @override
   void initState() {
@@ -49,6 +50,8 @@ class _EditMemberProfilePageState extends ConsumerState<EditMemberProfilePage> {
       text: widget.member.user.address,
     );
     _birthDate = widget.member.birthDate;
+    _fullPhoneNumber =
+        widget.member.phone; // Initialiser avec le numéro existant
   }
 
   @override
@@ -107,16 +110,10 @@ class _EditMemberProfilePageState extends ConsumerState<EditMemberProfilePage> {
           biography: _biographyController.text.trim().isEmpty
               ? null
               : _biographyController.text.trim(),
-          phone: _phoneController.text.trim().isEmpty
-              ? null
-              : _phoneController.text.trim(),
           birthDate: _birthDate,
           portfolio: _portfolioController.text.trim().isEmpty
               ? null
               : _portfolioController.text.trim(),
-          address: _addressController.text.trim().isEmpty
-              ? null
-              : _addressController.text.trim(),
           photo: _selectedPhoto,
         );
 
@@ -294,7 +291,8 @@ class _EditMemberProfilePageState extends ConsumerState<EditMemberProfilePage> {
                   ? PhoneNumber(phoneNumber: widget.member.phone)
                   : null,
               onPhoneNumberChanged: (PhoneNumber number) {
-                // Le numéro sera automatiquement mis à jour dans le controller
+                // Stocker le numéro complet avec le code pays
+                _fullPhoneNumber = number.phoneNumber;
               },
             ),
             const SizedBox(height: 16),

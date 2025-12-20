@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/profile_skills/presentation/providers/profile_skills_provider.dart';
 
@@ -30,7 +31,7 @@ class DeleteSkillDialog extends ConsumerWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => GoRouter.of(context).pop(),
           child: Text(
             'cancel'.tr(),
             style: const TextStyle(color: Colors.white70),
@@ -59,7 +60,7 @@ class DeleteSkillDialog extends ConsumerWidget {
         .deleteSkill(skillId);
 
     if (context.mounted) {
-      Navigator.pop(context);
+      GoRouter.of(context).pop();
     }
 
     if (success && context.mounted) {

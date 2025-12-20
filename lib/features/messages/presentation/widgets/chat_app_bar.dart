@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:linkup_pro/features/messages/presentation/widgets/new_conversation_user_list.dart';
@@ -27,7 +28,7 @@ class _ChatAppBarState extends State<ChatAppBar> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final List<String> filters = ["Tous", "Lus", "Non lus"];
+    final List<String> filters = ["all".tr(), "read".tr(), "unread".tr()];
     return SliverAppBar(
       actions: _isSearching
           ? null

@@ -107,6 +107,47 @@ class Search extends _$Search {
         isLoading: false,
       ),
     );
+
+    // Si la recherche 'all' retourne des counts mais pas d'items, tenter un fallback
+    if ((state.results.isEmpty) && (state.pagination?.total != null && state.pagination!.total > 0 || state.categories?.total != null && state.categories!.total > 0)) {
+      // Ne faire le fallback que si la requête initiale était en 'all'
+      if (searchType == SearchType.all) {
+        // déterminer la catégorie prioritaire
+        final cats = state.categories;
+        String preferred = 'people';
+        int maxCount = 0;
+        if (cats != null) {
+          final map = {
+            'people': cats.people,
+            'companies': cats.companies,
+            'posts': cats.posts,
+            'jobs': cats.jobs,
+          };
+          map.forEach((k, v) {
+            if (v > maxCount) {
+              maxCount = v;
+              preferred = k;
+            }
+          });
+        }
+
+        SearchType preferredType = SearchType.people;
+        if (preferred == 'companies') preferredType = SearchType.companies;
+        if (preferred == 'posts') preferredType = SearchType.posts;
+        if (preferred == 'jobs') preferredType = SearchType.jobs;
+
+        if (maxCount > 0) {
+          final fallback = await _repository.search(query: query, type: preferredType, page: 1);
+          fallback.fold((f) => null, (resp) {
+            state = state.copyWith(
+              results: resp.results,
+              pagination: resp.pagination,
+              // garder categories originaux
+            );
+          });
+        }
+      }
+    }
   }
 
   /// Changer le type de recherche

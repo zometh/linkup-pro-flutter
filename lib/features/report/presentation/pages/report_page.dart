@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
@@ -96,7 +97,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                   : AppColors.textPrimary,
                               size: 20,
                             ),
-                            onPressed: () => Navigator.pop(context),
+                            onPressed: () => GoRouter.of(context).pop(),
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -454,7 +455,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     );
 
     //ignore: use_build_context_synchronously
-    Navigator.pop(context);
+    GoRouter.of(context).pop();
   }
 
   String _getContentTypeText() {

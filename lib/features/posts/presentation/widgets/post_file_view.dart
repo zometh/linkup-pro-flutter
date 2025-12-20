@@ -28,7 +28,7 @@ class _BuildPostFileState extends State<BuildPostFile>
   @override
   void initState() {
     super.initState();
-    _uniqueId = '${widget.postId}_${DateTime.now().microsecondsSinceEpoch}_${hashCode}';
+    _uniqueId = '${widget.postId}_${DateTime.now().microsecondsSinceEpoch}_$hashCode';
   }
 
   @override

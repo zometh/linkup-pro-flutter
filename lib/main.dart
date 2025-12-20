@@ -18,6 +18,7 @@ import 'core/services/app_setup.dart';
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
   await dotenv.load(fileName: ".env");
   await setup();
   await NotificationService.initialize(navigatorKey);
@@ -66,13 +67,15 @@ class _MyAppState extends ConsumerState<MyApp> {
     widget.appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
         if (mounted) {
-          GoRouter.of(context).push(uri.path);
+          // Use `go` to replace current location for deep links instead of stacking
+          GoRouter.of(context).go(uri.path);
         }
       }
     });
     if (widget.initialLink != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        GoRouter.of(context).push(widget.initialLink!.path);
+        // Use `go` for initial link navigation
+        GoRouter.of(context).go(widget.initialLink!.path);
       });
     }
   }
@@ -81,7 +84,23 @@ class _MyAppState extends ConsumerState<MyApp> {
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
     final routerConfig = router(auth, navigatorKey);
-    final themeNotifier = ref.watch(themeProvider.notifier);
+    // Watch the provider state (AppThemeMode) instead of the notifier instance.
+    // Watching the notifier (`themeProvider.notifier`) returns the notifier object
+    // and won't trigger rebuilds when the state changes. We must watch
+    // `themeProvider` to rebuild the app when the theme changes.
+    final appThemeMode = ref.watch(themeProvider);
+    ThemeMode currentThemeMode;
+    switch (appThemeMode) {
+      case AppThemeMode.light:
+        currentThemeMode = ThemeMode.light;
+        break;
+      case AppThemeMode.dark:
+        currentThemeMode = ThemeMode.dark;
+        break;
+      case AppThemeMode.system:
+        currentThemeMode = ThemeMode.system;
+        break;
+    }
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
@@ -89,7 +108,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       routerConfig: routerConfig,
       darkTheme: darkTheme,
       theme: lightTheme,
-      themeMode: themeNotifier.themeMode,
+      themeMode: currentThemeMode,
       locale: context.locale,
       supportedLocales: context.supportedLocales,
     );

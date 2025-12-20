@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:linkup_pro/core/services/localdb/localdb.dart';
-import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/home_page/presentation/widgets/animated_logo.dart';
-import 'package:linkup_pro/features/notifications/presentation/pages/notification_home.dart';
 import 'package:linkup_pro/main.dart';
 
-import '../../../../core/routes/app_routes.dart';
-import 'package:linkup_pro/features/splash/pages/splash_screen.dart';
-import 'package:linkup_pro/core/network/websocket/config.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../notifications/presentation/providers/notification_provider.dart';
-import '../../../posts_actions/presentation/pages/post_action_page.dart';
 
 class HomeAppbar extends ConsumerStatefulWidget {
   const HomeAppbar({super.key});
@@ -38,7 +30,6 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar> {
     final isDark = context.isDarkMode;
     final badgeCount = ref.watch(notificationsProvider).unreadCount;
 
-
     return AppBar(
       elevation: 0,
       scrolledUnderElevation: 0.5,
@@ -48,15 +39,13 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar> {
       actions: [
         _buildActionButton(
           icon: FontAwesomeIcons.plus,
-          onPressed: () {
-            MyNavigator(context).navigateTo(const PostActionPage());
-          },
+          onPressed: () => context.push('/post/new'),
           isDark: isDark,
           isPrimary: true,
         ),
         _buildActionButton(
           icon: FontAwesomeIcons.bell,
-          onPressed: () => MyNavigator(context).navigateTo(const NotificationHome()),
+          onPressed: () => context.push('/notifications'),
           isDark: isDark,
           showBadge: true,
           badgeCount: badgeCount,
@@ -125,10 +114,7 @@ class _HomeAppbarState extends ConsumerState<HomeAppbar> {
               right: 2,
               child: Container(
                 padding: const EdgeInsets.all(4),
-                constraints: const BoxConstraints(
-                  minWidth: 16,
-                  minHeight: 16,
-                ),
+                constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
                 decoration: BoxDecoration(
                   color: AppColors.error,
                   borderRadius: BorderRadius.circular(10),

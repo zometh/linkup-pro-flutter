@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/add_comment.dart';
@@ -39,63 +40,73 @@ class _PostDetailsPageState extends ConsumerState<PostDetailsPage> {
     final bool isLoading = ref.watch(fetchOnePostProvider);
 
     return Scaffold(
-      backgroundColor: context.isDarkMode ? AppColors.darkSurface : AppColors.lightSurface,
+      backgroundColor: context.isDarkMode
+          ? AppColors.darkSurface
+          : AppColors.lightSurface,
       appBar: AppBar(),
       body: isLoading
           ? const OnePostShimmer()
           : post == null
-              ? const NoDataWidget()
-              : CustomScrollView(
-                  slivers: [
-                    SliverToBoxAdapter(
-                      child: Column(
-                        children: [
-                          PostCard(post: post!, isPostDetails: true, userId: userId!,),
-                          Container(
-                            height: 1,
-
-                            color: context.isDarkMode
-                                ? const Color(0xff2F3336)
-                                : Colors.grey.shade300,
-                          ),
-                        ],
+          ? const NoDataWidget()
+          : CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Column(
+                    children: [
+                      PostCard(
+                        post: post!,
+                        isPostDetails: true,
+                        userId: userId!,
+                        onDelete: () {
+                          // Retourner à la page précédente après suppression
+                          if (mounted) context.pop();
+                        },
                       ),
-                    ),
+                      Container(
+                        height: 1,
 
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only( top: 5,
-                        bottom: 100
-                        ),
-                        child: PostsCommentsPage(postId: post!.id),
+                        color: context.isDarkMode
+                            ? const Color(0xff2F3336)
+                            : Colors.grey.shade300,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 5, bottom: 100),
+                    child: PostsCommentsPage(postId: post!.id),
+                  ),
+                ),
+              ],
+            ),
       bottomSheet: post != null ? AddComment(postId: post!.id) : null,
     );
   }
+
   Column displayCommentsList(List<Comment> comments) {
     return Column(
       children: [
         ListView.builder(
           //controller: _attachedController,
           shrinkWrap: true,
-         // physics: const NeverScrollableScrollPhysics(),
+          // physics: const NeverScrollableScrollPhysics(),
           itemCount: comments.length,
           itemBuilder: (context, index) {
             final comment = comments[index];
             return Text(comment.content);
           },
         ),
-
       ],
     );
   }
+
   Future<void> fetch() async {
     final connectedUser = await db.getUserId();
-    final newPost =
-        await ref.read(fetchOnePostProvider.notifier).fetchPosts(widget.postId);
+    final newPost = await ref
+        .read(fetchOnePostProvider.notifier)
+        .fetchPosts(widget.postId);
     Future.microtask(() {
       setState(() {
         userId = connectedUser;

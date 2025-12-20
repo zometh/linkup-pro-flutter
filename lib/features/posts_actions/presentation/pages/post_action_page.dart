@@ -8,6 +8,7 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:faker/faker.dart' as f;
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
+import 'package:linkup_pro/features/posts/presentation/providers/post_event_provider.dart';
 import 'package:linkup_pro/features/posts_actions/domain/entities/post_action_entity.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/create_post.dart';
 import 'package:linkup_pro/features/posts_actions/presentation/providers/update_post.dart';
@@ -647,6 +648,11 @@ class _PostActionPageState extends ConsumerState<PostActionPage> {
           type: ToastificationType.error,
         );
         return;
+      }
+      // Notifier la création du post pour mise à jour en temps réel
+      if (response is Map<String, dynamic> && response['post'] != null) {
+        final newPost = Post.fromJson(response['post']);
+        ref.read(postEventProvider.notifier).notifyPostCreated(newPost);
       }
       if (mounted) {
         Navigator.of(context).pop(true); // renvoyer succès

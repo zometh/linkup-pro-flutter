@@ -24,17 +24,20 @@ class ProfileRepositoryImpl implements ProfileRepository {
   }) async {
     final formData = FormData();
 
-    if (firstName != null)
+    if (firstName != null) {
       formData.fields.add(MapEntry('firstName', firstName));
+    }
     if (lastName != null) formData.fields.add(MapEntry('lastName', lastName));
-    if (biography != null)
+    if (biography != null) {
       formData.fields.add(MapEntry('biography', biography));
+    }
     if (phone != null) formData.fields.add(MapEntry('phone', phone));
     if (birthDate != null) {
       formData.fields.add(MapEntry('birthDate', birthDate.toIso8601String()));
     }
-    if (portfolio != null)
+    if (portfolio != null) {
       formData.fields.add(MapEntry('portfolio', portfolio));
+    }
     if (address != null) formData.fields.add(MapEntry('address', address));
 
     if (photo != null) {

@@ -33,12 +33,19 @@ class PostRepositoryImpl implements PostRepository {
     if (userId != null) {
 
 
+      // Si un userId est fourni, appeler endpoint user-specific, sinon appeler /posts
+      // On utilise le endpoint `/posts` sans userId pour laisser le backend personnaliser
+      // la réponse en fonction du token si présent. Cependant, dans certains cas
+      // (token non disponible) on permet d'envoyer explicitement `userId` en query
+      // pour obtenir des posts ciblés.
       endPoint = "/posts/user/$userId";
     }
     try {
+      // TODO: envoyer userId en queryParams as a fallback rather than changing endpoint
+      print('[PostRepositoryImpl] calling $endPoint with page=$page limit=$limit userIdPresent=${userId != null}');
       final response = await _apiClient.get(
         endPoint,
-        queryParams: {'page': page, 'limit': limit},
+        queryParams: {'page': page, 'limit': limit, if (userId != null) 'userId': userId},
       );
       //  print(response);
       final posts = response.map((postJson) {

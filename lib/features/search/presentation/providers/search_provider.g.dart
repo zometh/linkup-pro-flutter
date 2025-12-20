@@ -43,7 +43,7 @@ final class SearchProvider extends $NotifierProvider<Search, SearchState> {
   }
 }
 
-String _$searchHash() => r'e5d283efb7e55914befbab24a76ab5e2b4819ac8';
+String _$searchHash() => r'f683cc467f6198e46559eb0097ad145859aa625d';
 
 /// Provider principal de recherche
 

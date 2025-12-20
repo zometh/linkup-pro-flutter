@@ -32,8 +32,42 @@ class SearchRepository {
         '/search',
         queryParams: queryParams,
       );
+      // Debug: log the raw response to help diagnose empty results vs categories present
+      // TODO: remove or guard this log in production
+      try {
+        print('[SearchRepository] raw response: ' + response.toString());
+      } catch (e) {}
 
-      return Right(SearchResponse.fromJson(response));
+      final parsed = SearchResponse.fromJson(response);
+
+      // Fallback: si la recherche "all" renvoie counts mais aucun item, appeler endpoint users/search
+      if (parsed.results.isEmpty && parsed.categories.total > 0 && type == SearchType.all && parsed.categories.people > 0) {
+        try {
+          final usersResp = await _apiClient.getOne('/users/search', queryParams: {'q': query, 'limit': limit.toString()});
+          // usersResp attendu: { results: [...], count: N }
+          final List<dynamic> usersList = (usersResp['results'] is List) ? usersResp['results'] as List<dynamic> : [];
+          final mappedResults = usersList.map((u) {
+            final map = u is Map<String, dynamic> ? Map<String, dynamic>.from(u) : {};
+            return SearchResult.fromJson({
+              'type': 'people',
+              'id': map['id'] ?? map['userId'] ?? '',
+              'data': map,
+            });
+          }).toList();
+
+          final fallbackResponse = SearchResponse(
+            results: mappedResults.cast<SearchResult>(),
+            pagination: parsed.pagination,
+            categories: parsed.categories,
+          );
+          return Right(fallbackResponse);
+        } catch (e) {
+          // si fallback échoue, retourner la réponse originale (vide)
+          return Right(parsed);
+        }
+      }
+
+      return Right(parsed);
     } on NetworkException catch (e) {
       return Left(e.message);
     } catch (e) {
@@ -80,4 +114,3 @@ class SearchRepository {
     }
   }
 }
-

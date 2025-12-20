@@ -63,20 +63,28 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
     _socketService.on('followUpdate', (data) {
       if (!mounted) return;
 
-      final type = data['type'] as String?;
       final followersCount = data['followersCount'] as int?;
       final followingCount = data['followingCount'] as int?;
 
       if (followersCount != null && followingCount != null) {
-        setState(() {
-          if (isMember && memberInfos != null) {
-            memberInfos!.user.followers = followersCount;
-            memberInfos!.user.following = followingCount;
-          } else if (!isMember && companyInfos != null) {
-            companyInfos!.user.followers = followersCount;
-            companyInfos!.user.following = followingCount;
-          }
-        });
+        // Only update if we are viewing our own profile or if the displayed user is the current user
+        final displayedUserId = isMember
+            ? memberInfos?.user.id
+            : companyInfos?.user.id;
+
+        if (displayedUserId != null &&
+            currentUserId != null &&
+            displayedUserId == currentUserId) {
+          setState(() {
+            if (isMember && memberInfos != null) {
+              memberInfos!.user.followers = followersCount;
+              memberInfos!.user.following = followingCount;
+            } else if (!isMember && companyInfos != null) {
+              companyInfos!.user.followers = followersCount;
+              companyInfos!.user.following = followingCount;
+            }
+          });
+        }
       }
     });
   }
@@ -124,7 +132,6 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                       memberInfos: memberInfos,
                       companyInfos: companyInfos,
                       onProfileUpdated: () {
-                        // Recharger les données du profil après modification
                         setState(() {
                           isLoading = true;
                         });
@@ -172,10 +179,12 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
                             fontWeight: FontWeight.bold,
                             fontSize: 11,
                           ),
-                          tabs:  [
+                          tabs: [
                             Tab(text: "Posts", height: 40),
-                            if(isOwnProfile)Tab(text: "skills".tr(), height: 40),
-                            if(isOwnProfile)Tab(text: "experiences".tr(), height: 40),
+                            //  if (isOwnProfile)
+                            Tab(text: "skills".tr(), height: 40),
+                            //   if (isOwnProfile)
+                            Tab(text: "experiences".tr(), height: 40),
                           ],
                         ),
                       ),
@@ -188,9 +197,17 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
               },
               body: TabBarView(
                 children: [
-                  PostsView(userId: isOwnProfile ? currentUserId : userId,),
-                  if(isOwnProfile)ProfileSkillsPage(userId:  isOwnProfile ? currentUserId! : userId!,isOwnProfile: isOwnProfile,),
-                   if(isOwnProfile)ProfileJobsPage(userId:  isOwnProfile ? currentUserId! : userId!,isOwnProfile: isOwnProfile),
+                  PostsView(userId: isOwnProfile ? currentUserId : userId),
+                  //  if (isOwnProfile)
+                  ProfileSkillsPage(
+                    userId: isOwnProfile ? currentUserId! : userId!,
+                    isOwnProfile: isOwnProfile,
+                  ),
+                  //  if (isOwnProfile)
+                  ProfileJobsPage(
+                    userId: isOwnProfile ? currentUserId! : userId!,
+                    isOwnProfile: isOwnProfile,
+                  ),
                 ],
               ),
             ),
@@ -319,9 +336,10 @@ class _ProfileHomeState extends ConsumerState<ProfileHome>
       rethrow;
     }
   }
+
   fetchCurrentUserId() async {
-    if(isOwnProfile){
-      final userId = await localDb.getUserId();
+    final userId = await localDb.getUserId();
+    if (mounted) {
       setState(() {
         currentUserId = userId;
       });

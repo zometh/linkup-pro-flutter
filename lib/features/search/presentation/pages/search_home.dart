@@ -197,7 +197,12 @@ class _SearchHomeState extends ConsumerState<SearchHome> {
   Widget _buildResultCard(bool isDark, SearchResult result) {
     switch (result.type) {
       case 'people':
-        return SearchPersonCard(result: result, isDark: isDark);
+        return InkWell(
+          onTap: () {
+            context.push('/user/${result.id}');
+          },
+          child: SearchPersonCard(result: result, isDark: isDark),
+        );
       case 'company':
         return SearchCompanyCard(result: result, isDark: isDark);
       case 'post':

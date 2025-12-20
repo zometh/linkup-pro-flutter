@@ -14,12 +14,14 @@ class FollowListSheet extends ConsumerStatefulWidget {
   final String userId;
   final FollowListType type;
   final String userName;
+  final void Function(int followersCount, int followingCount)? onCountsUpdated;
 
   const FollowListSheet({
     super.key,
     required this.userId,
     required this.type,
     required this.userName,
+    this.onCountsUpdated,
   });
 
   @override
@@ -58,6 +60,18 @@ class _FollowListSheetState extends ConsumerState<FollowListSheet> {
         _users = users?.cast<Map<String, dynamic>>() ?? [];
         _isLoading = false;
       });
+
+      // Après chargement de la liste, récupérer les stats pour synchroniser les compteurs
+      try {
+        final statsResp = await _apiClient.getOne('/follow/stats/${widget.userId}');
+        final followersCount = statsResp['followersCount'] as int? ?? 0;
+        final followingCount = statsResp['followingCount'] as int? ?? 0;
+        if (widget.onCountsUpdated != null) {
+          widget.onCountsUpdated!(followersCount, followingCount);
+        }
+      } catch (_) {
+        // ignore - ne bloque pas l'affichage de la liste
+      }
     } catch (e) {
       setState(() {
         _error = e.toString();
@@ -102,7 +116,7 @@ class _FollowListSheetState extends ConsumerState<FollowListSheet> {
                     Icons.close,
                     color: isDark ? Colors.white : AppColors.textPrimary,
                   ),
-                  onPressed: () => Navigator.pop(context),
+                  onPressed: () => GoRouter.of(context).pop(),
                 ),
                 Expanded(
                   child: CustomText(
@@ -209,7 +223,7 @@ class _FollowListSheetState extends ConsumerState<FollowListSheet> {
 
     return ListTile(
       onTap: () {
-        Navigator.pop(context);
+        GoRouter.of(context).pop();
         context.push('/user/$userId');
       },
       leading: CircleAvatar(
@@ -250,6 +264,7 @@ void showFollowList(
   required String userId,
   required FollowListType type,
   required String userName,
+  void Function(int followersCount, int followingCount)? onCountsUpdated,
 }) {
   showModalBottomSheet(
     context: context,
@@ -259,7 +274,7 @@ void showFollowList(
       userId: userId,
       type: type,
       userName: userName,
+      onCountsUpdated: onCountsUpdated,
     ),
   );
 }
-

@@ -288,7 +288,7 @@ class _AccountPreviewState extends State<AccountPreview> {
   }
 
   _visitProfile() async {
-    Navigator.of(context).pop();
+    GoRouter.of(context).pop();
     context.push('/user/${widget.post.userId}');
   }
 }

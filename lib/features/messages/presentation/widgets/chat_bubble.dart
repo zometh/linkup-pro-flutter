@@ -5,13 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:linkup_pro/core/routes/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/features/messages/domain/entity/delete_message.dart';
 import 'package:linkup_pro/features/messages/domain/entity/message_entity.dart';
 import 'package:linkup_pro/features/messages/presentation/providers/messages.dart';
 import 'package:linkup_pro/features/messages/presentation/widgets/bubble_action_tile.dart';
-import 'package:linkup_pro/features/posts/presentation/widgets/image_preview.dart';
 
 import '../../../../core/services/localdb/localdb.dart';
 import '../../../../core/utils/formatters/format_date.dart';
@@ -135,7 +134,7 @@ class BubbleChat extends ConsumerWidget {
     required WidgetRef ref,
     required BuildContext context,
   }) async {
-    Navigator.pop(context);
+    GoRouter.of(context).pop();
     final deletedMessage = DeleteMessageEntity(
       messageId: messageEntity.id!,
       conversationId: conversationId,
@@ -148,7 +147,7 @@ class BubbleChat extends ConsumerWidget {
     if (messageEntity.content == null || messageEntity.content!.isEmpty) {
       return;
     }
-    Navigator.pop(context);
+    GoRouter.of(context).pop();
 
     await Clipboard.setData(ClipboardData(text: messageEntity.content ?? ""));
     // ignore: use_build_context_synchronously
@@ -190,15 +189,11 @@ class BubbleChat extends ConsumerWidget {
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
                 onTap: () {
-                  MyNavigator(context).navigateTo(
-                    ImagePreview(
-                      imageUrls: [
-                        messageEntity.attachments!.firstWhere(
-                          (att) => att['fileType'] == 'image',
-                        )['fileUrl'],
-                      ],
-                    ),
-                  );
+                  // Use go_router and pass image urls via extra
+                  final imageUrl = messageEntity.attachments!.firstWhere(
+                    (att) => att['fileType'] == 'image',
+                  )['fileUrl'] as String;
+                  GoRouter.of(context).push('/image-preview', extra: <String>[imageUrl]);
                 },
                 child: Image.network(
                   messageEntity.attachments!.firstWhere(

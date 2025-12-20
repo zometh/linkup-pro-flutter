@@ -7,6 +7,7 @@ import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_post.dart';
+import 'package:linkup_pro/features/posts/presentation/providers/post_event_provider.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/no_data_widget.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_card.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_shimmer_loading.dart';
@@ -35,11 +36,13 @@ class _PostsViewState extends ConsumerState<PostsView>
   double _lastScrollPosition = 0;
   final io = GetIt.I<SocketService>();
   String? connectedUserId;
+  bool _hasToken = false;
+  int _tokenRetries = 0;
   @override
   void initState() {
     super.initState();
-    getUserId();
-    fetchPosts();
+    // Récupérer d'abord l'ID connecté et vérifier le token avant de charger les posts.
+    getUserId().then((_) => _ensureTokenAndFetch());
     _scrollController.addListener(_onScroll);
 
     _setupSocketListeners();
@@ -57,6 +60,27 @@ class _PostsViewState extends ConsumerState<PostsView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    ref.listen<PostEvent?>(postEventProvider, (previous, next) {
+      if (next == null) return;
+      switch (next.type) {
+        case PostEventType.created:
+          if (next.post != null) {
+            _insertPost(next.post!);
+          }
+          break;
+        case PostEventType.deleted:
+          if (next.postId != null) {
+            removePost(next.postId!);
+          }
+          break;
+        case PostEventType.updated:
+          if (next.post != null) {
+            _updatePostDirect(next.post!);
+          }
+          break;
+      }
+    });
 
     return RefreshIndicator.adaptive(
       key: refreshKey,
@@ -101,7 +125,11 @@ class _PostsViewState extends ConsumerState<PostsView>
                       }
                     }
                     final post = posts[index];
-                    return PostCard(post: post, userId: connectedUserId!);
+                    return PostCard(
+                      post: post,
+                      userId: connectedUserId!,
+                      onDelete: () => removePost(post.id),
+                    );
                   },
                 ),
               ],
@@ -143,6 +171,29 @@ class _PostsViewState extends ConsumerState<PostsView>
     }
   }
 
+  Future<void> _ensureTokenAndFetch() async {
+    final storage = GetIt.I<LocalDBService>();
+    final token = await storage.getToken();
+    if (token != null) {
+      _hasToken = true;
+      fetchPosts();
+      return;
+    }
+
+    // Retry court pour laisser le temps à l'auth flow de stocker le token
+    if (_tokenRetries < 5) {
+      _tokenRetries++;
+      await Future.delayed(const Duration(milliseconds: 300));
+      return _ensureTokenAndFetch();
+    }
+
+    // Si toujours pas de token, journaliser pour debug et ne pas appeler l'API non authentifiée
+    MyLogger().log(
+      'No auth token found after retries — skipping posts fetch',
+      type: LogType.error,
+    );
+  }
+
   fetchPosts() async {
     if (isInitialLoading || isLoadingMore) return;
 
@@ -158,7 +209,7 @@ class _PostsViewState extends ConsumerState<PostsView>
     try {
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
-          .fetchPosts(_currentPage, _postsPerPage,widget.userId);
+          .fetchPosts(_currentPage, _postsPerPage, widget.userId);
       Future.microtask(() {
         if (mounted) {
           setState(() {
@@ -238,7 +289,11 @@ class _PostsViewState extends ConsumerState<PostsView>
 
   void insertNewPost(Map<String, dynamic> data) {
     final newPost = Post.fromJson(data);
+    _insertPost(newPost);
+  }
 
+  /// Insère un nouveau post directement (utilisé par le provider d'événements)
+  void _insertPost(Post newPost) {
     final existingIndex = posts.indexWhere((post) => post.id == newPost.id);
 
     if (existingIndex != -1) {
@@ -260,7 +315,11 @@ class _PostsViewState extends ConsumerState<PostsView>
 
   updatePost(Map<String, dynamic> data) {
     final updatedPost = Post.fromJson(data);
+    _updatePostDirect(updatedPost);
+  }
 
+  /// Met à jour un post directement (utilisé par le provider d'événements)
+  void _updatePostDirect(Post updatedPost) {
     final existingIndex = posts.indexWhere((post) => post.id == updatedPost.id);
 
     if (existingIndex != -1) {

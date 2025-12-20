@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
@@ -20,7 +21,8 @@ class SearchEmptyState extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           CustomText(
-            text: 'Rechercher des personnes, entreprises, publications ou emplois',
+            text: 'search_page_description'
+            .tr(),
             fontSize: 14,
             color: isDark ? Colors.white54 : AppColors.textSecondary,
             textAlign: TextAlign.center,
@@ -36,7 +38,7 @@ class SearchNoResultsState extends StatelessWidget {
   final String query;
 
   const SearchNoResultsState({
-    super.key,
+      super.key,
     required this.isDark,
     required this.query,
   });

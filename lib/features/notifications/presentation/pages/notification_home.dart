@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/notifications/presentation/providers/notification_provider.dart';
@@ -44,7 +45,7 @@ class _NotificationHomeState extends ConsumerState<NotificationHome> {
             Icons.arrow_back,
             color: isDark ? Colors.white : AppColors.textPrimary,
           ),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () => GoRouter.of(context).pop(),
         ),
         actions: [
           if (notificationsState.unreadCount > 0)
@@ -222,12 +223,12 @@ class _NotificationHomeState extends ConsumerState<NotificationHome> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => GoRouter.of(context).pop(),
             child: const Text('Annuler'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context);
+              GoRouter.of(context).pop();
               ref.read(notificationsProvider.notifier).deleteReadNotifications();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),

@@ -16,8 +16,8 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/core/entities/user.dart';
-import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:linkup_pro/main.dart';
 
@@ -377,11 +377,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           .read(registerProvider.notifier)
           .registerUser(user);
       if (response) {
-        final route = MaterialPageRoute(
-          builder: (_) => SectorGridView(isEntreprise: widget.isEntreprise),
-        );
-        if(mounted){
-          Navigator.push(context, route);
+        if (mounted) {
+          GoRouter.of(context).push('/sector-choice?isEntreprise=${widget.isEntreprise}');
         }
         //showToast(description: "success_register".tr(),);
       } else {} /*else{

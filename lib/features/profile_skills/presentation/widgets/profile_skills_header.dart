@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileSkillsHeader extends StatelessWidget {
   const ProfileSkillsHeader({super.key});
@@ -23,7 +24,7 @@ class ProfileSkillsHeader extends StatelessWidget {
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => GoRouter.of(context).pop(),
           ),
           const SizedBox(width: 8),
           Text(

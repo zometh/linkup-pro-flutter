@@ -5,12 +5,9 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
-import 'package:linkup_pro/core/routes/app_routes.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
-import 'package:linkup_pro/features/posts/domain/repos%20and%20implements/implementations/post_repository_implementaion.dart';
-import 'package:linkup_pro/features/posts_actions/domain/repos_implementation/post_action_repository_implementation.dart';
 import 'package:linkup_pro/features/report/domain/enums/report_content_type.dart';
-import 'package:linkup_pro/features/report/presentation/pages/report_page.dart';
 import 'package:linkup_pro/features/users/domain/user_repos_implement.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:toastification/toastification.dart';
@@ -18,16 +15,21 @@ import '../../../../core/enums/user_role.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/custom_toast.dart';
-import '../../../posts_actions/presentation/pages/post_action_page.dart';
+import '../../../posts_actions/domain/repos_implementation/post_action_repository_implementation.dart';
 import '../../domain/entities/company_post.dart';
 import '../../domain/entities/member_post.dart';
 import '../../domain/entities/post.dart';
-import 'account_preview.dart';
 
 class PostHeader extends StatefulWidget {
   final String userId;
   final Post post;
-  const PostHeader({super.key, required this.post, required this.userId});
+  final VoidCallback? onDelete;
+  const PostHeader({
+    super.key,
+    required this.post,
+    required this.userId,
+    this.onDelete,
+  });
 
   @override
   State<PostHeader> createState() => _PostHeaderState();
@@ -314,31 +316,11 @@ class _PostHeaderState extends State<PostHeader> {
   }
 
   previewUser() async {
-    context.push("/user/${widget.post.userId}");
-   /* final postImplement = GetIt.I<PostRepositoryImpl>();
-    final response = await postImplement.getUserPreview(widget.post.userId);
-    userPreviewAdds = response.fold(
-      (failure) {
-        return null;
-      },
-      (data) {
-        return data;
-      },
-    );
-    if (userPreviewAdds != null) {
-      if (mounted) {
-        showModalBottomSheet(
-          context: context,
-          backgroundColor: Colors.transparent,
-          isScrollControlled: true,
-          builder: (ctx) => AccountPreview(
-            userPreview: userPreviewAdds!,
-            post: widget.post,
-            onFollowChanged: () async => await action(0),
-          ).animate().slideY(begin: 1, end: 0, duration: 300.ms),
-        );
-      }
-    }*/
+    final _db = GetIt.I<LocalDBService>();
+    final currentUserId = await _db.getUserId();
+    if (currentUserId != widget.post.userId) {
+      context.push("/user/${widget.post.userId}");
+    }
   }
 
   deletePost() async {
@@ -350,15 +332,21 @@ class _PostHeaderState extends State<PostHeader> {
           description: 'post_deleted_successfully'.tr(),
           type: ToastificationType.success,
         );
+        // Appeler le callback pour supprimer le post de la liste immédiatement
+        widget.onDelete?.call();
       }
     });
   }
 
   action(int value) async {
     if (value == 3) {
-      MyNavigator(
-        context,
-      ).navigateTo(ReportPage(reportType: ReportContentType.publication));
+      GoRouter.of(context).push(
+        '/report',
+        extra: {
+          'reportType': ReportContentType.publication,
+          'publicationId': widget.post.id,
+        },
+      );
       return;
     }
     if (isUserPostOwner && value == 1) {
@@ -366,9 +354,9 @@ class _PostHeaderState extends State<PostHeader> {
       return;
     }
     if (isUserPostOwner && value == 2) {
-      MyNavigator(
+      GoRouter.of(
         context,
-      ).navigateTo(PostActionPage(isEdit: true, postId: widget.post.id));
+      ).push('/post/new', extra: {'isEdit': true, 'postId': widget.post.id});
       return;
     }
 
