@@ -311,8 +311,7 @@
   "delete_account_confirmation": "Are you sure you want to delete your account? This action is irreversible.",
   "coming_soon": "Coming soon",
   "new_follower": "New follower",
-  "read" : "Read",
-  "unread" : "Unread",
-  "search_page_description" : "Search for professionals, companies, or posts within your sector."
-
+  "read": "Read",
+  "unread": "Unread",
+  "search_page_description": "Search for professionals, companies, or posts within your sector."
 }

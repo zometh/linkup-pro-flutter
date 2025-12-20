@@ -75,7 +75,7 @@ class ConversationTile extends StatelessWidget {
       ),
       onDismissed: onDismissed,
       child: InkWell(
-        onTap: () => context.go('/conversations/$id'),
+        onTap: () => context.push('/conversations/$id'),
         borderRadius: BorderRadius.circular(14),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

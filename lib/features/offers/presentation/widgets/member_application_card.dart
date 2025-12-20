@@ -6,7 +6,6 @@ import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/features/offers/domain/entities/entities.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
 class MemberApplicationCard extends StatelessWidget {
   final JobApplicationEntity application;
   final bool isDark;
@@ -189,7 +188,10 @@ class MemberApplicationCard extends StatelessWidget {
             jobOffer.company.location ?? 'Non spécifié',
           ),
           const SizedBox(height: 8),
-          _buildDetailRow(Icons.work_outline, jobOffer.employmentTypeName.toLowerCase().tr()),
+          _buildDetailRow(
+            Icons.work_outline,
+            jobOffer.employmentTypeName.toLowerCase().tr(),
+          ),
           if (jobOffer.salary != null) ...[
             const SizedBox(height: 8),
             _buildDetailRow(
@@ -235,7 +237,7 @@ class MemberApplicationCard extends StatelessWidget {
         const SizedBox(width: 4),
         CustomText(
           text:
-              'Postulé ${timeago.format(application.applicationDate, locale: 'fr')}',
+              'Postulé ${timeago.format(application.applicationDate, locale: 'fr', allowFromNow: false)}',
           fontSize: 12,
           color: isDark ? Colors.white38 : AppColors.textTertiary,
         ),

@@ -21,13 +21,15 @@ import 'package:linkup_pro/features/comments/data/entity/comment.dart'
     as comment_model;
 // import 'package:linkup_pro/features/offers/presentation/pages/job_detail_page.dart'; // retiré: route /job/:id utilise maintenant un builder inline
 
-import '../../features/posts/presentation/pages/post_details_page.dart';
-import '../../features/register/presentation/pages/register_profile.dart';
-import '../../features/register/presentation/pages/sector_choice.dart';
-import '../../features/offers/presentation/pages/job_detail_page.dart';
+import 'package:linkup_pro/features/posts/presentation/pages/post_details_page.dart';
+import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
+import 'package:linkup_pro/features/register/presentation/pages/register_profile.dart';
+import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
+import 'package:linkup_pro/features/offers/presentation/pages/job_detail_page.dart';
 import 'package:linkup_pro/features/report/presentation/pages/report_page.dart';
 import 'package:linkup_pro/features/report/domain/enums/report_content_type.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/image_preview.dart';
+import '../../features/messages/presentation/pages/conversations_page.dart';
 
 GoRouter router(
   AuthProvider authProvider,
@@ -57,7 +59,6 @@ GoRouter router(
         path: '/register-company',
         name: 'register-company',
         builder: (context, state) {
-          // The sector can be passed via `state.extra` when navigating from sector choice
           final extra = state.extra;
           Sector sector;
           if (extra is Sector) {
@@ -92,11 +93,71 @@ GoRouter router(
           return RegisterPage(isEntreprise: isEntreprise);
         },
       ),
-      GoRoute(
-        path: '/home',
-        name: 'home',
-        builder: (context, state) => const HomePage(),
+      // StatefulShellRoute for Bottom Navigation Tabs
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return HomePage(navigationShell: navigationShell);
+        },
+        branches: [
+          // Branch 0: Home (Posts)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/home',
+                name: 'home',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: PostsView()),
+              ),
+            ],
+          ),
+          // Branch 1: Search
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/search',
+                name: 'search',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: SearchHome()),
+              ),
+            ],
+          ),
+          // Branch 2: Messages
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                // Use base path for conversations list
+                path: '/conversations',
+                name: 'conversations',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: ConversationsPage()),
+              ),
+            ],
+          ),
+          // Branch 3: Offers
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/offers',
+                name: 'offers',
+                pageBuilder: (context, state) =>
+                    const NoTransitionPage(child: OffersHome()),
+              ),
+            ],
+          ),
+          // Branch 4: Profile (Own)
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: '/profile/me', // Specific path for own profile tab
+                name: 'profile-me',
+                pageBuilder: (context, state) =>
+                    NoTransitionPage(child: ProfileHome(isOwnProfile: true)),
+              ),
+            ],
+          ),
+        ],
       ),
+
       GoRoute(
         path: "/sector-choice",
         name: "sector-choice",
@@ -106,22 +167,14 @@ GoRouter router(
           return SectorGridView(isEntreprise: isEntreprise);
         },
       ),
-      GoRoute(
-        path: "/search",
-        name: "search",
-        builder: (context, state) => const SearchHome(),
-      ),
+      // Direct Search/Notifs/Offers routes removed as they are now branches
       GoRoute(
         path: "/notifications",
         name: "notifications",
         builder: (context, state) => const NotificationHome(),
       ),
-      GoRoute(
-        path: "/offers",
-        name: "offers",
-        builder: (context, state) => const OffersHome(),
-      ),
-      // NOTE: /post/new must be defined BEFORE /post/:id to avoid "new" being matched as an :id
+
+      // Note: /offers and /search removed from here as they are in branches
       GoRoute(
         path: "/post/new",
         name: "create-post",
@@ -145,48 +198,13 @@ GoRouter router(
         path: "/comments/:id/replies",
         name: "comment-replies",
         builder: (context, state) {
-          // We expect the Comment instance via state.extra
           final extra = state.extra;
           if (extra is comment_model.Comment) {
             return SubCommentsPage(parentComment: extra);
           }
-
-          // If not provided, show a fallback informative page instead of crashing
           return Scaffold(
             appBar: AppBar(title: const Text('Replies')),
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 64,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      'Commentaire introuvable',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Impossible d\'afficher les réponses car le commentaire n\'a pas été fourni.',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => GoRouter.of(context).pop(),
-                      child: const Text('Retour'),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+            body: const Center(child: Text('Commentaire introuvable')),
           );
         },
       ),

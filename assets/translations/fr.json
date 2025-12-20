@@ -324,8 +324,9 @@
     "delete_for_everyone": "Supprimer pour tout le monde",
     "level": "Niveau",
     "skills": "Compétences",
-    "read" : "Lu",
-    "unread" : "Non lu",
-    "search_page_description" : "Rechercher des personnes, entreprises, publications ou emplois"
+    "read": "Lu",
+    "unread": "Non lu",
+    "search_page_description": "Rechercher des personnes, entreprises, publications ou emplois",
+    "no_data_found": "Aucune donnée trouvée"
   }
 }

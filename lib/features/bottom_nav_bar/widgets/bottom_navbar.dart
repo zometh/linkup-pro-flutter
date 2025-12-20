@@ -9,11 +9,15 @@ import 'package:linkup_pro/features/bottom_nav_bar/providers/job_offers_count_pr
 import 'package:linkup_pro/features/bottom_nav_bar/providers/unread_conversations_provider.dart';
 
 class BottomNavbar extends ConsumerWidget {
-  const BottomNavbar({super.key});
+  final int? currentIndex;
+  final Function(int)? onTap;
+
+  const BottomNavbar({super.key, this.currentIndex, this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final int currentIndex = ref.watch(bottomNavbarProvider);
+    final int currentIndex =
+        this.currentIndex ?? ref.watch(bottomNavbarProvider);
     final int unreadConversationsCount = ref.watch(
       unreadConversationsCountProvider,
     );
@@ -88,8 +92,13 @@ class BottomNavbar extends ConsumerWidget {
 
             return Expanded(
               child: GestureDetector(
-                onTap: () =>
-                    ref.read(bottomNavbarProvider.notifier).setIndex(index),
+                onTap: () {
+                  if (onTap != null) {
+                    onTap!(index);
+                  } else {
+                    ref.read(bottomNavbarProvider.notifier).setIndex(index);
+                  }
+                },
                 behavior: HitTestBehavior.opaque,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),

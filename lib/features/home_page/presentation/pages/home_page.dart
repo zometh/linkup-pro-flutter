@@ -4,24 +4,15 @@ import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart'
 import 'package:linkup_pro/features/bottom_nav_bar/widgets/bottom_navbar.dart'
     as navbar_widget;
 import 'package:linkup_pro/features/home_page/presentation/widgets/home_appbar.dart';
-import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
-import 'package:linkup_pro/features/profile/presentation/pages/profile_home.dart';
 import 'package:linkup_pro/main.dart';
 
-import '../../../messages/presentation/pages/conversations_page.dart';
-import '../../../offers/presentation/pages/offers_home.dart';
-import '../../../search/presentation/pages/search_home.dart';
+import 'package:go_router/go_router.dart';
 
-final List<Widget> pages = [
-  const PostsView(),
-  const SearchHome(),
-  const ConversationsPage(),
-  const OffersHome(),
-   ProfileHome(isOwnProfile: true),
-];
+// Removed pages list as it's now handled by GoRouter branches
 
 class HomePage extends ConsumerStatefulWidget {
-  const HomePage({super.key});
+  final StatefulNavigationShell navigationShell;
+  const HomePage({super.key, required this.navigationShell});
 
   @override
   ConsumerState<HomePage> createState() => _HomePageState();
@@ -72,7 +63,7 @@ class _HomePageState extends ConsumerState<HomePage>
     });
 
     final double navBarHeight = MediaQuery.of(context).size.height /* * 0.095*/;
-    final int currentIndex = ref.watch(bottomNavbarProvider);
+    final int currentIndex = widget.navigationShell.currentIndex;
     final availableHeight = MediaQuery.of(context).size.height * 0.05;
 
     final bool offstage = !isNavbarVisible && _controller.isDismissed;
@@ -90,7 +81,7 @@ class _HomePageState extends ConsumerState<HomePage>
                   )
                 : null)
           : null,
-      body: IndexedStack(index: currentIndex, children: pages),
+      body: widget.navigationShell,
       bottomNavigationBar: Offstage(
         offstage: offstage,
         child: IgnorePointer(
@@ -105,7 +96,16 @@ class _HomePageState extends ConsumerState<HomePage>
                   width: context.screenWidth,
                   height: navBarHeight * 0.09,
                   // width: 300,
-                  child: const navbar_widget.BottomNavbar(),
+                  child: navbar_widget.BottomNavbar(
+                    currentIndex: currentIndex,
+                    onTap: (index) {
+                      widget.navigationShell.goBranch(
+                        index,
+                        initialLocation:
+                            index == widget.navigationShell.currentIndex,
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
