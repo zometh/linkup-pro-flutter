@@ -4,7 +4,7 @@ import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 
 abstract class PostRepository {
-  Future<Either<Failure, List<Post>>> getPosts(int? page, int? limit);
+  Future<Either<Failure, List<Post>>> getPosts(int? page, int? limit, String? userId);
   Future<Either<Failure, Post>> getPostById(String id);
   Future<Either<Failure, List<Post>>> getPostsByUserId(String userId, int? page, int? limit);
   Future<Either<Failure, UserPreviewAdds>> getUserPreview(String userId);

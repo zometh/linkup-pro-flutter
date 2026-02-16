@@ -30,7 +30,7 @@ class SocketService {
     }
 
     if (_isConnected) {
-      MyLogger().log('🔄 Socket déjà connecté.');
+      MyLogger().log('Socket déjà connecté.');
       return;
     }
 
@@ -56,15 +56,14 @@ class SocketService {
 
     _socket!.onConnect((_) {
       _isConnected = true;
-      MyLogger().log('✅ Socket connecté');
+      MyLogger().log('Socket connecté');
       if (userId != null) {
-        MyLogger().log('📤 Émission événement register avec userId: $userId');
+        MyLogger().log('Émission événement register avec userId: $userId');
         _socket!.emit('register', {'userId': userId});
       } else {
-        MyLogger().log('⚠️ userId est null, impossible d\'émettre register');
+        MyLogger().log('userId est null, impossible d\'émettre register');
       }
 
-      // Attacher les listeners en attente
       _attachPendingListeners();
 
       _flushPendingEmits();
@@ -72,11 +71,11 @@ class SocketService {
 
     _socket!.onDisconnect((_) {
       _isConnected = false;
-      MyLogger().log('❌ Socket déconnecté');
+      MyLogger().log('Socket déconnecté');
     });
 
     _socket!.onError((data) {
-      MyLogger().log('⚠️ Erreur socket: $data');
+      MyLogger().log('Erreur socket: $data');
     });
 
     _socket!.on('connect_error', (data) {
@@ -103,7 +102,7 @@ class SocketService {
     });
 
     _socket!.on('registered', (data) {
-      MyLogger().log('✅ Registered confirmation received: $data');
+      MyLogger().log('Registered confirmation received: $data');
     });
   }
 
@@ -122,11 +121,11 @@ class SocketService {
   void _attachPendingListeners() {
     if (_socket == null) return;
     MyLogger().log(
-      '🔧 Attaching ${_pendingListeners.length} pending listeners...',
+      'Attaching ${_pendingListeners.length} pending listeners...',
     );
     _pendingListeners.forEach((event, callbacks) {
       for (var callback in callbacks) {
-        MyLogger().log('✅ Attaching pending listener for: $event');
+        MyLogger().log('Attaching pending listener for: $event');
         _socket!.on(event, callback);
       }
     });
@@ -155,10 +154,10 @@ class SocketService {
 
   void on(String event, Function(dynamic) callback) {
     if (_socket != null) {
-      MyLogger().log('✅ Attaching listener for event: $event (socket exists)');
+      MyLogger().log('Attaching listener for event: $event (socket exists)');
       _socket!.on(event, callback);
     } else {
-      MyLogger().log('⚠️ Socket is null, storing listener for event: $event');
+      MyLogger().log('Socket is null, storing listener for event: $event');
       // Stocker le listener pour l'attacher plus tard
       if (!_pendingListeners.containsKey(event)) {
         _pendingListeners[event] = [];
@@ -183,7 +182,6 @@ class SocketService {
   void dispose() {
     if (_socket != null) {
       try {
-        // remove known listeners we attached earlier
         _socket!.off('connect');
         _socket!.off('disconnect');
         _socket!.off('error');
@@ -205,7 +203,7 @@ class SocketService {
       _socket = null;
       _isConnected = false;
       _pendingEmits.clear();
-      MyLogger().log('🛑 Socket fermé');
+      MyLogger().log('Socket fermé');
     }
   }
 }

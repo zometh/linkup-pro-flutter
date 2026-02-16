@@ -1,4 +1,3 @@
-
 import 'package:linkup_pro/core/enums/user_role.dart';
 
 class User {
@@ -9,8 +8,11 @@ class User {
   final String? lastName;
   final String? address;
   final UserRole role;
-
+  final DateTime? registrationDate;
   final String? id;
+  int? followers;
+  int? following;
+  bool? isFollowedByMe;
 
   User({
     required this.email,
@@ -20,21 +22,31 @@ class User {
     this.lastName,
     this.address,
     required this.role,
-
+    this.registrationDate,
     this.id,
+    this.followers = 0,
+    this.following = 0,
+    this.isFollowedByMe = false,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['id'],
+      followers: json['followers'] ?? 0,
+      following: json['following'] ?? 0,
+      isFollowedByMe: json['isFollowedByMe'] ?? false,
       email: json['email'],
       firstName: json['firstName'],
       lastName: json['lastName'],
       username: json['username'],
       address: json['address'],
-      role: json['role'] != null ? userRoleFromString(json["role"]) : UserRole.member,
-
-      password: json['password'] ?? ''
+      role: json['role'] != null
+          ? userRoleFromString(json["role"])
+          : UserRole.member,
+      registrationDate: json['registrationDate'] != null
+          ? DateTime.tryParse(json['registrationDate'])
+          : DateTime.now(),
+      password: json['password'] ?? '',
     );
   }
   Map<String, dynamic> toJson() {
@@ -45,7 +57,7 @@ class User {
       if (firstName != null) 'firstName': firstName,
       if (lastName != null) 'lastName': lastName,
       if (address != null) 'address': address,
-       'role': role.toString().split('.').last.toUpperCase(),
+      'role': role.toString().split('.').last.toUpperCase(),
     };
   }
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/core/providers/theme_provider.dart';
 import 'package:linkup_pro/core/routes/go_routes.dart';
 import 'package:linkup_pro/core/services/notification_service.dart';
 import 'package:linkup_pro/core/theme/dark_theme.dart';
@@ -14,18 +15,20 @@ import 'package:toastification/toastification.dart';
 
 import 'core/services/app_setup.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.initialize();
+  //FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  await dotenv.load(fileName: ".env");
+  await setup();
+  await NotificationService.initialize(navigatorKey);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  await setup();
   final appLinks = AppLinks();
   final initialLink = await appLinks.getInitialLink();
   await EasyLocalization.ensureInitialized();
-  await dotenv.load(fileName: ".env");
 
   runApp(
     ToastificationWrapper(
@@ -40,7 +43,9 @@ void main() async {
         ],
         path: 'assets/translations',
         fallbackLocale: const Locale('en'),
-        child:  ProviderScope(child: MyApp(appLinks: appLinks, initialLink: initialLink,)),
+        child: ProviderScope(
+          child: MyApp(appLinks: appLinks, initialLink: initialLink),
+        ),
       ),
     ),
   );
@@ -54,34 +59,56 @@ class MyApp extends ConsumerStatefulWidget {
   @override
   ConsumerState<MyApp> createState() => _MyAppState();
 }
+
 class _MyAppState extends ConsumerState<MyApp> {
   @override
   void initState() {
     super.initState();
     widget.appLinks.uriLinkStream.listen((Uri? uri) {
       if (uri != null) {
-      if(mounted){
-        GoRouter.of(context).push(uri.path);
-      }
+        if (mounted) {
+          // Use `go` to replace current location for deep links instead of stacking
+          GoRouter.of(context).go(uri.path);
+        }
       }
     });
-    if(widget.initialLink != null){
+    if (widget.initialLink != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        GoRouter.of(context).push(widget.initialLink!.path);
+        // Use `go` for initial link navigation
+        GoRouter.of(context).go(widget.initialLink!.path);
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authProvider);
-    final routerConfig = router(auth);
+    final routerConfig = router(auth, navigatorKey);
+    // Watch the provider state (AppThemeMode) instead of the notifier instance.
+    // Watching the notifier (`themeProvider.notifier`) returns the notifier object
+    // and won't trigger rebuilds when the state changes. We must watch
+    // `themeProvider` to rebuild the app when the theme changes.
+    final appThemeMode = ref.watch(themeProvider);
+    ThemeMode currentThemeMode;
+    switch (appThemeMode) {
+      case AppThemeMode.light:
+        currentThemeMode = ThemeMode.light;
+        break;
+      case AppThemeMode.dark:
+        currentThemeMode = ThemeMode.dark;
+        break;
+      case AppThemeMode.system:
+        currentThemeMode = ThemeMode.system;
+        break;
+    }
 
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       routerConfig: routerConfig,
       darkTheme: darkTheme,
-      theme: context.isDarkMode ? darkTheme : lightTheme,
+      theme: lightTheme,
+      themeMode: currentThemeMode,
       locale: context.locale,
       supportedLocales: context.supportedLocales,
     );

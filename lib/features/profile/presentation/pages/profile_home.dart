@@ -1,149 +1,383 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:get_it/get_it.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:linkup_pro/core/entities/company.dart';
+import 'package:linkup_pro/core/entities/member.dart';
+import 'package:linkup_pro/core/enums/user_role.dart';
+import 'package:linkup_pro/core/network/websocket/config.dart';
+import 'package:linkup_pro/core/services/localdb/localdb.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
-import 'package:linkup_pro/features/profile/presentation/widgets/profile_header.dart';
+import 'package:linkup_pro/core/widgets/custom_progress.dart';
+import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/core/widgets/custom_toast.dart';
+import 'package:linkup_pro/features/posts/presentation/pages/posts_view.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_top.dart';
+import 'package:linkup_pro/features/profile_jobs/presentation/pages/profile_jobs_page.dart';
+import 'package:linkup_pro/features/profile_skills/presentation/pages/profile_skills_page.dart';
+import 'package:linkup_pro/features/users/presentation/providers/users.dart';
+import 'package:toastification/toastification.dart';
 
-class ProfileHome extends StatelessWidget {
+class ProfileHome extends ConsumerStatefulWidget {
   final bool isOwnProfile;
-  final String? userId;
-  const ProfileHome({super.key, required this.isOwnProfile, this.userId});
+  String? userId;
+  ProfileHome({super.key, required this.isOwnProfile, this.userId});
+
+  @override
+  ConsumerState<ProfileHome> createState() => _ProfileHomeState();
+}
+
+class _ProfileHomeState extends ConsumerState<ProfileHome>
+    with TickerProviderStateMixin {
+  bool get isOwnProfile => widget.isOwnProfile;
+  String? get userId => widget.userId;
+
+  final localDb = GetIt.I<LocalDBService>();
+  final _socketService = GetIt.I<SocketService>();
+
+  bool isMember = false;
+  bool hasError = false;
+  bool isLoading = false;
+  String? currentUserId;
+
+  Member? memberInfos;
+  Company? companyInfos;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCurrentUserInfos();
+    fetchCurrentUserId();
+    _listenToFollowUpdates();
+  }
+
+  @override
+  void dispose() {
+    _socketService.off('followUpdate');
+    super.dispose();
+  }
+
+  /// Écouter les mises à jour de follow en temps réel
+  void _listenToFollowUpdates() {
+    _socketService.on('followUpdate', (data) {
+      if (!mounted) return;
+
+      final followersCount = data['followersCount'] as int?;
+      final followingCount = data['followingCount'] as int?;
+
+      if (followersCount != null && followingCount != null) {
+        // Only update if we are viewing our own profile or if the displayed user is the current user
+        final displayedUserId = isMember
+            ? memberInfos?.user.id
+            : companyInfos?.user.id;
+
+        if (displayedUserId != null &&
+            currentUserId != null &&
+            displayedUserId == currentUserId) {
+          setState(() {
+            if (isMember && memberInfos != null) {
+              memberInfos!.user.followers = followersCount;
+              memberInfos!.user.following = followingCount;
+            } else if (!isMember && companyInfos != null) {
+              companyInfos!.user.followers = followersCount;
+              companyInfos!.user.following = followingCount;
+            }
+          });
+        }
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
 
+    final loadingWidget = const CustomProgress();
+    if (hasError) {
+      return Center(child: CustomText(text: "error_occured".tr()));
+    }
+    if (isOwnProfile) {
+      if (ref.watch(usersProvider)) {
+        return loadingWidget;
+      }
+    }
+    if (isLoading) {
+      return loadingWidget;
+    }
+
+    if (isMember && memberInfos == null) {
+      return loadingWidget;
+    }
+    if (!isMember && companyInfos == null) {
+      return loadingWidget;
+    }
+
     return LayoutBuilder(
       builder: (_, cx) {
-        return Scaffold(
-          backgroundColor: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
-          body: SingleChildScrollView(
-            child: Column(
-              children: [
-                // Profile Header
-                 ProfileHeader(
-                  cx: cx,
-                  isOwnProfile: true, // Change to false to see other profile view
-                ),
-
-                // Tabs ou contenu supplémentaire
-                Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      // Tabs pour Posts, About, Media, etc.
+        return DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            backgroundColor: isDarkMode
+                ? AppColors.darkBackground
+                : AppColors.lightBackground,
+            body: NestedScrollView(
+              headerSliverBuilder: (context, innerBoxIsScrolled) {
+                return [
+                  SliverToBoxAdapter(
+                    child: ProfileTop(
+                      isMember: isMember,
+                      cx: cx,
+                      isOwnProfile: widget.isOwnProfile,
+                      memberInfos: memberInfos,
+                      companyInfos: companyInfos,
+                      onProfileUpdated: () {
+                        setState(() {
+                          isLoading = true;
+                        });
+                        fetchCurrentUserInfos();
+                      },
+                    ),
+                  ),
+                  SliverPersistentHeader(
+                    delegate: _SliverTabBarDelegate(
                       Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.darkCard : Colors.white,
-                          borderRadius: BorderRadius.circular(12),
+                        margin: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 8,
                         ),
-                        child: Row(
-                          children: [
-                            _TabItem(
-                              label: 'Posts',
-                              isSelected: true,
-                              isDarkMode: isDarkMode,
-                            ),
-                            _TabItem(
-                              label: 'About',
-                              isSelected: false,
-                              isDarkMode: isDarkMode,
-                            ),
-                            _TabItem(
-                              label: 'Media',
-                              isSelected: false,
-                              isDarkMode: isDarkMode,
-                            ),
+                        decoration: BoxDecoration(
+                          color: isDarkMode
+                              ? const Color(0xFF2D2D2D)
+                              : const Color(0xFFF1F5F9),
+                          borderRadius: BorderRadius.circular(25),
+                        ),
+                        child: TabBar(
+                          dividerColor: Colors.transparent,
+                          indicatorSize: TabBarIndicatorSize.tab,
+                          indicator: BoxDecoration(
+                            color: isDarkMode
+                                ? AppColors.primary
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(25),
+                            boxShadow: [
+                              if (!isDarkMode)
+                                BoxShadow(
+                                  color: Colors.black.withAlpha(10),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 2),
+                                ),
+                            ],
+                          ),
+                          labelColor: isDarkMode
+                              ? Colors.white
+                              : AppColors.primary,
+                          unselectedLabelColor: isDarkMode
+                              ? Colors.white54
+                              : Colors.grey,
+                          labelStyle: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                          tabs: [
+                            Tab(text: "Posts", height: 40),
+                            //  if (isOwnProfile)
+                            Tab(text: "skills".tr(), height: 40),
+                            //   if (isOwnProfile)
+                            Tab(text: "experiences".tr(), height: 40),
                           ],
                         ),
                       ),
-
-                      const SizedBox(height: 20),
-
-                      // Placeholder pour le contenu
-                      Container(
-                        padding: const EdgeInsets.all(40),
-                        decoration: BoxDecoration(
-                          color: isDarkMode ? AppColors.darkCard : Colors.white,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Center(
-                          child: Column(
-                            children: [
-                              Icon(
-                                Icons.article_outlined,
-                                size: 60,
-                                color: isDarkMode
-                                    ? Colors.white.withValues(alpha: 0.3)
-                                    : AppColors.textTertiary,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'No posts yet',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  color: isDarkMode ? Colors.white60 : AppColors.textSecondary,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'Start sharing your thoughts',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: isDarkMode ? Colors.white38 : AppColors.textTertiary,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
+                      isDarkMode: isDarkMode,
+                      height: 60,
+                    ),
+                    pinned: true,
                   ),
-                ),
-              ],
+                ];
+              },
+              body: TabBarView(
+                children: [
+                  PostsView(userId: isOwnProfile ? currentUserId : userId),
+                  //  if (isOwnProfile)
+                  ProfileSkillsPage(
+                    userId: isOwnProfile ? currentUserId! : userId!,
+                    isOwnProfile: isOwnProfile,
+                  ),
+                  //  if (isOwnProfile)
+                  ProfileJobsPage(
+                    userId: isOwnProfile ? currentUserId! : userId!,
+                    isOwnProfile: isOwnProfile,
+                  ),
+                ],
+              ),
             ),
           ),
         );
-      }
+      },
     );
+  }
+
+  initLocalData() async {
+    final localdb = GetIt.I<LocalDBService>();
+    final localData = await localdb.getUserInfos();
+    if (localData == null) {
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+      return;
+    }
+    final role = await localdb.getUserRole();
+    if (role == UserRole.member) {
+      if (mounted) {
+        Future.microtask(
+          () => setState(() {
+            isMember = true;
+            memberInfos = localData as Member;
+            isLoading = false;
+          }),
+        );
+      }
+    } else {
+      Future.microtask(
+        () => setState(() {
+          isMember = false;
+          companyInfos = localData as Company;
+          isLoading = false;
+        }),
+      );
+    }
+  }
+
+  fetchCurrentUserInfos() async {
+    if (!isOwnProfile) {
+      await initRemoteData();
+    } else {
+      // Charger aussi depuis l'API pour avoir les compteurs à jour
+      await initOwnProfileData();
+    }
+  }
+
+  initOwnProfileData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // D'abord récupérer l'ID de l'utilisateur connecté
+      final ownUserId = await localDb.getUserId();
+      if (ownUserId == null) {
+        await initLocalData();
+        return;
+      }
+
+      // Charger les données depuis l'API pour avoir les compteurs à jour
+      final response = await ref
+          .read(usersProvider.notifier)
+          .getUserById(ownUserId);
+
+      if (response == null) {
+        await initLocalData();
+        return;
+      }
+
+      final role = userRoleFromString(response["user"]['role']);
+      if (role == UserRole.member) {
+        setState(() {
+          isMember = true;
+          memberInfos = Member.fromJson(response);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isMember = false;
+          companyInfos = Company.fromJson(response);
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      // En cas d'erreur, utiliser les données locales
+      await initLocalData();
+    }
+  }
+
+  initRemoteData() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final response = await ref
+          .read(usersProvider.notifier)
+          .getUserById(userId!);
+      final role = userRoleFromString(response!["user"]['role']);
+      if (role == UserRole.member) {
+        setState(() {
+          isMember = true;
+          memberInfos = Member.fromJson(response);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isMember = false;
+          companyInfos = Company.fromJson(response);
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      showToast(
+        description: "error_occured".tr(),
+        type: ToastificationType.error,
+      );
+      setState(() {
+        hasError = true;
+        isLoading = false;
+      });
+      rethrow;
+    }
+  }
+
+  fetchCurrentUserId() async {
+    final userId = await localDb.getUserId();
+    if (mounted) {
+      setState(() {
+        currentUserId = userId;
+      });
+    }
   }
 }
 
-class _TabItem extends StatelessWidget {
-  final String label;
-  final bool isSelected;
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final Widget _tabBar;
   final bool isDarkMode;
+  final double height;
 
-  const _TabItem({
-    required this.label,
-    required this.isSelected,
+  _SliverTabBarDelegate(
+    this._tabBar, {
     required this.isDarkMode,
+    this.height = 65,
   });
 
   @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        decoration: BoxDecoration(
-          gradient: isSelected ? AppGradients.primaryGradient : null,
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: isSelected
-                ? Colors.white
-                : isDarkMode
-                    ? Colors.white60
-                    : AppColors.textSecondary,
-          ),
-        ),
-      ),
+  double get minExtent => height;
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    return Container(
+      height: height,
+      color: isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      child: _tabBar,
     );
+  }
+
+  @override
+  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
+    return oldDelegate.height != height || oldDelegate.isDarkMode != isDarkMode;
   }
 }

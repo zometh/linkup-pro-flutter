@@ -1,6 +1,6 @@
 import '../../../../core/enums/user_role.dart';
 import '../../../posts/domain/entities/member_post.dart';
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 
 String displayNameFor(Comment c) {
   try {

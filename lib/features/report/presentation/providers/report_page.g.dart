@@ -42,7 +42,7 @@ final class ReportPageProviderProvider
 }
 
 String _$reportPageProviderHash() =>
-    r'eb398bf82e3d345972f3fa0af8694a731bb53f44';
+    r'19916d4c142e23d220de9bc2b7776440d5696e2e';
 
 abstract class _$ReportPageProvider extends $Notifier<bool> {
   bool build();

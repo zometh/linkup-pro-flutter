@@ -16,8 +16,8 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
 import 'package:linkup_pro/core/entities/user.dart';
-import 'package:linkup_pro/features/register/presentation/pages/sector_choice.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:linkup_pro/main.dart';
 
@@ -239,8 +239,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
 
                                   Card(
                                         elevation: 2,
-                                        shadowColor: AppColors.primary
-                                            .withValues(alpha: 0.2),
+                                        shadowColor: AppColors.primary.withAlpha((0.2 * 255).round()),
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
                                             12,
@@ -262,64 +261,62 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
                                               gradient: LinearGradient(
                                                 colors: [
                                                   AppColors.primary,
-                                                  AppColors.primary.withValues(
-                                                    alpha: 0.8,
-                                                  ),
+                                                  AppColors.primary.withAlpha((0.8 * 255).round()),
                                                 ],
                                               ),
-                                              borderRadius:
-                                                  BorderRadius.circular(12),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                  padding: EdgeInsets.all(8),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.white
-                                                        .withValues(alpha: 0.2),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          8,
-                                                        ),
-                                                  ),
-                                                  child: Icon(
-                                                    Icons.public,
-                                                    color: Colors.white,
-                                                    size:
-                                                        constraints.maxWidth *
-                                                        0.06,
-                                                  ),
-                                                ),
-                                                SizedBox(
-                                                  width:
-                                                      constraints.maxWidth *
-                                                      0.03,
-                                                ),
-                                                Expanded(
-                                                  child: CustomText(
-                                                    color: Colors.white,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    text: selectedCountry.name,
-                                                    fontWeight: FontWeight.w600,
-                                                    fontSize:
-                                                        constraints.maxWidth *
-                                                        0.042,
-                                                  ),
-                                                ),
-                                                Icon(
-                                                  Icons
-                                                      .arrow_drop_down_circle_outlined,
-                                                  color: Colors.white,
-                                                  size:
-                                                      constraints.maxWidth *
-                                                      0.06,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      )
+                                               borderRadius:
+                                                   BorderRadius.circular(12),
+                                             ),
+                                             child: Row(
+                                               children: [
+                                                 Container(
+                                                   padding: EdgeInsets.all(8),
+                                                   /*decoration: BoxDecoration(
+-
++                                                    color: Colors.white.withAlpha((0.2 * 255).round()),
+                                                     borderRadius:
+                                                         BorderRadius.circular(
+                                                           8,
+                                                         ),
+                                                   )*/
+                                                   child: Icon(
+                                                     Icons.public,
+                                                     color: Colors.white,
+                                                     size:
+                                                         constraints.maxWidth *
+                                                         0.06,
+                                                   ),
+                                                 ),
+                                                 SizedBox(
+                                                   width:
+                                                       constraints.maxWidth *
+                                                       0.03,
+                                                 ),
+                                                 Expanded(
+                                                   child: CustomText(
+                                                     color: Colors.white,
+                                                     overflow:
+                                                         TextOverflow.ellipsis,
+                                                     text: selectedCountry.name,
+                                                     fontWeight: FontWeight.w600,
+                                                     fontSize:
+                                                         constraints.maxWidth *
+                                                         0.042,
+                                                   ),
+                                                 ),
+                                                 Icon(
+                                                   Icons
+                                                       .arrow_drop_down_circle_outlined,
+                                                   color: Colors.white,
+                                                   size:
+                                                       constraints.maxWidth *
+                                                       0.06,
+                                                 ),
+                                               ],
+                                             ),
+                                           ),
+                                         ),
+                                       )
                                       .animate()
                                       .fadeIn(duration: 500.ms, delay: 900.ms)
                                       .scale(
@@ -371,7 +368,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             ? null
             : FormatText.formatFormFiel(lastNameController),
         email: FormatText.formatFormFiel(emailController),
-        address: selectedCountry.countryCode,
+        address: selectedCountry.name,
 
         password: FormatText.formatFormFiel(passwordController),
         username: FormatText.formatFormFiel(usernameController),
@@ -380,11 +377,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           .read(registerProvider.notifier)
           .registerUser(user);
       if (response) {
-        final route = MaterialPageRoute(
-          builder: (_) => SectorGridView(isEntreprise: widget.isEntreprise),
-        );
-        if(mounted){
-          Navigator.push(context, route);
+        if (mounted) {
+          GoRouter.of(context).push('/sector-choice?isEntreprise=${widget.isEntreprise}');
         }
         //showToast(description: "success_register".tr(),);
       } else {} /*else{

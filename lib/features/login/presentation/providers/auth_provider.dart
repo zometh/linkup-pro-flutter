@@ -39,7 +39,8 @@ class Auth extends _$Auth {
           return [true, data["data"]];
         },
       );
-      final data = results[1] as Map<String, dynamic>;
+      final data = results[1] /*as Map<String, dynamic>*/;
+
       await _db.saveToken(data['access_token'] as String);
       final String role = data["data"]['user']['role'] as String;
       //print('User role: $role'); // Debug print
@@ -53,11 +54,11 @@ class Auth extends _$Auth {
       state = false;
       return results[0] as bool;
     } catch (e) {
-      _logger.log(
+      /*_logger.log(
         'SignIn Error: ${e.toString()}',
         type: LogType.error,
         error: e,
-      );
+      );*/
       state = false;
       return false;
     }

@@ -108,7 +108,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
             end: Alignment.bottomRight,
             colors: [
               Theme.of(context).scaffoldBackgroundColor,
-              Theme.of(context).primaryColor.withValues(alpha: 0.05),
+              Theme.of(context).primaryColor.withAlpha((0.05 * 255).round()),
               Theme.of(context).scaffoldBackgroundColor,
             ],
             stops: const [0.0, 0.5, 1.0],
@@ -160,7 +160,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                           colors: [
                                             Theme.of(
                                               context,
-                                            ).primaryColor.withValues(alpha: .1),
+                                            ).primaryColor.withAlpha((0.1 * 255).round()),
                                             Colors.transparent,
                                           ],
                                         ),
@@ -199,7 +199,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                                             .textTheme
                                             .bodyMedium
                                             ?.color
-                                            ?.withValues(alpha: .7),
+                                            ?.withAlpha((0.7 * 255).round()),
                                       ),
                                     ],
                                   ),

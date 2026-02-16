@@ -1,618 +1,310 @@
-import 'package:easy_localization/easy_localization.dart';
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
-import 'package:linkup_pro/core/entities/company.dart';
-import 'package:linkup_pro/core/entities/member.dart';
-import 'package:linkup_pro/core/entities/user.dart';
-import 'package:linkup_pro/core/enums/user_role.dart';
-import 'package:linkup_pro/core/enums/user_visibility.dart';
-import 'package:linkup_pro/core/theme/app_colors.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/edit_profile_button.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/follow_button.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/profile_action_button.dart';
+
+import '../../../../core/entities/company.dart';
+import '../../../../core/entities/member.dart';
+import '../../../../core/theme/app_colors.dart';
+import '../../../messages/presentation/widgets/new_conversation_user_list.dart';
 
 class ProfileHeader extends StatelessWidget {
-  final String? userId;
   final BoxConstraints cx;
   final bool isOwnProfile;
+  final bool isMember;
+  final Member? memberInfos;
+  final Company? companyInfos;
+  final VoidCallback? onProfileUpdated;
+  final String? userId;
+  final Function(bool isFollowing, int followersCount)? onFollowChanged;
 
   const ProfileHeader({
     super.key,
-
-    this.isOwnProfile = false,
+    required this.isOwnProfile,
     required this.cx,
+    required this.isMember,
+    this.memberInfos,
+    this.companyInfos,
+    this.onProfileUpdated,
+    this.onFollowChanged,
     this.userId,
   });
 
   @override
   Widget build(BuildContext context) {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final statusBarHeight = MediaQuery.of(context).padding.top;
 
-    final mockMember =  Member(
-      id: '1',
-      biography: 'Passionate software developer | Flutter enthusiast 🚀 | Building the future one app at a time',
-      birthDate: DateTime(1995, 3, 15),
-      phone: '+221 77 123 45 67',
-      portfolio: 'https://portfolio.example.com',
-      photoUrl: null,
-      sector: 'Tech & Digital',
-      profileVisibility: UserVisibility.public,
-      user: User(
-        id: '1',
-        email: 'john.doe@example.com',
-        username: 'johndoe',
-        firstName: 'John',
-        lastName: 'Doe',
-        address: 'Dakar, Senegal',
-        role: UserRole.member,
-        password: '',
-      ),
-    );
-
-    final mockCompany =  Company(
-      id: '1',
-      name: 'TechCorp Solutions',
-      creationDate: DateTime(2018, 6, 1),
-      website: 'https://techcorp.example.com',
-      logo: '',
-      profileFileId: '123',
-      phone: '+221 33 123 45 67',
-      isValidated: true,
-      description: 'Leading technology company 💼 | Digital transformation experts | Building innovative solutions for tomorrow',
-      size: 'medium_business',
-      sector: 'Tech & Digital',
-      user: User(
-        id: '2',
-        email: 'contact@techcorp.com',
-        username: 'techcorp',
-        firstName: 'Tech',
-        lastName: 'Corp',
-        address: 'Plateau, Dakar',
-        role: UserRole.entreprise,
-        password: '',
-      ),
-    );
-
-    final isMember = member != null || company == null;
-    final displayMember = isMember ? mockMember : null;
-    final displayCompany = !isMember ? mockCompany : null;
-    final width = cx.maxWidth;
-    final height = cx.maxHeight;
-    return Column(
+    return Stack(
+      clipBehavior: Clip.none,
       children: [
-        // Cover Banner - Twitter style
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            // Cover Image
-            Container(
-              height: height * 0.2,
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  stops: [
-                    0.0,
-                    1.0,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.primary,
-                    AppColors.primaryDark,
-                  ],
-                ),
-              ),
-            ),
-
-            // Back button (if not own profile)
-            if (!isOwnProfile)
-              Positioned(
-                top: MediaQuery.of(context).padding.top + 8,
-                left: 8,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black.withValues(alpha: 0.5),
-                    shape: BoxShape.circle,
-                  ),
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                ),
-              ),
-
-            // Profile Avatar - positioned at bottom overlapping
-            Positioned(
-              bottom: -40,
-              left: 16,
-              child: Container(
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: isDarkMode ? AppColors.darkBackground : Colors.white,
-                    width: 4,
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    CircleAvatar(
-                      radius: 45,
-                      backgroundColor: isDarkMode ? AppColors.darkCard : Colors.grey[200],
-                      child: displayMember != null && displayMember.photoUrl != null
-                          ? ClipOval(
-                              child: Image.network(
-                                displayMember.photoUrl!,
-                                fit: BoxFit.cover,
-                                width: 136,
-                                height: 136,
-                              ),
-                            )
-                          : displayCompany != null && displayCompany.logo.isNotEmpty
-                              ? ClipOval(
-                                  child: Image.network(
-                                    displayCompany.logo,
-                                    fit: BoxFit.cover,
-                                    width: 136,
-                                    height: 136,
-                                  ),
-                                )
-                              : Icon(
-                                  isMember ? Icons.person : Icons.business,
-                                  size: 60,
-                                  color: AppColors.primary,
-                                ),
-                    ),
-                    // Verified badge for companies
-                    if (displayCompany != null && displayCompany.isValidated)
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDarkMode ? AppColors.darkBackground : Colors.white,
-                              width: 2,
-                            ),
-                          ),
-                          child: const Icon(
-                            Icons.verified,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            ),
-
-            Positioned(
-              bottom: 16,
-              right: 16,
-              child: isOwnProfile
-                  ? ActionButton(
-                      label: 'edit'.tr(),
-                      onPressed: () {},
-                      isDarkMode: isDarkMode,
-                      isOutlined: true,
-                    )
-                  : Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: isDarkMode ? AppColors.darkCard : Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDarkMode
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : Colors.black.withValues(alpha: 0.1),
-                            ),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.more_horiz,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                            onPressed: () => _showMoreOptions(context),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          decoration: BoxDecoration(
-                            color: isDarkMode ? AppColors.darkCard : Colors.white,
-                            shape: BoxShape.circle,
-                            border: Border.all(
-                              color: isDarkMode
-                                  ? Colors.white.withValues(alpha: 0.2)
-                                  : Colors.black.withValues(alpha: 0.1),
-                            ),
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              Icons.mail_outline,
-                              color: isDarkMode ? Colors.white : Colors.black,
-                            ),
-                            onPressed: () {},
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        ActionButton(
-                          label: 'follow'.tr(),
-                          onPressed: () {},
-                          isDarkMode: isDarkMode,
-                          isPrimary: true,
-                        ),
-                      ],
-                    ),
-            ),
-          ],
-        ),
-
         Container(
+          height: double.infinity,
           width: double.infinity,
-          color: isDarkMode ? AppColors.darkBackground : Colors.white,
-          padding: const EdgeInsets.fromLTRB(16, 56, 16, 0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.primary,
+                AppColors.primaryDark,
+                AppColors.primaryDark.withAlpha((0.9 * 255).round()),
+              ],
+              stops: const [0.0, 0.6, 1.0],
+            ),
+          ),
+          child: Stack(
             children: [
-              // Name and verified badge
-              Row(
-                children: [
-                  Flexible(
-                    child: Text(
-                      displayMember != null
-                          ? '${displayMember.user.firstName} ${displayMember.user.lastName}'
-                          : displayCompany!.name,
-                      style: TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.w800,
-                        color: isDarkMode ? Colors.white : Colors.black,
-                        height: 1.2,
-                      ),
-                    ),
+              Positioned(
+                top: -30,
+                right: -30,
+                child: Container(
+                  width: 120,
+                  height: 120,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withAlpha((0.08 * 255).round()),
                   ),
-                  if (displayCompany != null && displayCompany.isValidated)
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4),
-                      child: Icon(
-                        Icons.verified,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                    ),
-                ],
+                ),
               ),
-              const SizedBox(height: 2),
-
-              // Username
-              Text(
-                '@${displayMember?.user.username ?? displayCompany!.user.username}',
-                style: TextStyle(
-                  fontSize: 15,
-                  color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+              Positioned(
+                bottom: 20,
+                left: -40,
+                child: Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.white.withAlpha((0.05 * 255).round()),
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 12),
-
-              // Bio/Description
-              if (displayMember?.biography != null || displayCompany?.description != null)
-                Text(
-                  displayMember?.biography ?? displayCompany!.description,
-                  style: TextStyle(
-                    fontSize: 15,
-                    height: 1.4,
-                    color: isDarkMode ? Colors.white : Colors.black,
-                  ),
-                ),
-
-              const SizedBox(height: 12),
-
-              // Meta info (location, link, joined date) - Twitter style
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  if (displayMember?.user.address != null || displayCompany?.user.address != null)
-                    ProfileMetaInfo(
-                      icon: Icons.location_on_outlined,
-                      text: displayMember?.user.address ?? displayCompany!.user.address!,
-                      isDarkMode: isDarkMode,
-                    ),
-                  if (displayMember?.portfolio != null)
-                    ProfileMetaInfo(
-                      icon: Icons.link,
-                      text: 'portfolio.example.com',
-                      isDarkMode: isDarkMode,
-                      isLink: true,
-                    ),
-                  if (displayCompany?.website != null)
-                    ProfileMetaInfo(
-                      icon: Icons.link,
-                      text: 'techcorp.example.com',
-                      isDarkMode: isDarkMode,
-                      isLink: true,
-                    ),
-                  ProfileMetaInfo(
-                    icon: Icons.calendar_today_outlined,
-                    text: displayCompany != null
-                        ? 'Joined ${DateFormat('MMMM yyyy').format(displayCompany.creationDate)}'
-                        : 'Joined March 2020',
-                    isDarkMode: isDarkMode,
-                  ),
-                  ProfileMetaInfo(
-                    icon: Icons.work_outline,
-                    text: (displayMember?.sector ?? displayCompany!.sector).tr(),
-                    isDarkMode: isDarkMode,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Following/Followers count - Twitter style
-              Row(
-                children: [
-                  ProfileStats(
-                    count: '567',
-                    label: 'following'.tr(),
-                    isDarkMode: isDarkMode,
-                    onTap: () {},
-                  ),
-                  const SizedBox(width: 20),
-                  ProfileStats(
-                    count: '1.2K',
-                    label: 'followers'.tr(),
-                    isDarkMode: isDarkMode,
-                    onTap: () {},
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Divider
-              Divider(
-                height: 1,
-                thickness: 0.5,
-                color: isDarkMode
-                    ? Colors.white.withValues(alpha: 0.1)
-                    : Colors.black.withValues(alpha: 0.1),
+              Positioned.fill(
+                child: CustomPaint(painter: _DotPatternPainter()),
               ),
             ],
           ),
+        ),
+
+        if (!isOwnProfile)
+          Positioned(
+            top: statusBarHeight + 8,
+            left: 12,
+            child: _buildGlassButton(
+              icon: Icons.arrow_back_ios_new_rounded,
+              onTap: () => Navigator.pop(context),
+              size: 40,
+            ),
+          ),
+
+        /*
+        if (isOwnProfile)
+          Positioned(
+            top: statusBarHeight + 8,
+            right: 12,
+            child: _buildGlassButton(
+              icon: Icons.settings_outlined,
+              onTap: () => context.push('/settings'),
+              size: 40,
+            ),
+          ),*/
+        Positioned(
+          bottom: -45,
+          left: 20,
+          child: _buildProfileAvatar(isDarkMode),
+        ),
+
+        Positioned(
+          bottom: 12,
+          right: 16,
+          child: _buildActionButtons(context, isDarkMode),
         ),
       ],
     );
   }
 
-  void _showMoreOptions(BuildContext context) {
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
-
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.transparent,
-      builder: (context) => Container(
-        decoration: BoxDecoration(
-          color: isDarkMode ? AppColors.darkSurface : Colors.white,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-        ),
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(top: 12, bottom: 8),
-                width: 40,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: isDarkMode
-                      ? Colors.white.withValues(alpha: 0.3)
-                      : Colors.black.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(2),
+  Widget _buildGlassButton({
+    required IconData icon,
+    required VoidCallback onTap,
+    double size = 44,
+  }) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+        child: Material(
+          color: Colors.white.withAlpha((0.15 * 255).round()),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: Colors.white.withAlpha((0.2 * 255).round()),
+                  width: 1,
                 ),
               ),
-              ProfileMoreOption(
-                icon: Icons.block_outlined,
-                label: 'Block',
-                isDarkMode: isDarkMode,
-                onTap: () => Navigator.pop(context),
-              ),
-              ProfileMoreOption(
-                icon: Icons.flag_outlined,
-                label: 'report'.tr(),
-                isDarkMode: isDarkMode,
-                isDestructive: true,
-                onTap: () => Navigator.pop(context),
-              ),
-              const SizedBox(height: 12),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// Twitter-style button
-class ActionButton extends StatelessWidget {
-  final String label;
-  final VoidCallback onPressed;
-  final bool isDarkMode;
-  final bool isPrimary;
-  final bool isOutlined;
-
-  const ActionButton({super.key,
-    required this.label,
-    required this.onPressed,
-    required this.isDarkMode,
-    this.isPrimary = false,
-    this.isOutlined = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(20),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          decoration: BoxDecoration(
-            color: isPrimary
-                ? (isDarkMode ? Colors.white : Colors.black)
-                : isOutlined
-                    ? Colors.transparent
-                    : (isDarkMode ? AppColors.darkCard : Colors.white),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: isOutlined || !isPrimary
-                  ? (isDarkMode
-                      ? Colors.white.withValues(alpha: 0.3)
-                      : Colors.black.withValues(alpha: 0.2))
-                  : Colors.transparent,
-              width: 1,
-            ),
-          ),
-          child: Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w700,
-              color: isPrimary
-                  ? (isDarkMode ? Colors.black : Colors.white)
-                  : (isDarkMode ? Colors.white : Colors.black),
+              child: Icon(icon, color: Colors.white, size: 20),
             ),
           ),
         ),
       ),
     );
   }
-}
 
-class ProfileMetaInfo extends StatelessWidget {
-  final IconData icon;
-  final String text;
-  final bool isDarkMode;
-  final bool isLink;
+  Widget _buildProfileAvatar(bool isDarkMode) {
+    final hasImage =
+        (isMember && memberInfos?.photoUrl != null) ||
+        (companyInfos != null && companyInfos!.logo.isNotEmpty);
 
-  const ProfileMetaInfo({super.key,
-    required this.icon,
-    required this.text,
-    required this.isDarkMode,
-    this.isLink = false,
-  });
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: isDarkMode ? AppColors.darkBackground : Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withAlpha((0.2 * 255).round()),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: Stack(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: !hasImage
+                  ? LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        AppColors.primaryLight.withAlpha((0.3 * 255).round()),
+                        AppColors.primary.withAlpha((0.1 * 255).round()),
+                      ],
+                    )
+                  : null,
+            ),
+            child: CircleAvatar(
+              radius: 45,
+              backgroundColor: Colors.transparent,
+              backgroundImage: _getProfileImage(),
+              child: !hasImage
+                  ? Icon(
+                      isMember ? Icons.person_rounded : Icons.business_rounded,
+                      size: 45,
+                      color: AppColors.primary,
+                    )
+                  : null,
+            ),
+          ),
+          // Verified badge
+          if (companyInfos != null && companyInfos!.isValidated)
+            Positioned(
+              bottom: 4,
+              right: 4,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  color: isDarkMode ? AppColors.darkBackground : Colors.white,
+                  shape: BoxShape.circle,
+                ),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [AppColors.primary, AppColors.primaryDark],
+                    ),
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(Icons.check, color: Colors.white, size: 12),
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
+  ImageProvider? _getProfileImage() {
+    if (isMember && memberInfos?.photoUrl != null) {
+      return NetworkImage(memberInfos!.photoUrl!);
+    }
+    if (companyInfos != null && companyInfos!.logo.isNotEmpty) {
+      return NetworkImage(companyInfos!.logo);
+    }
+    return null;
+  }
+
+  Widget _buildActionButtons(BuildContext context, bool isDarkMode) {
+    if (isOwnProfile) {
+      return EditProfileButton(onProfileUpdated: onProfileUpdated);
+    }
+
+    final isFollowing = isMember
+        ? (memberInfos!.user.isFollowedByMe ?? false)
+        : (companyInfos!.user.isFollowedByMe ?? false);
+    final followersCount = isMember
+        ? (memberInfos!.user.followers ?? 0)
+        : (companyInfos!.user.followers ?? 0);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(
-          icon,
-          size: 16,
-          color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
+        ProfileActionButton(
+          icon: FontAwesomeIcons.paperPlane,
+          onPressed: () => _openFreindsList(context),
+          isDarkMode: isDarkMode,
         ),
-        const SizedBox(width: 4),
-        Text(
-          text,
-          style: TextStyle(
-            fontSize: 14,
-            color: isLink
-                ? AppColors.primary
-                : (isDarkMode ? Colors.grey[500] : Colors.grey[600]),
-          ),
+        const SizedBox(width: 8),
+        FollowButton(
+          userId: userId,
+          initialIsFollowing: isFollowing,
+          initialFollowersCount: followersCount,
+          onFollowChanged: onFollowChanged,
         ),
       ],
     );
   }
-}
 
-// Twitter-style follow count
-class ProfileStats extends StatelessWidget {
-  final String count;
-  final String label;
-  final bool isDarkMode;
-  final VoidCallback onTap;
+  _openFreindsList(BuildContext context) async {
+    await showModalBottomSheet(
+      showDragHandle: true,
 
-  const ProfileStats({super.key,
-    required this.count,
-    required this.label,
-    required this.isDarkMode,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(
-                text: count,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: isDarkMode ? Colors.white : Colors.black,
-                ),
-              ),
-              TextSpan(
-                text: ' $label',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: isDarkMode ? Colors.grey[500] : Colors.grey[600],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
+      context: context,
+      builder: (_) {
+        return const NewConversationUserList();
+      },
     );
   }
 }
 
-// Twitter-style more option item
-class ProfileMoreOption extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final bool isDarkMode;
-  final bool isDestructive;
-  final VoidCallback onTap;
+class _DotPatternPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.white.withAlpha((0.03 * 255).round())
+      ..style = PaintingStyle.fill;
 
-  const ProfileMoreOption({super.key,
-    required this.icon,
-    required this.label,
-    required this.isDarkMode,
-    this.isDestructive = false,
-    required this.onTap,
-  });
+    const spacing = 30.0;
+    const radius = 1.5;
+
+    for (double x = 0; x < size.width; x += spacing) {
+      for (double y = 0; y < size.height; y += spacing) {
+        canvas.drawCircle(Offset(x, y), radius, paint);
+      }
+    }
+  }
 
   @override
-  Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(
-        icon,
-        color: isDestructive
-            ? AppColors.error
-            : (isDarkMode ? Colors.white : Colors.black),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          color: isDestructive
-              ? AppColors.error
-              : (isDarkMode ? Colors.white : Colors.black),
-          fontWeight: FontWeight.w500,
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
-
-
-

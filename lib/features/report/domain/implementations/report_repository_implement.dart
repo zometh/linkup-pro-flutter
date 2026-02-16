@@ -18,5 +18,4 @@ class ReportRepositoryImplement implements ReportRepository{
       return Left(Failure(e.toString()));
     }
   }
-  // Implementation details will go here
 }

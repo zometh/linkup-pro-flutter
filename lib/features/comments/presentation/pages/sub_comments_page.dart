@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/utils/my_logger.dart';
-import 'package:linkup_pro/features/comments/data/comment.dart';
+import 'package:linkup_pro/features/comments/data/entity/comment.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
-import 'package:linkup_pro/features/comments/presentation/widgets/comment_reply.dart';
+import 'package:linkup_pro/features/comments/presentation/widgets/add_comment.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/comment_tile.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/no_comments_found.dart';
 import 'package:linkup_pro/features/comments/presentation/widgets/one_comment_shimmer__loading.dart';
@@ -42,17 +42,19 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
 
     // Listen for new sub-comments
     io.on("newComment", (data) {
-      if(data["postId"] == widget.parentComment.postId && data["commentId"] == widget.parentComment.id) {
+      if (data["postId"] == widget.parentComment.postId &&
+          data["commentId"] == widget.parentComment.id) {
         Future.microtask(() {
           setState(() {
-            subComments.insert(0, Comment.fromJson(data["commentData"]["response"]));
+            subComments.insert(
+              0,
+              Comment.fromJson(data["commentData"]["response"]),
+            );
             widget.parentComment.subCommentsCount++;
           });
         });
       }
-
     });
-
 
     fetchSubComments();
   }
@@ -60,47 +62,49 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('replies'.tr()),
-        elevation: 1,
-      ),
+      appBar: AppBar(title: Text('replies'.tr()), elevation: 1),
       body: Column(
         children: [
           Expanded(
             child: isInitialLoading
                 ? OneCommentShimmerLoading()
                 : subComments.isEmpty
-                    ? NoCommentsFound()
-                    : ListView.separated(
-                        separatorBuilder: (context, index) => Container(
-                          height: 1,
-                          color: context.isDarkMode
-                              ? const Color(0xff2F3336)
-                              : Colors.grey.shade300,
-                        ),
-                        itemCount: subComments.length + (isLoadingMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index < subComments.length) {
-                            final subComment = subComments[index];
-                            return InkWell(
-                                onTap: () =>  showMoreDialog(subComment.content, subComment.id),
-                                child: CommentTile(comment: subComment,isSubComment: true,)) /*SubCommentTile(subComment: subComment)*/;
-                          } else {
-                            return const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: CircularProgressIndicator(),
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                ? NoCommentsFound()
+                : ListView.separated(
+                    separatorBuilder: (context, index) => Container(
+                      height: 1,
+                      color: context.isDarkMode
+                          ? const Color(0xff2F3336)
+                          : Colors.grey.shade300,
+                    ),
+                    itemCount: subComments.length + (isLoadingMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index < subComments.length) {
+                        final subComment = subComments[index];
+                        return InkWell(
+                          onTap: () =>
+                              showMoreDialog(subComment.content, subComment.id),
+                          child: CommentTile(
+                            comment: subComment,
+                            isSubComment: true,
+                          ),
+                        ) /*SubCommentTile(subComment: subComment)*/;
+                      } else {
+                        return const Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Center(child: CircularProgressIndicator()),
+                        );
+                      }
+                    },
+                  ),
           ),
           // Add reply button at the bottom
           Container(
             padding: const EdgeInsets.all(12.0),
             decoration: BoxDecoration(
-              color: context.isDarkMode ? const Color(0xff16181C) : Colors.white,
+              color: context.isDarkMode
+                  ? const Color(0xff16181C)
+                  : Colors.white,
               border: Border(
                 top: BorderSide(
                   color: context.isDarkMode
@@ -124,8 +128,8 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
       ),
     );
   }
-  showMoreDialog(String text, String commentId) async{
 
+  showMoreDialog(String text, String commentId) async {
     final result = await CustomConfirmationDialog.showDeleteConfirmation(
       context: context,
       title: 'delete_comment'.tr(),
@@ -138,7 +142,8 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
       deleteComment(commentId);
     }
   }
-  deleteComment(String commentId) async{
+
+  deleteComment(String commentId) async {
     final commentImplement = GetIt.I<CommentRepositoryImplement>();
     final response = await commentImplement.deleteComment(commentId);
     response.fold((f) => MyLogger().log(f.message), (r) {
@@ -147,6 +152,7 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
       });
     });
   }
+
   fetchSubComments() async {
     final commentImplement = GetIt.I<CommentRepositoryImplement>();
 
@@ -168,19 +174,16 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
         _commentsPerPage,
       );
 
-      final newSubComments = response.fold(
-        (failure) {
+      final newSubComments = response.fold((failure) {
+        showToast(
+          description: 'error_occurred'.tr(),
+          type: ToastificationType.error,
+        );
 
-          showToast(description: 'error_occurred'.tr(),
-              type: ToastificationType.error
-          );
-
-          return <Comment>[];
-        },
-        (d) => d,
-      );
-      Future.microtask((){
-       /* final newComments = newSubComments
+        return <Comment>[];
+      }, (d) => d);
+      Future.microtask(() {
+        /* final newComments = newSubComments
             .where((c) => c.commentId == widget.parentComment.id)
             .toList();*/
 
@@ -192,19 +195,19 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
       });
     } catch (error) {
       // handle error
-      if(mounted) {
-        showToast(description: 'error_occurred'.tr(),
-            type: ToastificationType.error
+      if (mounted) {
+        showToast(
+          description: 'error_occurred'.tr(),
+          type: ToastificationType.error,
         );
-
       }
     } finally {
-     Future.microtask(() {
-       setState(() {
-         isInitialLoading = false;
-         isLoadingMore = false;
-       });
-     });
+      Future.microtask(() {
+        setState(() {
+          isInitialLoading = false;
+          isLoadingMore = false;
+        });
+      });
     }
   }
 
@@ -212,7 +215,10 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
     final result = await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      builder: (context) => CommentReply(comment: widget.parentComment),
+      builder: (context) => AddComment(
+        postId: widget.parentComment.postId,
+        c: widget.parentComment,
+      ) /*CommentReply(comment: widget.parentComment)*/,
     );
 
     // Refresh after adding a reply
@@ -226,4 +232,3 @@ class _SubCommentsPageState extends ConsumerState<SubCommentsPage> {
     }
   }
 }
-

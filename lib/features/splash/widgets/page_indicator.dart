@@ -18,14 +18,7 @@ class PageIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // If it's a simple provider:
     final indicatorProvider = ref.watch(splashProviderProvider);
-
-    // If it's a StateNotifierProvider or similar:
-    // final indicatorProvider = ref.watch(splashProvider.notifier);
-
-    // If you need just the state:
-    // final indicatorState = ref.watch(splashProvider);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

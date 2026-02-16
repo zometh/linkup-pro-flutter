@@ -1,185 +1,170 @@
-# LinkUp Pro 🚀
+# LinkUp Pro - Application Mobile
 
-A modern Flutter application for seamless networking and professional connections.
+Application mobile multiplateforme développée avec [Flutter](https://flutter.dev/), conçue pour une plateforme de réseautage professionnel. Cette application fournit une interface utilisateur moderne et fluide pour la gestion de profils, la messagerie, les publications, les offres d'emploi et bien plus encore.
 
-[![Flutter Version](https://img.shields.io/badge/Flutter-3.0+-blue.svg)](https://flutter.dev/)
-[![Dart Version](https://img.shields.io/badge/Dart-3.0+-blue.svg)](https://dart.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
+## Fonctionnalités
 
-## 📱 Features
+- Architecture modulaire avec Flutter et Riverpod
+- Authentification (JWT)
+- Gestion des profils utilisateurs, compétences et expériences
+- Publications, commentaires et interactions sociales
+- Messagerie en temps réel avec Socket.IO
+- Notifications push avec Firebase Messaging
+- Recherche d'utilisateurs et de contenus
+- Support multilingue (Français, Anglais, Arabe)
+- Thème clair/sombre
+- Mode hors-ligne avec mise en cache
 
-- **Real-time Messaging** - Instant communication with professionals
-- **Profile Management** - Comprehensive user profiles with skills and experience
-- **Network Discovery** - Find and connect with industry professionals
-- **Event Integration** - Join networking events and meetups
-- **Cross-platform** - Available on iOS and Android
-- **Offline Support** - Core features work without internet connection
+## Technologies Utilisées
 
-## 📸 Screenshots
+- [Flutter](https://flutter.dev/) (SDK ^3.10.0)
+- [Dart](https://dart.dev/)
+- [Riverpod](https://riverpod.dev/) (gestion d'état)
+- [Dio](https://pub.dev/packages/dio) (requêtes HTTP)
+- [Go Router](https://pub.dev/packages/go_router) (navigation)
+- [Firebase](https://firebase.google.com/) (notifications, authentification)
+- [Socket.IO](https://socket.io/) (messagerie temps réel)
+- [Hive](https://pub.dev/packages/hive) (stockage local)
+- [Easy Localization](https://pub.dev/packages/easy_localization) (internationalisation)
 
-| Home Screen | Profile | Messages | Network |
-|-------------|---------|----------|---------|
-| ![Home](screenshots/home.png) | ![Profile](screenshots/profile.png) | ![Messages](screenshots/messages.png) | ![Network](screenshots/network.png) |
+## Captures d'Écran
 
-## 🚀 Getting Started
+| Accueil | Profil | Messagerie | Offres d'emploi |
+|---------|--------|------------|-----------------|
+| ![Accueil](screenshots/home.png) | ![Profil](screenshots/profile.png) | ![Messagerie](screenshots/chat.png) | ![Offres](screenshots/job_offers.png) |
 
-### Prerequisites
+## Langues Supportées
 
-- Flutter SDK (3.0+)
+L'application est entièrement traduite en **trois langues** :
+
+| Langue | Code | Fichier |
+|--------|------|---------|
+| Français | `fr` | `assets/translations/fr.json` |
+| Anglais | `en` | `assets/translations/en.json` |
+| Arabe | `ar` | `assets/translations/ar.json` |
+
+L'interface s'adapte automatiquement à la langue du système ou peut être changée manuellement dans les paramètres.
+
+## Démarrage
+
+### Prérequis
+
+- Flutter SDK (3.10+)
 - Dart SDK (3.0+)
 - Android Studio / VS Code
-- iOS Simulator / Android Emulator
+- Émulateur Android ou Simulateur iOS
 
 ### Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/linkup_pro.git
-   cd linkup_pro
-   ```
-
-2. **Install dependencies**
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the app**
-   ```bash
-   flutter run
-   ```
+```bash
+flutter pub get
+```
 
 ### Configuration
 
-1. Create a `.env` file in the root directory:
-   ```env
-   API_BASE_URL=https://api.linkuppro.com
-   FIREBASE_PROJECT_ID=your-firebase-project
-   ```
+1. Créez un fichier `.env` à la racine du projet :
+```env
+API_BASE_URL=https://api.linkuppro.com
+FIREBASE_PROJECT_ID=votre-projet-firebase
+```
 
-2. Configure Firebase (optional):
-   - Add `google-services.json` for Android
-   - Add `GoogleService-Info.plist` for iOS
+2. Configurez Firebase :
+   - Ajoutez `google-services.json` dans `android/app/`
+   - Ajoutez `GoogleService-Info.plist` dans `ios/Runner/`
 
-## 🏗️ Project Structure
+### Lancement de l'Application
+
+```bash
+flutter run
+```
+
+### Exécution des Tests
+
+```bash
+flutter test
+```
+
+## Structure du Projet
 
 ```
 lib/
-├── core/           # Core utilities and constants
-├── data/           # Data layer (repositories, models)
-├── features/       # Feature modules
-│   ├── auth/       # Authentication
-│   ├── profile/    # User profiles
-│   ├── messaging/  # Chat functionality
-│   └── network/    # Networking features
-├── shared/         # Shared widgets and utilities
-└── main.dart       # App entry point
+  main.dart                 # Point d'entrée
+  core/                     # Utilitaires et constantes
+    constants/              # Constantes de l'application
+    entities/               # Entités de données
+    enums/                  # Énumérations
+    error/                  # Gestion des erreurs
+    network/                # Configuration réseau (Dio)
+    providers/              # Providers Riverpod globaux
+    routes/                 # Configuration Go Router
+    services/               # Services partagés
+    theme/                  # Thèmes et styles
+    utils/                  # Fonctions utilitaires
+    widgets/                # Widgets réutilisables
+  features/                 # Modules fonctionnels
+    auth/                   # Authentification
+    login/                  # Connexion
+    register/               # Inscription
+    profile/                # Profil utilisateur
+    profile_skills/         # Compétences
+    profile_jobs/           # Expériences professionnelles
+    posts/                  # Publications
+    comments/               # Commentaires
+    messages/               # Messagerie
+    notifications/          # Notifications
+    offers/                 # Offres d'emploi
+    search/                 # Recherche
+    settings/               # Paramètres
+    users/                  # Utilisateurs
+assets/
+  images/                   # Images et icônes
+  translations/             # Fichiers de traduction (ar, en, fr)
 ```
 
-## 🔧 Development
+## Aperçu des Fonctionnalités
 
-### Code Style
+- **Authentification** : Connexion, inscription, Google Sign-In
+- **Profil** : Gestion du profil, photo, biographie, compétences
+- **Publications** : Création, modification, suppression de posts
+- **Commentaires** : Système de commentaires imbriqués
+- **Messagerie** : Chat en temps réel avec les utilisateurs
+- **Notifications** : Notifications push pour les interactions
+- **Recherche** : Recherche d'utilisateurs et de contenus
+- **Paramètres** : Langue, thème, confidentialité
 
-This project follows the [official Dart style guide](https://dart.dev/guides/language/effective-dart/style).
+## Commandes Utiles
 
 ```bash
-# Format code
+# Formater le code
 dart format .
 
-# Analyze code
+# Analyser le code
 dart analyze .
 
-# Run tests
-flutter test
-```
+# Générer le code Riverpod
+dart run build_runner build
 
-### State Management
-
-- **Provider** for simple state management
-- **Bloc** for complex business logic
-- **Riverpod** for dependency injection
-
-## 📚 API Documentation
-
-The app integrates with the LinkUp Pro API. Key endpoints:
-
-- `GET /api/users/profile` - Get user profile
-- `POST /api/messages` - Send message
-- `GET /api/network/suggestions` - Get connection suggestions
-
-## 🧪 Testing
-
-```bash
-# Run all tests
-flutter test
-
-# Run tests with coverage
-flutter test --coverage
-
-# Run integration tests
-flutter drive --target=test_driver/app.dart
-```
-
-## 🚢 Deployment
-
-### Android
-```bash
+# Build APK (Android)
 flutter build apk --release
-```
 
-### iOS
-```bash
+# Build iOS
 flutter build ios --release
+
+# Générer les icônes de l'application
+flutter pub run flutter_launcher_icons
+
+# Générer le splash screen
+flutter pub run flutter_native_splash:create
 ```
 
-## 🤝 Contributing
+## Contribution
 
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+1. Forkez le dépôt
+2. Créez votre branche (`git checkout -b feature/MaFonctionnalite`)
+3. Commitez vos modifications (`git commit -am 'Ajout d'une nouvelle fonctionnalité'`)
+4. Poussez vers la branche (`git push origin feature/MaFonctionnalite`)
+5. Créez une Pull Request
 
-### Development Guidelines
+## Licence
 
-- Follow the existing code style
-- Write tests for new features
-- Update documentation as needed
-- Ensure all tests pass before submitting PR
-
-## 📋 Roadmap
-
-- [ ] Video calling integration
-- [ ] Advanced search filters
-- [ ] AI-powered connection recommendations
-- [ ] Desktop application
-- [ ] LinkedIn integration
-
-## 🐛 Known Issues
-
-- iOS: Camera permission dialog appears twice on first launch
-- Android: Push notifications may not work on MIUI devices
-
-## 📄 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 👥 Authors
-
-- **Your Name** - *Initial work* - [@yourusername](https://github.com/yourusername)
-
-## 🙏 Acknowledgments
-
-- Flutter team for the amazing framework
-- Contributors and beta testers
-- Open source packages used in this project
-
-## 📞 Support
-
-- **Email**: support@linkuppro.com
-- **Documentation**: [docs.linkuppro.com](https://docs.linkuppro.com)
-- **Issues**: [GitHub Issues](https://github.com/yourusername/linkup_pro/issues)
-
----
-
-Made with ❤️ using Flutter
+Ce projet est sous licence MIT.

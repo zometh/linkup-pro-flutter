@@ -2,6 +2,7 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/main.dart';
 
 import '../data/entities/sector.dart';
 
@@ -21,51 +22,64 @@ class SectorCard extends StatelessWidget {
     this.onTap,
   });
 
+  Color _parseColor(String hex) {
+    try {
+      return Color(int.parse("0xFF$hex"));
+    } catch (_) {
+      return AppColors.primary;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    Color color = getColor(sector.color);
-    return GestureDetector(
-      onTap: onTap,
+    final isDark = context.isDarkMode;
+    final color = _parseColor(sector.color);
 
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-          side: BorderSide(
-            color: selected ? color : Colors.transparent,
-            width: 2,
-          ),
-        ),
-        elevation: selected ? 8 : 2,
-        shadowColor: selected ? color.withAlpha(50) : Colors.black26,
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
           decoration: BoxDecoration(
-            backgroundBlendMode: BlendMode.overlay,
-            color: selected ? AppColors.primary : Colors.red,
+            color: isDark ? AppColors.darkSurface : AppColors.lightSurface,
             borderRadius: BorderRadius.circular(16),
-            gradient: AppGradients.primaryGradient,
-            border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+            border: Border.all(color: color.withAlpha((0.6 * 255).round()), width: 1.3),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withAlpha((isDark ? 0.4 : 0.08 * 255).round()),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(sector.icon, style: const TextStyle(fontSize: 36)),
-              SizedBox(height: maxHeight != null ? maxHeight! * 0.02 : 8),
-              CustomText(
-                text: sector.name.tr(),
-                //color: color,
-                fontSize: maxWidth != null ? maxWidth! * 0.03 : 12,
-                fontWeight: FontWeight.w600,
-                textAlign: TextAlign.center,
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: color.withAlpha((0.15 * 255).round()),
+                  shape: BoxShape.circle,
+                ),
+                child: Text(sector.icon, style: const TextStyle(fontSize: 28)),
+              ),
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: CustomText(
+                  text: sector.name.tr(),
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                  textAlign: TextAlign.center,
+                  color: isDark ? Colors.white : AppColors.textPrimary,
+                  maxLines: 2,
+                ),
               ),
             ],
           ),
         ),
       ),
     );
-  }
-
-  Color getColor(String color) {
-    return Color(int.parse("0XFF$color"));
   }
 }

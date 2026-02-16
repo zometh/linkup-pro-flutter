@@ -1,8 +1,8 @@
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
 import 'package:linkup_pro/features/posts/domain/entities/user_preview_adds.dart';
 
@@ -18,8 +18,7 @@ class AccountPreview extends StatefulWidget {
   final UserPreviewAdds userPreview;
   final Post post;
 
-  /// Optional callback when follow state changes. Useful to update remote state.
-  final  Function() onFollowChanged;
+  final Function() onFollowChanged;
 
   const AccountPreview({
     super.key,
@@ -36,7 +35,6 @@ class _AccountPreviewState extends State<AccountPreview> {
   String connectedUserId = '';
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getConnectedUserId();
   }
@@ -45,7 +43,10 @@ class _AccountPreviewState extends State<AccountPreview> {
   Widget build(BuildContext context) {
     final owner = widget.post.owner;
     final isCompany = owner.role == UserRole.entreprise;
-    final String content = widget.userPreview.companyDescription ?? widget.userPreview.biography ?? '';
+    final String content =
+        widget.userPreview.companyDescription ??
+        widget.userPreview.biography ??
+        '';
     String displayName;
     String? avatarUrl;
     if (isCompany) {
@@ -92,31 +93,34 @@ class _AccountPreviewState extends State<AccountPreview> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Avatar
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        gradient: avatarUrl == null
-                            ? AppGradients.primaryGradient
-                            : null,
-                      ),
-                      child: CircleAvatar(
-                        radius: 24,
-                        backgroundColor: Colors.transparent,
-                        backgroundImage: avatarUrl != null
-                            ? CachedNetworkImageProvider(avatarUrl)
-                            : null,
-                        child: avatarUrl == null
-                            ? Text(
-                                displayName.isNotEmpty
-                                    ? displayName[0].toUpperCase()
-                                    : '',
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15,
-                                ),
-                              )
-                            : null,
+                    InkWell(
+                      onTap: _visitProfile,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: avatarUrl == null
+                              ? AppGradients.primaryGradient
+                              : null,
+                        ),
+                        child: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: Colors.transparent,
+                          backgroundImage: avatarUrl != null
+                              ? CachedNetworkImageProvider(avatarUrl)
+                              : null,
+                          child: avatarUrl == null
+                              ? Text(
+                                  displayName.isNotEmpty
+                                      ? displayName[0].toUpperCase()
+                                      : '',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
+                                  ),
+                                )
+                              : null,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 16),
@@ -171,38 +175,35 @@ class _AccountPreviewState extends State<AccountPreview> {
                     ),
                     const SizedBox(width: 8),
                     // keep button intrinsic size; don't force layout with flex
-                    if(connectedUserId != widget.post.userId)InkWell(
-                      onTap: () async {
-                        await widget.onFollowChanged();
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        constraints: const BoxConstraints(
-                          minWidth: 70,
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.white10),
-                          color: widget.post.isFollowed
+                    if (connectedUserId != widget.post.userId)
+                      InkWell(
+                        onTap: () async {
+                          await widget.onFollowChanged();
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          constraints: const BoxConstraints(minWidth: 70),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white10),
+                            color: widget.post.isFollowed
                                 ? Colors.transparent
                                 : AppColors.primary,
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                        
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+
                           child: CustomText(
-                            text: (widget.post.isFollowed
-                                    ? 'followed'
-                                    : 'follow')
-                                .tr(),
+                            text:
+                                (widget.post.isFollowed ? 'followed' : 'follow')
+                                    .tr(),
                             color: widget.post.isFollowed
                                 ? (isDark
-                                    ? Colors.white
-                                    : AppColors.textPrimary)
+                                      ? Colors.white
+                                      : AppColors.textPrimary)
                                 : Colors.white,
                             fontWeight: FontWeight.w600,
                           ),
-                      )
+                        ),
                       ),
-                    
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -265,6 +266,7 @@ class _AccountPreviewState extends State<AccountPreview> {
       },
     );
   }
+
   getConnectedUserId() async {
     final storage = GetIt.I<LocalDBService>();
     final String? userId = await storage.getUserId();
@@ -273,15 +275,20 @@ class _AccountPreviewState extends State<AccountPreview> {
         connectedUserId = userId;
       });
     }
-
   }
-  String? formatContent(String? content){
+
+  String? formatContent(String? content) {
     final int max = 200;
-    if(content==null) return null;
-    if(content.length>max){
-      return '${content.substring(0,max)}...';
-    }else {
+    if (content == null) return null;
+    if (content.length > max) {
+      return '${content.substring(0, max)}...';
+    } else {
       return content;
     }
+  }
+
+  _visitProfile() async {
+    GoRouter.of(context).pop();
+    context.push('/user/${widget.post.userId}');
   }
 }

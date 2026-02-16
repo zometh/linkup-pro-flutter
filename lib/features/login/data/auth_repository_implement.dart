@@ -1,5 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:get_it/get_it.dart';
+import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/login/data/auth_repository.dart';
 
 import '../../../core/network/api/api_client.dart';
@@ -22,6 +23,7 @@ class AuthRepositoryImplement implements AuthRepository {
     String credential,
     String password,
   ) async {
+
     try {
       final response = await _apiClient.post(
         '/auth/login',
@@ -34,6 +36,7 @@ class AuthRepositoryImplement implements AuthRepository {
 
       return Right({"data": response});
     } catch (e) {
+
       return Left(Failure(e.toString()));
     }
   }
@@ -41,5 +44,20 @@ class AuthRepositoryImplement implements AuthRepository {
   @override
   Future<void> signOut() {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> sendDeviceToken(String token) async{
+
+    try{
+      await _apiClient.post(
+        "/auth/device-token",
+        data: {
+          "deviceToken": token,
+        },
+      );
+    }catch(e){
+      MyLogger().log("Error sending Device token : $e");
+    }
   }
 }

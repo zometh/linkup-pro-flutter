@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/services/localdb/localdb.dart';
+import 'package:linkup_pro/core/utils/my_logger.dart';
 import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/providers/fetch_post.dart';
+import 'package:linkup_pro/features/posts/presentation/providers/post_event_provider.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/no_data_widget.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_card.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_shimmer_loading.dart';
@@ -13,7 +15,9 @@ import 'package:linkup_pro/main.dart';
 import 'package:shimmer/shimmer.dart';
 
 class PostsView extends ConsumerStatefulWidget {
-  const PostsView({super.key});
+  final String? userId;
+
+  const PostsView({super.key, this.userId});
 
   @override
   ConsumerState<PostsView> createState() => _PostsViewState();
@@ -25,23 +29,24 @@ class _PostsViewState extends ConsumerState<PostsView>
   int _postsPerPage = 5;
   int _currentPage = 1;
   final refreshKey = GlobalKey<RefreshIndicatorState>();
-  bool isInitialLoading = false; // used for first load or refresh
-  bool isLoadingMore = false; // used when loading additional pages (pagination)
+  bool isInitialLoading = false;
+  bool isLoadingMore = false;
   bool hasMore = true;
   List<Post> posts = [];
   double _lastScrollPosition = 0;
   final io = GetIt.I<SocketService>();
   String? connectedUserId;
+  bool _hasToken = false;
+  int _tokenRetries = 0;
   @override
   void initState() {
     super.initState();
-    getUserId();
-    fetchPosts();
+    // Récupérer d'abord l'ID connecté et vérifier le token avant de charger les posts.
+    getUserId().then((_) => _ensureTokenAndFetch());
     _scrollController.addListener(_onScroll);
 
     _setupSocketListeners();
   }
-
 
   @override
   void dispose() {
@@ -55,6 +60,27 @@ class _PostsViewState extends ConsumerState<PostsView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    ref.listen<PostEvent?>(postEventProvider, (previous, next) {
+      if (next == null) return;
+      switch (next.type) {
+        case PostEventType.created:
+          if (next.post != null) {
+            _insertPost(next.post!);
+          }
+          break;
+        case PostEventType.deleted:
+          if (next.postId != null) {
+            removePost(next.postId!);
+          }
+          break;
+        case PostEventType.updated:
+          if (next.post != null) {
+            _updatePostDirect(next.post!);
+          }
+          break;
+      }
+    });
 
     return RefreshIndicator.adaptive(
       key: refreshKey,
@@ -70,7 +96,7 @@ class _PostsViewState extends ConsumerState<PostsView>
       child: isInitialLoading
           ? PostShimmerLoading()
           : posts.isEmpty
-          ? const NoDataWidget()
+          ? NoDataWidget(onPressed: () => fetchPosts())
           : CustomScrollView(
               controller: _scrollController,
               slivers: [
@@ -85,7 +111,6 @@ class _PostsViewState extends ConsumerState<PostsView>
                   itemBuilder: (context, index) {
                     if (index == posts.length) {
                       if (isLoadingMore) {
-                        // constrain footer height so the spinner doesn't center vertically over the whole screen
                         return const SizedBox(
                           height: 80,
                           child: Center(child: LinearProgressIndicator()),
@@ -96,11 +121,15 @@ class _PostsViewState extends ConsumerState<PostsView>
                           child: Center(child: Text("Aucun post disponible.")),
                         );
                       } else {
-                        return const SizedBox(); // rien tant qu’on n’a pas déclenché le chargement
+                        return const SizedBox();
                       }
                     }
                     final post = posts[index];
-                    return PostCard(post: post, userId: connectedUserId!);
+                    return PostCard(
+                      post: post,
+                      userId: connectedUserId!,
+                      onDelete: () => removePost(post.id),
+                    );
                   },
                 ),
               ],
@@ -133,9 +162,36 @@ class _PostsViewState extends ConsumerState<PostsView>
   Future<void> getUserId() async {
     final storage = GetIt.I<LocalDBService>();
     final userId = await storage.getUserId();
-    setState(() {
-      connectedUserId = userId;
-    });
+    if (mounted) {
+      Future.microtask(() {
+        setState(() {
+          connectedUserId = userId;
+        });
+      });
+    }
+  }
+
+  Future<void> _ensureTokenAndFetch() async {
+    final storage = GetIt.I<LocalDBService>();
+    final token = await storage.getToken();
+    if (token != null) {
+      _hasToken = true;
+      fetchPosts();
+      return;
+    }
+
+    // Retry court pour laisser le temps à l'auth flow de stocker le token
+    if (_tokenRetries < 5) {
+      _tokenRetries++;
+      await Future.delayed(const Duration(milliseconds: 300));
+      return _ensureTokenAndFetch();
+    }
+
+    // Si toujours pas de token, journaliser pour debug et ne pas appeler l'API non authentifiée
+    MyLogger().log(
+      'No auth token found after retries — skipping posts fetch',
+      type: LogType.error,
+    );
   }
 
   fetchPosts() async {
@@ -153,7 +209,7 @@ class _PostsViewState extends ConsumerState<PostsView>
     try {
       final newPosts = await ref
           .read(fetchPostProvider.notifier)
-          .fetchPosts(_currentPage, _postsPerPage);
+          .fetchPosts(_currentPage, _postsPerPage, widget.userId);
       Future.microtask(() {
         if (mounted) {
           setState(() {
@@ -164,6 +220,7 @@ class _PostsViewState extends ConsumerState<PostsView>
         }
       });
     } catch (error) {
+      MyLogger().log('Erreur fetchPosts: $error', type: LogType.error);
     } finally {
       Future.microtask(() {
         if (mounted) {
@@ -175,57 +232,38 @@ class _PostsViewState extends ConsumerState<PostsView>
       });
     }
   }
-  void _setupSocketListeners() {
 
+  void _setupSocketListeners() {
     io.off("newPost");
     io.off("deletePost");
     io.off("postUpdated");
 
-    // Puis attacher les nouveaux
     io.on("newPost", (d) {
       if (d is Map<String, dynamic>) {
         insertNewPost(d);
         io.joinRoom("postSubscribe", {"roomId": d["id"]});
-      } else {
-        print("⚠️ Invalid data format for newPost: $d");
-      }
+      } else {}
     });
-    io.on("postUpdated", (v){
+    io.on("postUpdated", (v) {
       if (v is Map<String, dynamic>) {
         updatePost(v);
-      } else {
-        print("⚠️ Invalid data format for postUpdated: $v");
-      }
+      } else {}
     });
     io.on("deletePost", (v) {
       if (v is String) {
         removePost(v);
-      } else {
-        print("⚠️ Invalid data format for deletePost: $v");
-      }
+      } else {}
     });
   }
 
   removePost(String postId) {
-    print('🗑️ Tentative de suppression du post: $postId');
-    print('📋 Nombre de posts avant suppression: ${posts.length}');
-
     final existingIndex = posts.indexWhere((post) => post.id == postId);
 
     if (existingIndex != -1) {
-      print('✅ Post trouvé à l\'index $existingIndex, suppression en cours');
       setState(() {
         posts.removeAt(existingIndex);
       });
-      print(
-        '✅ Post supprimé avec succès. Nombre de posts restants: ${posts.length}',
-      );
-    } else {
-      print('⚠️ Post $postId non trouvé dans la liste');
-      print(
-        '📋 IDs des posts actuels: ${posts.map((p) => p.id).take(5).toList()}...',
-      );
-    }
+    } else {}
   }
 
   void _onScroll() {
@@ -251,11 +289,14 @@ class _PostsViewState extends ConsumerState<PostsView>
 
   void insertNewPost(Map<String, dynamic> data) {
     final newPost = Post.fromJson(data);
+    _insertPost(newPost);
+  }
 
+  /// Insère un nouveau post directement (utilisé par le provider d'événements)
+  void _insertPost(Post newPost) {
     final existingIndex = posts.indexWhere((post) => post.id == newPost.id);
 
     if (existingIndex != -1) {
-
       setState(() {
         posts[existingIndex] = newPost;
       });
@@ -271,13 +312,17 @@ class _PostsViewState extends ConsumerState<PostsView>
       curve: Curves.easeOut,
     );
   }
+
   updatePost(Map<String, dynamic> data) {
     final updatedPost = Post.fromJson(data);
+    _updatePostDirect(updatedPost);
+  }
 
+  /// Met à jour un post directement (utilisé par le provider d'événements)
+  void _updatePostDirect(Post updatedPost) {
     final existingIndex = posts.indexWhere((post) => post.id == updatedPost.id);
 
     if (existingIndex != -1) {
-
       setState(() {
         posts[existingIndex] = updatedPost;
       });

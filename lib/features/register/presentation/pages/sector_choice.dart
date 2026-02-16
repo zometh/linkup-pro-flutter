@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
+import 'package:go_router/go_router.dart';
+import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/widgets/custom_popscope.dart';
 
 import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
-import 'package:linkup_pro/features/register/presentation/pages/register_company.dart';
-import 'package:linkup_pro/features/register/presentation/pages/register_profile.dart';
 import 'package:linkup_pro/features/register/presentation/providers/register_provider.dart';
 import 'package:linkup_pro/main.dart';
 
@@ -41,117 +41,139 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
     _registerRepositoryImplements = GetIt.I<RegisterRepositoryImplement>();
     _sectorsFuture = _registerRepositoryImplements.getSectors();
   }
+
   @override
   Widget build(BuildContext context) {
-    Sector? selectedSector;
+    final isDark = context.isDarkMode;
 
     return CustomPopscope(
       executeOnPop: () => ref.read(registerProvider.notifier).deleteUser(),
-      widget: RefreshIndicator(
-        key: refreshKey,
-        color: AppColors.primary,
-        onRefresh: () async {
-          // Refresh the future explicitly to re-fetch sectors
-          setState(() {
-            _sectorsFuture = _registerRepositoryImplements.getSectors();
-          });
-        },
-        child: Scaffold(
-          body: SafeArea(
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: context.isDarkMode
-                    ? AppGradients.scaffoldGradient
-                    : null,
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 8,
-                        ),
-                        child: CustomText(
-                          text: "Choose your sector".tr(),
-                          fontSize: constraints.maxWidth * 0.05,
-                          fontWeight: FontWeight.bold,
-                          textAlign: TextAlign.center,
-                          color: AppColors.primary,
-                        ),
+      widget: Scaffold(
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: isDark ? AppGradients.scaffoldGradient : null,
+          ),
+          child: SafeArea(
+            child: RefreshIndicator(
+              key: refreshKey,
+              color: AppColors.primary,
+              onRefresh: () async {
+                setState(() {
+                  _sectorsFuture = _registerRepositoryImplements.getSectors();
+                });
+              },
+              child: CustomScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                slivers: [
+                  // Header
+                  SliverToBoxAdapter(
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(24, 40, 24, 32),
+                      child: Column(
+                        children: [
+                          CustomText(
+                            text: "Choose your sector".tr(),
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            textAlign: TextAlign.center,
+                            color: isDark
+                                ? Colors.white
+                                : AppColors.darkBackground,
+                          ),
+                          const SizedBox(height: 8),
+                          CustomText(
+                            text: "splash_subtitle_1".tr(),
+                            fontSize: 14,
+                            textAlign: TextAlign.center,
+                            color: isDark
+                                ? Colors.grey.shade400
+                                : Colors.grey.shade600,
+                          ),
+                        ],
                       ),
-      
-                      Expanded(
-                        child: FutureBuilder(
-                          // Use the cached future so the request is not re-issued on every rebuild
-                          future: _sectorsFuture,
-                          builder: (_, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
-                              return const CustomProgress();
-                            }
-                            if (snapshot.hasError) {
-                              return Center(
-                                child: Text('Error: ${snapshot.error}'),
-                              );
-                            }
-                            if (!snapshot.hasData) {
-                              return const Center(
-                                child: Text('No data available'),
-                              );
-                            }
-                            final response = snapshot.data!;
-      
-                            final sectors = response.fold(
-                              (failure) => <Sector>[],
-                              (data) {
-                                final List<dynamic> sectorList = data ?? [];
-                                return sectorList
-                                    .map((e) => Sector.fromMap(e))
-                                    .toList();
-                              },
-                            );
-      
-                            return GridView.builder(
-                              padding: const EdgeInsets.all(16),
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                    crossAxisCount:
-                                        2, // ou 3 selon la taille d’écran
-                                    mainAxisSpacing: 12,
-                                    crossAxisSpacing: 12,
-                                    childAspectRatio: 1,
-                                  ),
-                              itemCount: sectors.length,
-                              itemBuilder: (context, index) {
-                                final sector = sectors[index];
-                                return SectorCard(
-                                  selected: sector == selectedSector,
+                    ),
+                  ),
+                  // Grid
+                  FutureBuilder(
+                    future: _sectorsFuture,
+                    builder: (_, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const SliverFillRemaining(
+                          child: CustomProgress(),
+                        );
+                      }
+                      if (snapshot.hasError) {
+                        return SliverFillRemaining(
+                          child: _buildErrorState(snapshot.error.toString()),
+                        );
+                      }
+                      if (!snapshot.hasData) {
+                        return SliverFillRemaining(child: _buildEmptyState());
+                      }
+                      final response = snapshot.data!;
+
+                      final sectors = response.fold((failure) => <Sector>[], (
+                        data,
+                      ) {
+                        final List<dynamic> sectorList = data ?? [];
+                        return sectorList
+                            .map((e) => Sector.fromMap(e))
+                            .toList();
+                      });
+
+                      if (sectors.isEmpty) {
+                        return SliverFillRemaining(child: _buildEmptyState());
+                      }
+
+                      return SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+                        sliver: SliverGrid(
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                mainAxisSpacing: 16,
+                                crossAxisSpacing: 16,
+                                childAspectRatio: 0.95,
+                              ),
+                          delegate: SliverChildBuilderDelegate((
+                            context,
+                            index,
+                          ) {
+                            final sector = sectors[index];
+                            return SectorCard(
                                   sector: sector,
                                   onTap: () {
-                                    setState(() {
-                                      selectedSector = sector;
-                                    });
-                                    final route = MaterialPageRoute(
-                                      builder: (_) => widget.isEntreprise
-                                          ? RegisterCompany(sector: sector)
-                                          : RegisterProfile(sector: sector),
-                                    );
-                                    Navigator.push(context, route);
+                                    if (widget.isEntreprise) {
+                                      GoRouter.of(context).push(
+                                        '/register-company',
+                                        extra: sector,
+                                      );
+                                    } else {
+                                      GoRouter.of(context).push(
+                                        '/register/profile',
+                                        extra: sector,
+                                      );
+                                    }
                                   },
-                                ).animate().fadeIn(
-                                  duration: 200.ms,
-                                  delay: (index * 100).ms,
+                                )
+                                .animate()
+                                .fadeIn(
+                                  duration: 300.ms,
+                                  delay: (index * 50).ms,
+                                )
+                                .slideY(
+                                  begin: 0.1,
+                                  end: 0,
+                                  duration: 300.ms,
+                                  delay: (index * 50).ms,
+                                  curve: Curves.easeOut,
                                 );
-                              },
-                            );
-                          },
+                          }, childCount: sectors.length),
                         ),
-                      ),
-                    ],
-                  );
-                },
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),
@@ -159,5 +181,116 @@ class _SectorGridViewState extends ConsumerState<SectorGridView> {
       ),
     );
   }
-}
 
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.error.withAlpha((0.1 * 255).round()),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.error_outline_rounded,
+                size: 48,
+                color: AppColors.error,
+              ),
+            ),
+            const SizedBox(height: 16),
+            CustomText(
+              text: 'error'.tr(),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: AppColors.error,
+            ),
+            const SizedBox(height: 8),
+            CustomText(
+              text: error,
+              fontSize: 14,
+              textAlign: TextAlign.center,
+              color: Colors.grey,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _sectorsFuture = _registerRepositoryImplements.getSectors();
+                });
+              },
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text('reset'.tr()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: AppColors.primary.withAlpha((0.1 * 255).round()),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Icon(
+                Icons.inbox_rounded,
+                size: 48,
+                color: AppColors.primary,
+              ),
+            ),
+            const SizedBox(height: 16),
+            CustomText(
+              text: 'no_data_found'.tr(),
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () {
+                setState(() {
+                  _sectorsFuture = _registerRepositoryImplements.getSectors();
+                });
+              },
+              icon: const Icon(Icons.refresh_rounded),
+              label: Text('reset'.tr()),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 12,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

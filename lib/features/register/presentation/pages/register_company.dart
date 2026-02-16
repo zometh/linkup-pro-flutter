@@ -75,6 +75,17 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
     final bool isLoading = ref.watch(registerCompanyProvider);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Container(
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            color: AppColors.primary.withAlpha((0.1 * 255).round()),
+          ),
+          child: Icon(Icons.arrow_back_sharp, color: Colors.black),
+        ),
+      ),
       body: isLoading
           ? const CustomProgress().animate().fadeIn(duration: 300.ms)
           : Container(
@@ -227,13 +238,13 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
                                       });
                                     },
                                     context: context,
-                                    onAdjusted: (){
+                                    onAdjusted: () {
                                       showToast(
-                                          description: 'selected_date_was_adjusted'.tr(),
-                                          type: ToastificationType.error,
-
+                                        description:
+                                            'selected_date_was_adjusted'.tr(),
+                                        type: ToastificationType.error,
                                       );
-                                    }
+                                    },
                                   );
                                 },
                                 child: Container(
@@ -244,16 +255,16 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
                                   ),
                                   decoration: BoxDecoration(
                                     color: context.isDarkMode
-                                        ? Color(0xFF1E293B).withValues(
-                                            alpha: .5,
+                                        ? Color(0xFF1E293B).withAlpha(
+                                            (0.5 * 255).round(),
                                           ) // Gris foncé semi-transparent en mode sombre
-                                        : AppColors.primary
-                                              .withValues(alpha: .03)
-                                              .withValues(alpha: 0.03),
+                                        : AppColors.primary.withAlpha(
+                                            (0.03 * 255).round(),
+                                          ),
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
-                                      color: AppColors.primary.withValues(
-                                        alpha: 0.5,
+                                      color: AppColors.primary.withAlpha(
+                                        (0.5 * 255).round(),
                                       ),
                                     ),
                                   ),
@@ -327,28 +338,28 @@ class _RegisterCompanyState extends ConsumerState<RegisterCompany> {
             final storage = FlutterSecureStorage();
             await storage.write(key: 'isRegistrationComplete', value: 'true');
 
-if(mounted){
+            if (mounted) {
               MyNavigator(context).navigateToHomeAndClearStack();
-
-}            //context.go( '/');
+            } //context.go( '/');
           } else {
-            showToast(description: 'profile_creation_failed'.tr(),
-                type: ToastificationType.error
+            showToast(
+              description: 'profile_creation_failed'.tr(),
+              type: ToastificationType.error,
             );
-
           }
         }
       } else {
-        showToast(description: 'please_enter_a_valid_phone_number'.tr(),
-            type: ToastificationType.error
+        showToast(
+          description: 'please_enter_a_valid_phone_number'.tr(),
+          type: ToastificationType.error,
         );
-
 
         return;
       }
     } else {
-      showToast(description: 'please_upload_company_logo'.tr(),
-          type: ToastificationType.error
+      showToast(
+        description: 'please_upload_company_logo'.tr(),
+        type: ToastificationType.error,
       );
 
       return;

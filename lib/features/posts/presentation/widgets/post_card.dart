@@ -1,22 +1,23 @@
-import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/network/websocket/config.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
-import 'package:linkup_pro/core/widgets/custom_text.dart';
+import 'package:linkup_pro/features/bottom_nav_bar/providers/bottom_navbar.dart';
 import 'package:linkup_pro/features/posts/domain/entities/post.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_file_view.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/post_header.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_stats.dart';
 import 'package:linkup_pro/features/posts/presentation/widgets/posts_tags.dart';
+import 'package:linkup_pro/features/profile/presentation/widgets/expansion_text.dart';
+import 'package:linkup_pro/features/search/domain/entities/search_entities.dart';
+import 'package:linkup_pro/features/search/presentation/providers/search_provider.dart';
 import 'package:linkup_pro/main.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
-
-
-class PostCard extends StatefulWidget {
+class PostCard extends ConsumerStatefulWidget {
   final String userId;
   final bool isPostDetails;
   final Post post;
@@ -24,6 +25,7 @@ class PostCard extends StatefulWidget {
   final VoidCallback? onComment;
   final VoidCallback? onShare;
   final VoidCallback? onProfileTap;
+  final VoidCallback? onDelete;
 
   const PostCard({
     super.key,
@@ -33,29 +35,33 @@ class PostCard extends StatefulWidget {
     this.onComment,
     this.onShare,
     this.onProfileTap,
+    this.onDelete,
     this.isPostDetails = false,
   });
 
   @override
-  State<PostCard> createState() => _PostCardState();
+  ConsumerState<PostCard> createState() => _PostCardState();
 }
 
-class _PostCardState extends State<PostCard> {
+class _PostCardState extends ConsumerState<PostCard> {
   String get userId => widget.userId;
-  bool _isExpanded = false;
-
 
   final io = GetIt.I<SocketService>();
-@override
+  @override
   void initState() {
     super.initState();
     io.joinRoom("postSubscribe", {"roomId": widget.post.id});
-
   }
+
   @override
   void dispose() {
     io.joinRoom("postUnsubscribe", {"roomId": widget.post.id});
     super.dispose();
+  }
+
+  void _onTagTap(String tag) {
+    ref.read(searchProvider.notifier).search(tag, type: SearchType.posts);
+    ref.read(bottomNavbarProvider.notifier).setIndex(1);
   }
 
   @override
@@ -68,12 +74,14 @@ class _PostCardState extends State<PostCard> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-
-        return InkWell(
-          onTap: widget.isPostDetails ? null : () {
-           if(mounted)context.push("/post/${post.id}");
-          },
+        return GestureDetector(
+          onTap: widget.isPostDetails
+              ? null
+              : () {
+                  if (mounted) context.push("/post/${post.id}");
+                },
           child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 1),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(0),
               gradient: isDark
@@ -82,7 +90,7 @@ class _PostCardState extends State<PostCard> {
                       end: Alignment.bottomRight,
                       colors: [
                         AppColors.darkCard,
-                        AppColors.darkCard.withValues(alpha: .95),
+                        AppColors.darkCard.withAlpha((0.95 * 255).round()),
                       ],
                     )
                   : null,
@@ -92,22 +100,21 @@ class _PostCardState extends State<PostCard> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Section
-                 PostHeader(post: post, userId: userId,),
+                PostHeader(
+                  post: post,
+                  userId: userId,
+                  onDelete: widget.onDelete,
+                ),
 
-                // Content Section
-                _buildContent(isDark),
+                ExpansionText(text: post.content),
 
-                // Media Section (Images/Videos)
-                if (post.files.isNotEmpty) BuildPostFile(files: post.files),
+                if (post.files.isNotEmpty)
+                  BuildPostFile(files: post.files, postId: post.id),
 
-                // Tags Section
+                PostsStats(post: post),
 
-                // Stats Section
-                PostsStats(post: post,),
-
-                if (post.tags.isNotEmpty) PostsTags(tags: post.tags),
-
+                if (post.tags.isNotEmpty)
+                  PostsTags(tags: post.tags, onTagTap: _onTagTap),
               ],
             ),
             //),
@@ -116,65 +123,4 @@ class _PostCardState extends State<PostCard> {
       },
     );
   }
-
-
-
-  Widget _buildContent(bool isDark) {
-    final content = widget.post.content;
-    final shouldShowMore = content.length > 200;
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AnimatedCrossFade(
-            firstChild: CustomText(
-              text: content,
-
-              fontSize: 15,
-
-              color: isDark
-                  ? Colors.white.withValues(alpha: .9)
-                  : AppColors.textPrimary,
-
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            ),
-            secondChild: CustomText(
-              text: content,
-
-              fontSize: 15,
-
-              color: isDark
-                  ? Colors.white.withValues(alpha: .9)
-                  : AppColors.textPrimary,
-            ),
-            crossFadeState: _isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
-            duration: const Duration(milliseconds: 300),
-          ),
-          if (shouldShowMore) ...[
-            const SizedBox(height: 8),
-            GestureDetector(
-              onTap: () => setState(() => _isExpanded = !_isExpanded),
-              child: Text(
-                _isExpanded ? 'show_less'.tr() : 'show_more'.tr(),
-                style: TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-            ),
-          ],
-          const SizedBox(height: 12),
-        ],
-      ),
-    );
-  }
-
-
- 
 }

@@ -8,7 +8,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import '../../../../core/widgets/custom_text.dart';
 import '../../../../core/widgets/my_animated_flipcounter.dart';
 import '../../../../core/network/websocket/config.dart';
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 import '../../data/comment_repository_implement.dart';
 import '../utils/avatar_url.dart';
 import '../utils/display_name.dart';

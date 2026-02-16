@@ -5,7 +5,9 @@ import '../../../../core/widgets/custom_text.dart';
 
 class PostsTags extends StatelessWidget {
   final List<String> tags;
-  const PostsTags({super.key, required this.tags});
+  final void Function(String tag)? onTagTap;
+
+  const PostsTags({super.key, required this.tags, this.onTagTap});
 
   @override
   Widget build(BuildContext context) {
@@ -19,27 +21,13 @@ class PostsTags extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: tags.map((tag) {
-            return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    AppColors.primary.withValues(alpha: .15),
-                    AppColors.primaryLight.withValues(alpha: .1),
-                  ],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.primary.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
+            return GestureDetector(
+              onTap: onTagTap != null ? () => onTagTap!(tag) : null,
               child: CustomText(
-                text: '#$tag',
-
-                color: AppColors.primary,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+                  text: '#$tag',
+                  color: AppColors.primary,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
               ),
             );
           }).toList(),

@@ -17,8 +17,7 @@ class PostActionImagePreview extends StatelessWidget {
   Widget build(BuildContext context) {
 
       if (imageFile == null && imageUrl == null) return const SizedBox.shrink();
-print(imageUrl);
-print(imageFile);
+
 
       return ClipRRect(
         borderRadius: BorderRadius.circular(16),
@@ -53,7 +52,7 @@ print(imageFile);
               top: 12,
               right: 12,
               child: Material(
-                color: Colors.black.withValues(alpha: 0.6),
+                color: Colors.black.withAlpha((0.6 * 255).round()),
                 shape: const CircleBorder(),
                 child: InkWell(
                   onTap: ()=> removeImage.call(),

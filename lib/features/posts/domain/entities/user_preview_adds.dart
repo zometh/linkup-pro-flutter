@@ -1,15 +1,4 @@
-/*
-{
-username: jairo.pfannerstill,
-role: ENTREPRISE,
-followersCount: 0,
-followingCount: 0,
-biography: null,
-portfolio: null, c
-ompanyDescription:
-Vestibulum morbi blandit cursus risus.
-}
- */
+
 import 'package:linkup_pro/core/enums/user_role.dart';
 class UserPreviewAdds {
   final String username;

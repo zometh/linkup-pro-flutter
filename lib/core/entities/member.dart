@@ -1,8 +1,7 @@
-
 import 'package:linkup_pro/core/entities/user.dart';
 import 'package:linkup_pro/core/enums/user_visibility.dart';
 
-class Member{
+class Member {
   final String id;
   final String? biography;
   final DateTime? birthDate;
@@ -28,7 +27,6 @@ class Member{
   });
 
   factory Member.fromJson(Map<String, dynamic> json) {
-
     return Member(
       id: json['id'] as String,
       biography: json['biography'],
@@ -38,23 +36,29 @@ class Member{
       birthDate: DateTime.tryParse(json['birthDate']),
       sector: json['sector'],
       profileFileId: json['profileFileId'],
-      profileVisibility: json["visibility"] != null ? getVisibility(json["visibility"]) : UserVisibility.public,
+      profileVisibility: json["visibility"] != null
+          ? getVisibility(json["visibility"])
+          : UserVisibility.public,
       user: User.fromJson(json['user']),
     );
   }
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      if(biography != null) 'biography': biography,
-      if(birthDate != null) 'birthDate': birthDate!.toIso8601String(),
+      if (biography != null) 'biography': biography,
+      if (birthDate != null) 'birthDate': birthDate!.toIso8601String(),
       'phone': phone,
-      if(portfolio != null) 'portfolio': portfolio,
-      if(photoUrl != null) 'photo': photoUrl,
+      if (portfolio != null) 'portfolio': portfolio,
+      if (photoUrl != null) 'photo': photoUrl,
       'sector': sector,
-      if(profileFileId != null) 'profileFileId': profileFileId,
+      if (profileFileId != null) 'profileFileId': profileFileId,
       'visibility': profileVisibility.toString().split('.').last,
       'user': user.toJson(),
     };
   }
 
+  @override
+  String toString() {
+    return 'Member(id: $id, biography: $biography, birthDate: $birthDate, phone: $phone, portfolio: $portfolio, profileVisibility: $profileVisibility, profileFileId: $profileFileId, photoUrl: $photoUrl, sector: $sector, user: $user)';
+  }
 }

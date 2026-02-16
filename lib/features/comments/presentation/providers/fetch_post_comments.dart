@@ -2,7 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:linkup_pro/features/comments/data/comment_repository_implement.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 
 part 'fetch_post_comments.g.dart';
 

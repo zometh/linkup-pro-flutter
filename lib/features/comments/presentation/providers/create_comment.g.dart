@@ -41,7 +41,7 @@ final class CreateCommentProvider
   }
 }
 
-String _$createCommentHash() => r'b7636e58543c1a474d9cada6dfe7375800da565a';
+String _$createCommentHash() => r'cfa1bc3cb591a80f4cec3da5828139c675900be7';
 
 abstract class _$CreateComment extends $Notifier<bool> {
   bool build();

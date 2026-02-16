@@ -3,19 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get_it/get_it.dart';
-import 'package:linkup_pro/core/routes/app_routes.dart';
+import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/theme/theme.dart';
 import 'package:linkup_pro/core/widgets/my_animated_flipcounter.dart';
-import 'package:linkup_pro/features/comments/presentation/pages/sub_comments_page.dart';
-import 'package:linkup_pro/features/comments/presentation/widgets/comment_reply.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 import '../../../../core/network/websocket/config.dart';
 import '../../../../core/widgets/custom_text.dart';
-import '../../data/comment.dart';
+import '../../data/entity/comment.dart';
 import '../../data/comment_repository_implement.dart';
 import '../utils/avatar_url.dart';
 import '../utils/display_name.dart';
+import 'comment_reply.dart';
 
 class CommentTile extends StatefulWidget {
   final bool isSubComment;
@@ -37,7 +36,7 @@ class _CommentTileState extends State<CommentTile> {
       updateCommentStats(data);
     });
 
-    // Listen for new sub-comments to update count
+
     io.on("newSubComment", (data){
       if(data['commentId'] == widget.comment.id){
         setState(() {
@@ -84,6 +83,7 @@ class _CommentTileState extends State<CommentTile> {
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
+                  spacing: 6,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -105,60 +105,75 @@ class _CommentTileState extends State<CommentTile> {
                         ),
                       ],
                     ),
+                    if(widget.comment.fileUrl != null)
+                    Container(
+                      width: double.infinity,
+                      height: 160,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(
+                          10),
+                        image: DecorationImage(
+                          image: NetworkImage(widget.comment.fileUrl!),
+                          fit: BoxFit.cover)
+                      )
+                    ),
+
+
                     const SizedBox(height: 4),
                     Text(
                       widget.comment.content,
                       style: const TextStyle(fontSize: 14),
+                    ),
+                    Row(
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            IconButton(
+                              iconSize: 15,
+                              onPressed: likeComment,
+                              icon: Icon(
+                                widget.comment.isLikedByUser
+                                    ? FontAwesomeIcons.solidHeart
+                                    : FontAwesomeIcons.heart,
+                                color: widget.comment.isLikedByUser
+                                    ? Colors.red
+                                    : null,
+                              ),
+                            ),
+                            MyAnimatedFlipcounter(value: widget.comment.likesCount, fontSize: 14,)
+                          ],
+                        ),
+                        if(!widget.isSubComment)
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                iconSize: 15,
+                                onPressed: showCommentReply,
+                                icon: Icon(FontAwesomeIcons.reply),
+                              ),
+                              MyAnimatedFlipcounter(value: widget.comment.subCommentsCount, fontSize: 14,),
+                            ],
+                          ),
+                        // View all replies button
+                        if (widget.comment.subCommentsCount > 0)
+                          TextButton(
+                            onPressed: viewAllReplies,
+                            child: CustomText(
+                              text: 'view_replies'.tr(),
+                              fontSize: 12,
+                            ),
+                          ),
+                      ],
                     ),
                   ],
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  IconButton(
-                    iconSize: 15,
-                    onPressed: likeComment,
-                    icon: Icon(
-                      widget.comment.isLikedByUser
-                          ? FontAwesomeIcons.solidHeart
-                          : FontAwesomeIcons.heart,
-                      color: widget.comment.isLikedByUser
-                          ? Colors.red
-                          : null,
-                    ),
-                  ),
-                  MyAnimatedFlipcounter(value: widget.comment.likesCount, fontSize: 14,)
-                ],
-              ),
-              if(!widget.isSubComment)
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    iconSize: 15,
-                    onPressed: showCommentReply,
-                    icon: Icon(FontAwesomeIcons.reply),
-                  ),
-                  MyAnimatedFlipcounter(value: widget.comment.subCommentsCount, fontSize: 14,),
-                ],
-              ),
-              // View all replies button
-              if (widget.comment.subCommentsCount > 0)
-                TextButton(
-                  onPressed: viewAllReplies,
-                  child: CustomText(
-                    text: 'view_replies'.tr(),
-                   fontSize: 12,
-                  ),
-                ),
-            ],
-          ),
+
         ],
       ),
     );
@@ -175,7 +190,7 @@ class _CommentTileState extends State<CommentTile> {
   }
 
   viewAllReplies() async {
-     MyNavigator(context).navigateTo(SubCommentsPage(parentComment: widget.comment));
+     GoRouter.of(context).push('/comments/${widget.comment.id}/replies', extra: widget.comment);
   }
 
   likeComment() async{

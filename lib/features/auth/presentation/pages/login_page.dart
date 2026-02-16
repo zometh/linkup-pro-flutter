@@ -4,7 +4,6 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:linkup_pro/core/enums/textfield_type.dart';
-import 'package:linkup_pro/core/routes/app_routes.dart';
 import 'package:linkup_pro/core/theme/app_colors.dart';
 import 'package:linkup_pro/core/utils/formatters/form_validator.dart';
 import 'package:linkup_pro/core/widgets/custom_button.dart';
@@ -12,9 +11,6 @@ import 'package:linkup_pro/core/widgets/custom_progress.dart';
 import 'package:linkup_pro/core/widgets/custom_text.dart';
 import 'package:linkup_pro/core/widgets/custom_textfield.dart';
 import 'package:linkup_pro/core/widgets/text_editting_controller_instance.dart';
-import 'package:linkup_pro/features/auth_checker/auth_checker.dart';
-
-
 import 'package:linkup_pro/main.dart';
 import 'package:toastification/toastification.dart';
 
@@ -255,12 +251,16 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         _passwordController.text.trim().toLowerCase(),
       );
       if (result) {
-        if(mounted){
-        MyNavigator(context).navigateTo(const AuthCheckerService());
-
+        if (mounted) {
+          // Naviguer vers la page d'accueil via go_router
+          GoRouter.of(context).go('/home');
         }
-      }else{
-
+      } else {
+        // Afficher une erreur si l'authentification a échoué
+        showToast(
+          description: 'login_failed'.tr(),
+          type: ToastificationType.error,
+        );
       }
     } else {
       showToast(
@@ -271,4 +271,3 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 }
-
