@@ -99,8 +99,10 @@ class NotificationService {
         id: DateTime.now().millisecondsSinceEpoch.remainder(100000),
         channelKey: 'basic_channel',
         // On priorise le titre dans 'notification', sinon on regarde dans 'data'
-        title: translate(message.notification?.title ?? message.data['title']),
-        body: formatBody(message.notification?.body ?? message.data['body']),
+        title: translate(
+          message.notification?.title!.tr() ?? message.data['title'],
+        ),
+        body: formatBody(message.notification?.body!.tr() ?? message.data['body']),
         // Si une image est envoyée dans les data
         bigPicture: message.data['image'],
         notificationLayout: message.data['image'] != null
